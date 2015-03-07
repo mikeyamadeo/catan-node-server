@@ -1,0 +1,16 @@
+{
+  "name": "node-server-boilerplate",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mikey",
+  "license": "y",
+  "dependencies": {
+    "express": "~4.12.2",
+    "lodash": "~3.4.0",
+    "http-error": "0.0.5"
+  }
+}
