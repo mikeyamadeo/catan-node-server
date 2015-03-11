@@ -9,7 +9,7 @@ var _ = require('lodash');
  */
 
 
-var UserController = {
+var MovesController = {
   /** CREATE **/
 
   roadBuilding: function(req, res, next) {
@@ -18,4 +18,4 @@ var UserController = {
   }
 };
 
-module.exports = UserController;
+module.exports = MovesController;

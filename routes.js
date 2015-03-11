@@ -15,7 +15,8 @@ module.exports = function(app) {
   // Define routes here //
   /////////////////////////
   app.use('/moves', require('./api/moves'));
-  
+  app.use('/user', require('./api/user'));
+
   /////////////////////////
   // Application Routes //
   /////////////////////////
@@ -41,7 +42,11 @@ module.exports = function(app) {
 
     /** Only log the stack trace if error status code is greater than 404 */
     res.status(err.code || err.status || 500).json({
+<<<<<<< HEAD
       error: "this is an error message"
+=======
+      error: "error message"
+>>>>>>> 5667418a917afaa66ceb547481e190e534077343
     });
   });
 };

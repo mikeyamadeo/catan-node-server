@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node-dev ./bin/www"
   },
   "author": "mikey",
   "license": "y",
   "dependencies": {
-    "express": "~4.12.2",
+    "body-parser": "^1.12.0",
+    "debug": "^2.1.2",
+    "express": "^4.12.2",
+    "http-error": "0.0.5",
     "lodash": "~3.4.0",
-    "http-error": "0.0.5"
+    "mongoose": "^3.8.24",
+    "node-dev": "^2.6.1"
   }
 }
