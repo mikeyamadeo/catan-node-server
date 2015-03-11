@@ -15,6 +15,7 @@ module.exports = function(app) {
   // Define routes here //
   /////////////////////////
   app.use('/moves', require('./api/moves'));
+  app.use('/user', require('./api/user'));
 
   /////////////////////////
   // Application Routes //

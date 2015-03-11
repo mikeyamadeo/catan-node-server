@@ -4,7 +4,6 @@ var mongoose = require('mongoose'),
 var UserSchema = new Schema({
     username : String,
     password : String
-    }
 });
 
 var User = mongoose.model('User', UserSchema);
@@ -21,7 +20,7 @@ UserSchema.statics.addNewUser = function(username, password, callback) {
     var newUser = new User({
         username : username,
         password : password
-    };
+    });
     return newUser.save(callback);
 }
 
