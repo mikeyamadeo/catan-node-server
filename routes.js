@@ -15,12 +15,12 @@ module.exports = function(app) {
   // Define routes here //
   /////////////////////////
   app.use('/moves', require('./api/moves'));
-
+  
   /////////////////////////
   // Application Routes //
   /////////////////////////
   app.get('/', function(req, res) {
-    res.send('The application is alive!');
+    res.send('The application is alive homie!');
   });
 
   /////////////////////
@@ -41,7 +41,7 @@ module.exports = function(app) {
 
     /** Only log the stack trace if error status code is greater than 404 */
     res.status(err.code || err.status || 500).json({
-      error: message
+      error: "this is an error message"
     });
   });
 };
