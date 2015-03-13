@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: moves/moves.controller.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: moves/moves.controller.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>'use strict';
+
+var _ = require('lodash');
+
+/**
+ * Example of getting access to required models:
+ *
+ * var Model = require('../model');
+ * var MovesModel = require('./moves.model');
+ */
+
+
+var MovesController = {
+  /** CREATE **/
+
+  /**
+   * @desc store a chat message & return a response
+   * @method sendChat
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  sendChat: function(req, res, next) {
+    /* Psuedo code
+        //Example of how we can store commands for the command pattern
+        var body = req.body;
+        Model.storeCommand(body);
+
+        //store chat message
+        MovesModel.storeMessage(body, function(err, msg) {
+            //send back response after message stored
+            if(err) return next(err);
+            res.status(201);
+        })
+    */
+  },
+  /**
+   * @desc get rolled number and based on the 
+   * number, change the game state and distribute
+   * resources to players and return a response
+   * @method rollNumer
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  rollNumber: function(req, res, next) {},
+  /**
+   * @desc gets a rob player request and updates
+   * player resources based on the request and returns
+   * a response
+   * @method robPlayer
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  robPlayer: function(req, res, next) {},
+  /**
+   * @desc recieves a finish turn request and updates
+   * the turn tracker accordingly
+   * @method finishTurn
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  finishTurn: function(req, res, next) {},
+   /**
+   * @desc receives a request to buy a dev card and
+   * checks if the requester is the current player, the
+   * requester has enough resources, and the dev card
+   * deck is not empty
+   * @method buyDevCard
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  buyDevCard: function(req, res, next) {},
+  /**
+   * @desc receives a request to play a year of plenty card and
+   * checks to see that the requester is the current player, 
+   * the requester has a year of plenty card, that card was not 
+   * bought that same turn, and the user hasn't used another
+   * dev card that turn and returns a response
+   * @method yearOfPlenty
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  yearOfPlenty: function(req, res, next) {},
+  /**
+   * @desc receives a request to play a road building card and 
+   * verifies that the actiono is valid and sends a response
+   * @method roadBuilding
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  roadBuilding: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a soldier card, validates
+   * the request and sends a response after performing the action
+   * @method Soldier
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  Soldier: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a monopoly card, validates
+   * the request and sends a response after performing the action
+   * @method Monopoly
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  Monopoly: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a monument card, validates
+   * the request and sends a response after performing the action
+   * @method Monument
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  Monument: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a road, validates
+   * the request and sends a response after performing the action
+   * @method buildRoad
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  buildRoad: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a settlement, validates
+   * the request and sends a response after performing the action
+   * @method buildSettlement
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  buildSettlement: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a city, validates
+   * the request and sends a response after performing the action
+   * @method buildCity
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  buildCity: function(req, res, next) {},
+  /**
+   * @desc gets a request to offer a domestic trade, validates
+   * the request and sends a response after performing the action
+   * @method offerTrade
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  offerTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to accept a trade, validates
+   * the request and sends a response after performing the action
+   * @method acceptTrade
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  acceptTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to offer a maritime trade, validates
+   * the request and sends a response after performing the action
+   * @method maritimeTrade
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  maritimeTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to discard cards, validates
+   * the request and sends a response after performing the action
+   * @method discardCards
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
+   */
+  discardCards: function(req, res, next) {},
+
+};
+
+module.exports = MovesController;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Mar 13 2015 13:58:05 GMT-0600 (MDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

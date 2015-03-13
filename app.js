@@ -14,5 +14,4 @@ var app = express();
 app.use(bodyParser.json({ inflate : true }));
 require('./routes')(app);
 
-/** @type {ExpressApplication} expose the express app */
 module.exports = app;
