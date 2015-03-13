@@ -18,10 +18,8 @@
     "mongoose": "^3.8.24",
     "node-dev": "^2.6.1",
     "sqlite3": "^3.0.5"
-    "node-dev": "^2.6.1"
   },
   "devDependencies": {
     "grunt-jsdoc": "~0.5.8"
->>>>>>> 54ed2a399367700e848137366f847e07ca6b8bb3
   }
 }
