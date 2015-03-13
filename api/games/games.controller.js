@@ -14,29 +14,39 @@ var GamesController = {
   /** CREATE **/
 
   /**
-   * @desc store a chat message & return a response
+   * @desc get request to list all current games
    * @arg {object} req - http request object
    * @arg {object} res - http response object
    * @arg {function} next - next command
    */
-  list: function(req, res, next) {
-    /* Psuedo code
-        //Example of how we can store commands for the command pattern
-        var body = req.body;
-        Model.storeCommand(body);
-
-        //store chat message
-        MovesModel.storeMessage(body, function(err, msg) {
-            //send back response after message stored
-            if(err) return next(err);
-            res.status(201);
-        })
-    */
-  },
-
+  list: function(req, res, next) {},
+  /**
+   * @desc request to create new game
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   create: function(req, res, next) {},
+  /**
+   * @desc request to join existing game
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   join: function(req, res, next) {},
+  /**
+   * @desc request to store current state of game
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   save: function(req, res, next) {},
+  /**
+   * @desc request to load a saved game state game state
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   load: function(req, res, next) {},
 
 };

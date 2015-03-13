@@ -14,30 +14,46 @@ var GameController = {
   /** CREATE **/
 
   /**
-   * @desc store a chat message & return a response
+   * @desc get request that gets game's current state
    * @arg {object} req - http request object
    * @arg {object} res - http response object
    * @arg {function} next - next command
    */
-  model: function(req, res, next) {
-    /* Psuedo code
-        //Example of how we can store commands for the command pattern
-        var body = req.body;
-        Model.storeCommand(body);
-
-        //store chat message
-        MovesModel.storeMessage(body, function(err, msg) {
-            //send back response after message stored
-            if(err) return next(err);
-            res.status(201);
-        })
-    */
-  },
-
+  model: function(req, res, next) {},
+  /**
+   * @desc get request to get commands in command log
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   getCommands: function(req, res, next) {},
+    /**
+   * @desc get request to get all AI types
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   listAI: function(req, res, next) {},
+    /**
+   * @desc request to reset game state to initial state
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   reset: function(req, res, next) {},
+    /**
+   * @desc request for adding new commands to command log
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   postCommands: function(req, res, next) {},
+    /**
+   * @desc request to add an AI player
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   addAI: function(req, res, next) {},
 };
 
