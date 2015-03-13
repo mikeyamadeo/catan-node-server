@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: game/game.controller.js</title>
+    <title>JSDoc: Source: game/game.model.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: game/game.controller.js</h1>
+    <h1 class="page-title">Source: game/game.model.js</h1>
     
     
 
@@ -25,72 +25,41 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>'use strict';
+            <pre class="prettyprint source"><code>'use strict'
 
-var _ = require('lodash');
-
-/**
- * Example of getting access to required models:
- *
- * var Model = require('../model');
- * var MovesModel = require('./moves.model');
- */
-
-
-var GameController = {
-  /** CREATE **/
-
-  /**
-   * @desc get request that gets game's current state
-   * @method model
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  model: function(req, res, next) {},
-  /**
-   * @desc get request to get commands in command log
-   * @method getCommands
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  getCommands: function(req, res, next) {},
+var GameModel = {
     /**
-   * @desc get request to get all AI types
-   * @method listAI
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  listAI: function(req, res, next) {},
+    * @desc retrieves game model of specified game
+    * @method getModel
+    * @param {number} id - id of game to retrieve
+    * @param {function} callback - callback
+    */
+    getModel : function(id, callback) {},
     /**
-   * @desc request to reset game state to initial state
-   * @method reset
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  reset: function(req, res, next) {},
+    * @desc retrieves executed commands for specified game
+    * @method getCommands
+    * @param {number} id - id of game to retrieve commands
+    * @param {function} callback - callback
+    */
+    getCommands : function(id, callback) {},
     /**
-   * @desc request for adding new commands to command log
-   * @method postCommands
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  postCommands: function(req, res, next) {},
+    * @desc reset specified game to initial state
+    * @method resetGame
+    * @param {number} id - game id to reset game
+    * @param {function} callback - callback
+    */
+    resetGame : function(id, callback) {},
     /**
-   * @desc request to add an AI player
-   * @method addAI
-   * @param {object} req - http request object
-   * @param {object} res - http response object
-   * @param {function} next - next command
-   */
-  addAI: function(req, res, next) {},
+    * @desc adds commands to a game's command list
+    * @method addCommands
+    * @param {number} id - specifies game
+    * @param {array} commands - list of commands to add
+    * @param {function} callback - callback
+    */
+    addCommands : function(id, commands, callback) {}
 };
 
-module.exports = MovesController;
+module.exports = GameModel;
 </code></pre>
         </article>
     </section>
