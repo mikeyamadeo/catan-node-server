@@ -33,24 +33,142 @@ var MovesController = {
         })
     */
   },
-
+  /**
+   * @desc get rolled number and based on the 
+   * number, change the game state and distribute
+   * resources to players and return a response
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   rollNumber: function(req, res, next) {},
+  /**
+   * @desc gets a rob player request and updates
+   * player resources based on the request and returns
+   * a response
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   robPlayer: function(req, res, next) {},
+  /**
+   * @desc recieves a finish turn request and updates
+   * the turn tracker accordingly
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   finishTurn: function(req, res, next) {},
+   /**
+   * @desc receives a request to buy a dev card and
+   * checks if the requester is the current player, the
+   * requester has enough resources, and the dev card
+   * deck is not empty
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   buyDevCard: function(req, res, next) {},
+  /**
+   * @desc receives a request to play a year of plenty card and
+   * checks to see that the requester is the current player, 
+   * the requester has a year of plenty card, that card was not 
+   * bought that same turn, and the user hasn't used another
+   * dev card that turn and returns a response
+   * deck is not empty
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   yearOfPlenty: function(req, res, next) {},
+  /**
+   * @desc receives a request to play a road building card and 
+   * verifies that the actiono is valid and sends a response
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   roadBuilding: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a soldier card, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   Soldier: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a monopoly card, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   Monopoly: function(req, res, next) {},
+  /**
+   * @desc gets a request to play a monument card, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   Monument: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a road, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   buildRoad: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a settlement, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   buildSettlement: function(req, res, next) {},
+  /**
+   * @desc gets a request to build a city, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   buildCity: function(req, res, next) {},
+  /**
+   * @desc gets a request to offer a domestic trade, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   offerTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to accept a trade, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   acceptTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to offer a maritime trade, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   maritimeTrade: function(req, res, next) {},
+  /**
+   * @desc gets a request to discard cards, validates
+   * the request and sends a response after performing the action
+   * @arg {object} req - http request object
+   * @arg {object} res - http response object
+   * @arg {function} next - next command
+   */
   discardCards: function(req, res, next) {},
-  roadBuilding: function(req, res, next) {},
 
 };
 
