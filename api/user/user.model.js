@@ -1,27 +1,16 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+'use strict'
 
-var UserSchema = new Schema({
-    username : String,
-    password : String
-});
 
-var User = mongoose.model('User', UserSchema);
 
-UserSchema.methods.comparePasswords = function(password) {
-    return password === this.password;
-}
+var UserModel = {
+    getUser : function(username, callback) {
 
-UserSchema.statics.findByUsername = function(username, callback) {
-    return this.find({ username : username }, callback);
+    },
+
+    addUser : function(username, password, callback) {
+    
+    }
 };
 
-UserSchema.statics.addNewUser = function(username, password, callback) {
-    var newUser = new User({
-        username : username,
-        password : password
-    });
-    return newUser.save(callback);
-}
+module.exports = UserModel
 
-module.exports = User

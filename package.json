@@ -16,6 +16,7 @@
     "http-error": "0.0.5",
     "lodash": "~3.4.0",
     "mongoose": "^3.8.24",
-    "node-dev": "^2.6.1"
+    "node-dev": "^2.6.1",
+    "sqlite3": "^3.0.5"
   }
 }
