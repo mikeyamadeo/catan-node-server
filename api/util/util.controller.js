@@ -15,9 +15,10 @@ var UtilController = {
 
   /**
    * @desc a request to change the logging level
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method changeLog
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   changeLog: function(req, res, next) {},
 

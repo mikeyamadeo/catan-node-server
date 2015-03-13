@@ -6,9 +6,10 @@ var UserModel = require('./user.model'),
 var UserController = {
 	/**
    * @desc a request for logging in a user
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method login
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
     login : function(req, res, next) {
         console.log(req.body);
@@ -17,9 +18,10 @@ var UserController = {
 	
 	/**
    * @desc request to register new user
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method register
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
     register : function(req, res, next) {
         console.log(req.body);

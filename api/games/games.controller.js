@@ -15,37 +15,42 @@ var GamesController = {
 
   /**
    * @desc get request to list all current games
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method list
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   list: function(req, res, next) {},
   /**
    * @desc request to create new game
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method create
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   create: function(req, res, next) {},
   /**
    * @desc request to join existing game
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method join
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   join: function(req, res, next) {},
   /**
    * @desc request to store current state of game
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method save
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   save: function(req, res, next) {},
   /**
    * @desc request to load a saved game state game state
-   * @arg {object} req - http request object
-   * @arg {object} res - http response object
-   * @arg {function} next - next command
+   * @method load
+   * @param {object} req - http request object
+   * @param {object} res - http response object
+   * @param {function} next - next command
    */
   load: function(req, res, next) {},
 
