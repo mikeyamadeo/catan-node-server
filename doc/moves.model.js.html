@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: moves/moves.model.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: moves/moves.model.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>'use strict'
+
+var MovesModel = {
+    /**
+    * @desc adds chat to a game
+    * @method addChat
+    * @param {number} id - specifies game
+    * @param {number} player - index of sender
+    * @param {string} message - chat message to add
+    * @param {function} callback - callback
+    */
+    addChat : function(id, player, message, callback) {},
+    /**
+    * @desc modifies a games latest rolled number
+    * @method rollNumber
+    * @param {number} id - specifies the game
+    * @param {number} player - index of player
+    * @param {number} num - rolled number
+    * @param {function} callback - callback
+    */
+    rollNumber : function(id, player, num, callback) {},
+    /**
+    * @desc performs rob operation on specified game
+    * @method robPlayer
+    * @param {number} id - specifies game
+    * @param {object} hex - new hex location of robber
+    * @param {number} player - index of player
+    * @param {number} victim - index of robbed victim
+    * @param {function} callback - callback
+    */
+    robPlayer : function(id, hex, player, victim, callback) {},
+    /**
+    * @desc performs a finish turn operation on specified game
+    * @method finishTurn
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {function} callback - callback
+    */
+    finishTurn : function(id, player, callback) {},
+    /**
+    * @desc performs a dev card purchase operation
+    * @method buyDevCard
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {function} callback - callback
+    */
+    buyDevCard : function(id, player, callback) {},
+    /**
+    * @desc performs year of plenty operation
+    * @method yearOfPlenty
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {string} first - first resource requested
+    * @param {string} second - second resource requested
+    * @param {function} callback - callback
+    */
+    yearOfPlenty : function(id, player, first, second, callback) {},
+    /**
+    * @desc performs a road building card operation
+    * @method roadBuilding
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} first - edge location of first road to be built
+    * @param {obejct} second - edge location of second road to be built
+    * @param {function} callback - callback
+    */
+    roadBuilding : function(id, player, first, second, callback) {},
+    /**
+    * @desc performs a soldier operation
+    * @method soldier
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {number} victim - index of victim
+    * @param {object} hex - new hex location of robber
+    * @param {function} callback - callback
+    */
+    soldier : function(id, player, victim, hex, callback) {},
+    /**
+    * @desc performs a monopoly operation
+    * @method monopoly
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {string} resource - resource to monopolize
+    * @param {function} callback - callback
+    */
+    monopoly : function(id, player, resource, callback) {},
+    /**
+    * @desc performs monument operation
+    * @method monument
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {function} callback - callback
+    */
+    monument : function(id, player, callback) {},
+    /**
+    * @desc performs a build road operation
+    * @method buildRoad
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} edge - edge location of road to be built
+    * @param {boolean} free - whether or not the road should be free
+    * @param {function} callback - callback
+    */
+    buildRoad : function(id, player, edge, free, callback) {},
+    /**
+    * @desc performs a build settlement operation
+    * @method buildSettlement
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} vertex - vertex location of settlement to be built
+    * @param {boolean} free - whethere of not the settlement should be free
+    * @param {function} callback - callback
+    */
+    buildSettlement : function(id, player, vertex, free, callback) {},
+    /**
+    * @desc performs a build city operation
+    * @method buildCity
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} vertex - vertex location of city to be built
+    * @param {function} callback - callback
+    */
+    buildCity : function(id, player, vertex, callback) {},
+    /**
+    * @desc performs a offer trade operation
+    * @method offerTrade
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} offer - resources to be offered in a trade
+    * @param {number} receiver - index of receiver
+    * @param {function} callback - callback
+    */
+    offerTrade : function(id, player, offer, receiver, callback) {},
+    /**
+    * @desc performs an accept trade operation
+    * @method acceptTrade
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {boolean} acceptance - whether or not the trade was accepted
+    * @param {function} callback - callback
+    */
+    acceptTrade : function(id, player, acceptance, callback) {},
+    /**
+    * @desc performs a maritime trade operation
+    * @method maritimeTrade
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {number} ratio - trade ratio
+    * @param {string} input - input resource
+    * @param {string} output - output resource
+    * @param {function} callback - callback
+    */
+    maritimeTrade : function(id, player, ratio, input, output, callback) {},
+    /**
+    * @desc performs a discard cards operation
+    * @method discardCards
+    * @param {number} id - specifies game
+    * @param {number} player - index of player
+    * @param {object} discarded - cards to discard
+    * @param {function} callback - callback
+    */
+    discardCards : function(id, player, discarded, callback) {}
+};
+
+module.exports = MovesModel;  
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Mar 13 2015 18:07:31 GMT-0600 (MDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
