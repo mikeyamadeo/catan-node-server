@@ -9,6 +9,12 @@ var express = require('express'),
 var app = express();
 
 /////////////////////////////////
+// Database Initialization     //
+/////////////////////////////////
+var mongoose = requires('mongoose');
+mongoose.connect('mongodb://localhost/catan');
+
+/////////////////////////////////
 // Application Middleware      //
 /////////////////////////////////
 app.use(bodyParser.json({ inflate : true }));
