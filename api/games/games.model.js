@@ -1,19 +1,25 @@
 'use strict'
 
+var model = require('../game/game.model.mongoose');
+
 var GamesModel = {
     /**
     * @desc retrieve games from server model
     * @method listGames
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, games)
     */
-    listGames : function(callback) {},
+    listGames : function(callback) {
+        model.find().exec(callback);    
+    },
     /**
     * @desc add a game to the database
     * @method addGame
     * @param {object} game - game object to be stored
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, boolean)
     */
-    addGame : function(game, callback) {},
+    addGame : function(game, callback) {
+        
+    },
     /**
     * @desc adds a player to currently existing game
     * @method addPlayer
