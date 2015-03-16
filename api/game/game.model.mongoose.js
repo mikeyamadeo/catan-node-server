@@ -38,7 +38,7 @@ var Player = new Schema({
     oldDevCards : DevCardList,
     index : Number,
     playedDevCard : Boolean,
-    reources : ResourceList,
+    resource : ResourceList,
     roads : Number,
     settlements : Number,
     soldiers : Number,
@@ -51,21 +51,21 @@ var HexLocation = new Schema({
 });
 
 var Hex = new Schema({
-    address : HexLocation,
+    location : HexLocation,
     resource : String,
     chit : Number
 });
 
 var Port = new Schema({
     resource : String,
-    address : HexLocation,
+    location : HexLocation,
     direction : String,
     ratio : Number
 }); 
 
 var Road = new Schema({
     owner : Number,
-    address : {
+    location : {
         x : Number,
         y : Number,
         direction : String
@@ -74,7 +74,7 @@ var Road = new Schema({
 
 var VertexObject = new Schema({
     owner : Number,
-    address : {
+    location : {
         x : Number,
         y : Number,
         direction : String
