@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var fs = require('fs');
 
 var GamesModel = {
     /**
@@ -80,14 +81,31 @@ var GamesModel = {
     * @param {array} commands - list of commands to be saved
     * @param {function} callback - callback(err, boolean)
     */
-    saveGame : function(id, name, callback) {},
+    saveGame : function(id, name, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                fs.writeFile(config.saves + name, JSON.stringify(game), function(err) {
+                    if (err) return callback(err);
+                    return callback(null, true);
+                });        
+            } else {
+                return callback(null, false);
+            }
+        });
+    },
     /**
     * @desc loads the state of specified game
     * @method loadGame
     * @param {string} name - file location to load game
-    * @param {function} callback - callback(err, boolean)
+    * @param {function} callback - callback(err, game)
     */
-    loadGame : function(name, callback) {},
+    loadGame : function(name, callback) {
+        fs.readFile(config.saves + name, function(err, data) {
+            if (err) return callback(err);
+            callback(null, JSON.parse(data));    
+        });
+    },
 }
 
 module.exports = GamesModel; 
