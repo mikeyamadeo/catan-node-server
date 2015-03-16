@@ -33,7 +33,8 @@ var MovesController = {
             res.status(201);
         })
     */
-    res.send('send chat');
+    console.log(req.body);
+    res.send({child: "children"});
   },
   /**
    * @desc get rolled number and based on the 
