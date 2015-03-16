@@ -2,7 +2,7 @@
 
 var express = require('express');
 
-var ctrl = require('./moves.ctrl');
+var ctrl = require('./moves.controller');
 
 var router = express.Router();
 

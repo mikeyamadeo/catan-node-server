@@ -11,7 +11,7 @@ var app = express();
 /////////////////////////////////
 // Database Initialization     //
 /////////////////////////////////
-var mongoose = requires('mongoose');
+var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/catan');
 
 /////////////////////////////////
