@@ -8,7 +8,7 @@ var _ = require('lodash');
  * var Model = require('../model');
  * var MovesModel = require('./moves.model');
  */
-
+var Model = require('./moves.model');
 
 var MovesController = {
   /** CREATE **/
@@ -41,6 +41,8 @@ var MovesController = {
             res.status(201);
         })
     */
+    console.log(req.body);
+    res.send({child: "children"});
   },
   /**
    * @desc get rolled number and based on the 
@@ -52,7 +54,6 @@ var MovesController = {
    * @param {function} next - next command
    */
   rollNumber: function(req, res, next) {
-
     /*
       Things to do:
       1. pull model from request body.
@@ -75,6 +76,7 @@ var MovesController = {
           else
             change state to 'discarding'
     */
+    console.log("number rolled");
   },
   /**
    * @desc gets a rob player request and updates
