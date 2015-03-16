@@ -360,6 +360,11 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player
+        verify receiver is not player
+        verify player resources
+        if above is valid, set as trade offer
+
     */
   },
   /**
@@ -375,6 +380,11 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify receiving player
+        verify receiving player's cards
+        if above is ture and willAccept
+          transfer cards
+          set trade offer to null
     */
   },
   /**
@@ -390,6 +400,12 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player
+        verify player owns port and gets ratio (?)
+        verify availablility of output resource
+        verify player has enough input resource
+        if above is true
+          transfer resources
     */
   },
   /**
@@ -405,6 +421,16 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player has not already discarded cards this turn
+        verify that total number of resources is half of all resource cards owned
+        verify that player has resource cards
+        if above is true
+          move resources to bank
+          mark player as having discarded cards
+
+        if all players have discarded cards
+          set game state to playing
+
     */
   },
 
