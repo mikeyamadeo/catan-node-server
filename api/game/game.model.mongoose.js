@@ -140,7 +140,7 @@ GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
 };
 
-GameSchema.methods.updateTurn(player) {
+GameSchema.methods.updateTurn = function(player) {
     var newTurn = -1;
     switch (player) {
         case 0 : newTurn = 1;

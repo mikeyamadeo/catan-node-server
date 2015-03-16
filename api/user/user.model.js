@@ -27,7 +27,7 @@ var UserModel = {
             if (err) callback(err);
             return callback(null, added);
         });
-    }
+    },
     /**
     * @desc determines if the given username corresponds with the given password
     * @method validateUser
@@ -39,7 +39,7 @@ var UserModel = {
         model.findByUsername(username, function(err, user) {
             if (err) callback(err);
             if (user) {
-                return callback(null, user.comparePasswords(password);
+                return callback(null, user.comparePasswords(password));
             } else {
                 return callback(null, false);
             }
