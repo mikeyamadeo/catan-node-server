@@ -120,6 +120,19 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check that player index is current player index
+        if game state is playing
+          increment current player index (mod 4)
+          set game state to rolling
+        else if game state is first turn
+          increment current player index
+          if current player index is 4
+            decrement current player index and change state to second turn
+        else if game state is second turn
+          decrement current player index
+          if current player index is < 0
+            set current player index to 0
+            change game state to rolling
     */
   },
    /**
