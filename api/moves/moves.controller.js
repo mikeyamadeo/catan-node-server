@@ -150,6 +150,18 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check to make sure player index is the same as current player index
+        check to make sure there are dev cards available for purchase
+        check to make sure user has correct resources
+        if true for all of the above
+          while (card is not chosen)
+            get random dev card type
+              if dev card type total is greater than zero
+                set card chosen flag to true
+                subtract one dev card from bank
+                add one dev card to current player
+              else
+                mark dev card type as being checked
     */
   },
   /**
