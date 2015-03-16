@@ -201,6 +201,16 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check to make sure player index is current player
+        check to make sure that the card was not bought that turn, and hasn't already been played
+        check to make sure player has two roads
+        check to make sure that both spots are available
+        (spot 1 must be connected to one of the player's other roads, and spot two must be in an available spot after spot one has been placed)
+        if all of the above is true
+          add roads to map
+          remove roads from player
+          mark card as used
+          run longest road algorithm
     */
   },
   /**
@@ -216,6 +226,13 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check to make sure player index is current player
+        check to make sure that the card was not bought that turn, and hasn't already been played
+        check to make sure victim is not current player
+        check to make sure location is not robber's current location
+        if all of the above is true
+          see rob player function
+          increment player soldier count
     */
   },
   /**
@@ -231,6 +248,11 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check to make sure player index is current player
+        check to make sure that the card was not bought that turn, and hasn't already been played
+        if above is true
+          loop through players and reduce resources of resource type to zero
+          increment current player's resource by same number
     */
   },
   /**
@@ -246,6 +268,14 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check that player is current player
+        if we decide to take the easy route:
+          increment player's victory points
+        else
+          if player's victory points + total number of monument cards >= 10
+            increment player's victory points
+            set winner index to current player index
+            change game state?
     */
   },
   /**
@@ -261,6 +291,14 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player
+        verify availability of resources and road pieces
+        verify road location
+        if above is true
+          add road to map
+          decrement road pieces
+          remove resources and place back in bank
+          run longest road algorithm
     */
   },
   /**
@@ -276,6 +314,14 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player
+        verify availablity of resources and settlement pieces
+        verify settlement location
+        if above is true
+          add settlement to map
+          increment player victory points by 1
+          give player resources to bank
+
     */
   },
   /**
@@ -291,6 +337,14 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        verify player
+        verify availablity of resources and city pieces
+        verify city location
+        if above is true
+          add city to map and remove settlement from map
+          increase player settlement count by 1
+          increment player victory points by 1
+          give player resources to bank
     */
   },
   /**
