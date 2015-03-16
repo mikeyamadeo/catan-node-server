@@ -180,6 +180,12 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
+        check to make sure player index is the same as current player index
+        check to make player owns card
+        check to make sure card was not bought that turn and has not already been played
+        check to make sure both resources are available from the bank
+        if true for all of the above
+          decrement resources from bank and add to player
     */
   },
   /**
