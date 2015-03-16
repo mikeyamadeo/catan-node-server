@@ -57,9 +57,9 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
-        - check that the player index matches the current player index
-        - verify that the number is valid
-        - if (number is not 7)
+          check that the player index matches the current player index
+          verify that the number is valid
+          if (number is not 7)
             create array of users/ resources
             find resource hexes with same number
             find settlements that border those hexes
@@ -85,7 +85,26 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  robPlayer: function(req, res, next) {},
+  robPlayer: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+        check that player index matches the current player
+        check that location is not the current robber location
+        if victim index is valid and is not the current player
+          get victim player's resource card hand
+          while (card is not stolen)
+            get random resource
+              if resource total is greater than zero
+                set card stolen flag to true
+                subtract one resource from victim
+                add one resource to current player
+              else
+                mark resource as being checked
+        change state to 'playing'
+    */
+  },
   /**
    * @desc recieves a finish turn request and updates
    * the turn tracker accordingly
@@ -94,7 +113,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  finishTurn: function(req, res, next) {},
+  finishTurn: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
    /**
    * @desc receives a request to buy a dev card and
    * checks if the requester is the current player, the
@@ -105,7 +130,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  buyDevCard: function(req, res, next) {},
+  buyDevCard: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc receives a request to play a year of plenty card and
    * checks to see that the requester is the current player, 
@@ -117,7 +148,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  yearOfPlenty: function(req, res, next) {},
+  yearOfPlenty: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc receives a request to play a road building card and 
    * verifies that the actiono is valid and sends a response
@@ -126,7 +163,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  roadBuilding: function(req, res, next) {},
+  roadBuilding: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to play a soldier card, validates
    * the request and sends a response after performing the action
@@ -135,7 +178,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  Soldier: function(req, res, next) {},
+  Soldier: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to play a monopoly card, validates
    * the request and sends a response after performing the action
@@ -144,7 +193,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  Monopoly: function(req, res, next) {},
+  Monopoly: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to play a monument card, validates
    * the request and sends a response after performing the action
@@ -153,7 +208,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  Monument: function(req, res, next) {},
+  Monument: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to build a road, validates
    * the request and sends a response after performing the action
@@ -162,7 +223,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  buildRoad: function(req, res, next) {},
+  buildRoad: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to build a settlement, validates
    * the request and sends a response after performing the action
@@ -171,7 +238,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  buildSettlement: function(req, res, next) {},
+  buildSettlement: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to build a city, validates
    * the request and sends a response after performing the action
@@ -180,7 +253,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  buildCity: function(req, res, next) {},
+  buildCity: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to offer a domestic trade, validates
    * the request and sends a response after performing the action
@@ -189,7 +268,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  offerTrade: function(req, res, next) {},
+  offerTrade: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to accept a trade, validates
    * the request and sends a response after performing the action
@@ -198,7 +283,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  acceptTrade: function(req, res, next) {},
+  acceptTrade: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to offer a maritime trade, validates
    * the request and sends a response after performing the action
@@ -207,7 +298,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  maritimeTrade: function(req, res, next) {},
+  maritimeTrade: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
   /**
    * @desc gets a request to discard cards, validates
    * the request and sends a response after performing the action
@@ -216,7 +313,13 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  discardCards: function(req, res, next) {},
+  discardCards: function(req, res, next) {
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+    */
+  },
 
 };
 
