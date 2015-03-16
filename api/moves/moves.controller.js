@@ -21,6 +21,14 @@ var MovesController = {
    * @param {function} next - next command
    */
   sendChat: function(req, res, next) {
+
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+        - add chat object to the chat object array
+    */
+
     /* Psuedo code
         //Example of how we can store commands for the command pattern
         var body = req.body;
@@ -43,7 +51,31 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  rollNumber: function(req, res, next) {},
+  rollNumber: function(req, res, next) {
+
+    /*
+      Things to do:
+      1. pull model from request body.
+      2. call correct execute method
+        - check that the player index matches the current player index
+        - verify that the number is valid
+        - if (number is not 7)
+            create array of users/ resources
+            find resource hexes with same number
+            find settlements that border those hexes
+              for each settlement
+                add one to the user/resource total in the array
+            find cities that border those hexes
+              for each city
+                add two to the user/resource total stored in the array
+            for each resource, get total and verify that there are enough resources in bank
+              if available
+                give cards to players
+            change game state to 'playing'
+          else
+            change state to 'discarding'
+    */
+  },
   /**
    * @desc gets a rob player request and updates
    * player resources based on the request and returns
