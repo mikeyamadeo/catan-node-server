@@ -38,7 +38,7 @@ var Player = new Schema({
     oldDevCards : DevCardList,
     index : Number,
     playedDevCard : Boolean,
-    resource : ResourceList,
+    resources : ResourceList,
     roads : Number,
     settlements : Number,
     soldiers : Number,
@@ -99,7 +99,7 @@ var TradeOffer = new Schema({
 
 var TurnTracker = new Schema({
     currentTurn : Number,
-    stat : String,
+    status : String,
     longestRoad : Number,
     largestArmy : Number
 });
@@ -116,6 +116,75 @@ var GameSchema = new Schema({
         turnTracker : TurnTracker,
         version : Number,
         winner : Number
+    }
 });
-    
+
+GameSchema.methods.giveResource = function(player, resource, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].resources[resource] += amount;
+    }
+};
+
+GameSchema.methods.takeResource = function(player, resource, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].resources[resource] -= amount;
+    }
+};
+
+GameSchema.methods.updateRobber = function(hex) {
+    this.game.map.robber.x = hex.x;
+    this.game.map.robber.y = hex.y;
+};
+
+GameSchema.methods.updateStatus = function(status) {
+    this.game.turnTracker.status = status;
+};
+
+GameSchema.methods.updateTurn(player) {
+    var newTurn = -1;
+    switch (player) {
+        case 0 : newTurn = 1;
+                 break;
+        case 1 : newTurn = 2;
+                 break;
+        case 2 : newTurn = 3;
+                 break;
+        case 3 : newTurn = 0;
+                 break;
+        default : break;
+    }
+    if (newTurn != -1) {
+        this.turnTracker.currentTurn = newTurn;
+    }
+};
+
+GameSchema.methods.mergeDevCards = function(player) {
+    if (player >= 0 && player < players.length) {
+        var oldDevCards = this.players[player].oldDevCards;
+        var newDevCards = this.players[player].newDevCards;
+        oldDevCards.monument += newDevCards.monument;
+        newDevCards.monument = 0;
+        oldDevCards.monopoly += newDevCards.monopoly;
+        newDevCards.monopoly = 0;
+        oldDevCards.roadBuilding += newDevCards.roadBuilding;
+        newDevCards.roadBuilding = 0;
+        oldDevCards.soldier += newDevCards.soldier;
+        newDevCards.soldier = 0;
+        oldDevCards.yearOfPlenty += newDevCards.yearOfPlenty;
+        newDevCards.yearOfPlenty = 0;
+    }        
+};
+
+GameSchema.methods.incVersion = function() {
+    this.game.version += 1;
+};
+
+GameSchema.methods.addChat = function(message, source) {
+    var newMessage = {
+        message : message,
+        source : source
+    };
+    this.chat.lines.push(newMessage);
+};
+
 modele.exports = mongoose.model('Game', GameSchema);

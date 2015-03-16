@@ -17,10 +17,13 @@ var GamesModel = {
     * @desc add a game to the database
     * @method addGame
     * @param {object} game - game object to be stored
-    * @param {function} callback - callback(err, boolean)
+    * @param {function} callback - callback(err, saved)
     */
     addGame : function(game, callback) {
-        
+        model.create(game, function(err, saved) {
+            if (err) return callback(err);
+            callback(null, saved);
+        });    
     },
     /**
     * @desc adds a player to currently existing game

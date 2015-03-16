@@ -1,5 +1,7 @@
 'use strict'
 
+var model = require('../game/game.model.mongoose');
+
 var MovesModel = {
     /**
     * @desc adds chat to a game
@@ -7,18 +9,37 @@ var MovesModel = {
     * @param {number} id - specifies game
     * @param {number} player - index of sender
     * @param {string} message - chat message to add
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, game)
     */
-    addChat : function(id, player, message, callback) {},
+    addChat : function(id, player, message, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.addChat(message, player);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc modifies a games latest rolled number
     * @method rollNumber
     * @param {number} id - specifies the game
-    * @param {number} player - index of player
-    * @param {number} num - rolled number
+    * @param {string} status - new status of game
     * @param {function} callback - callback
     */
-    rollNumber : function(id, player, num, callback) {},
+    rollNumber : function(id, status, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.updateStatus(status);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs rob operation on specified game
     * @method robPlayer
@@ -26,9 +47,26 @@ var MovesModel = {
     * @param {object} hex - new hex location of robber
     * @param {number} player - index of player
     * @param {number} victim - index of robbed victim
+    * @param {string} resource - robbed resource
     * @param {function} callback - callback
     */
-    robPlayer : function(id, hex, player, victim, callback) {},
+    robPlayer : function(id, hex, player, victim, resource, status, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                if (victim != -1) {
+                    game.giveResource(player, resource, 1);
+                    game.takeResource(victim, resource, 1);
+                }
+                game.updateRobber(hex); 
+                game.updateStatus(status);
+                game.incVersion();
+                return game.save(callback);
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
     /**
     * @desc performs a finish turn operation on specified game
     * @method finishTurn
@@ -36,7 +74,19 @@ var MovesModel = {
     * @param {number} player - index of player
     * @param {function} callback - callback
     */
-    finishTurn : function(id, player, callback) {},
+    finishTurn : function(id, player, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.mergeDevCards(player);
+                game.updateTurn(player);
+                game.incVersion();
+                return game.save(callback);
+            } else {
+                return callback(null, null);
+            }
+        }); 
+    },
     /**
     * @desc performs a dev card purchase operation
     * @method buyDevCard
