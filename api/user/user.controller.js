@@ -37,7 +37,7 @@ var UserController = {
              * Logs in a user
              */
             });
-	
+    },
 	/**
    * @desc request to register new user
    * @method register

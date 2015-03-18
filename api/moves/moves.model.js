@@ -183,7 +183,7 @@ var MovesModel = {
                                 });
             }
             return callback(null, null);
-        };
+        });
     },
     /**
     * @desc performs a monopoly operation

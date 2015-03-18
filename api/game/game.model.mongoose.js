@@ -35,11 +35,11 @@ var Player = new Schema({
     discarded : Boolean,
     monuments : Number,
     name : String,
-    newDevCards : DevCardList,
-    oldDevCards : DevCardList,
+    newDevCards : [DevCardList],
+    oldDevCards : [DevCardList],
     index : Number,
     playedDevCard : Boolean,
-    resources : ResourceList,
+    resources : [ResourceList],
     roads : Number,
     settlements : Number,
     soldiers : Number,
@@ -52,14 +52,14 @@ var HexLocation = new Schema({
 });
 
 var Hex = new Schema({
-    location : HexLocation,
+    location : [HexLocation],
     resource : String,
     chit : Number
 });
 
 var Port = new Schema({
     resource : String,
-    location : HexLocation,
+    location : [HexLocation],
     direction : String,
     ratio : Number
 }); 
@@ -89,13 +89,13 @@ var Map = new Schema({
     settlements : [VertexObject],
     cities : [VertexObject],
     radius : Number,
-    robber : HexLocation
+    robber : [HexLocation]
 });
 
 var TradeOffer = new Schema({
     sender : Number,
     receiver : Number,
-    offer : ResourceList
+    offer : [ResourceList]
 });
 
 var TurnTracker = new Schema({
@@ -109,12 +109,12 @@ var GameSchema = new Schema({
     title : String,
     players : [Player],
     game : {
-        bank : ResourceList,
-        chat : MessageList,
-        log : MessageList,
-        map : Map,
-        tradeOffer : TradeOffer,
-        turnTracker : TurnTracker,
+        bank : [ResourceList],
+        chat : [MessageList],
+        log : [MessageList],
+        map : [Map],
+        tradeOffer : [TradeOffer],
+        turnTracker : [TurnTracker],
         version : Number,
         winner : Number
     }
@@ -141,35 +141,35 @@ GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
 };
 
-GameSchema.methods.addOldDevCard(player, devCard, amount) {
+GameSchema.methods.addOldDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].oldDevCards[devCard] += amount;
     }
 };
 
-GameSchema.methods.removeOldDevCard(player, devCard, amount) {
+GameSchema.methods.removeOldDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].oldDevCards[devCard] -= amount;
     }
 };
 
-GameSchema.methods.addNewDevCard(player, devCard, amount) {
+GameSchema.methods.addNewDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].newDevCards[devCard] += amount;
     }
 };
 
-GameSchema.methods.removeNewDevCard(player, devCard, amount) {
+GameSchema.methods.removeNewDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].newDevCards[devCard] -= amount;
     }
 };
 
-GameSchema.methods.addRoad(player, location) {
+GameSchema.methods.addRoad = function(player, location) {
     if (player >= 0 && player < players.length) {
         var road = this.map.roads.find(function(road, index, array) {
             return _.isEqual(road.location, location);
-        };
+        });
         if (!road) {
             this.map.roads.push({ owner : player, location : location });
             this.players[player].roads -= 1;
@@ -177,7 +177,7 @@ GameSchema.methods.addRoad(player, location) {
     }
 };
 
-GameSchema.methods.setDiscarded(players, discarded) {
+GameSchema.methods.setDiscarded = function(players, discarded) {
     players.map(function(player, index, array) {
         if (player >= 0 && player < players.length) {
             this.players[player].discarded = discarded;
@@ -185,7 +185,7 @@ GameSchema.methods.setDiscarded(players, discarded) {
     });
 };
 
-GameSchema.methods.setPlayedDevCard(players, played) {
+GameSchema.methods.setPlayedDevCard = function(players, played) {
     players.map(function(player, index, array) {
         if (player >= 0 && player < players.length) {
             this.players[player].playedDevCard = played;
@@ -193,7 +193,7 @@ GameSchema.methods.setPlayedDevCard(players, played) {
     });
 };
 
-GameSchema.methods.addSoldier(player, amount) {
+GameSchema.methods.addSoldier = function(player, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].soldier += amount;                
     }
@@ -246,4 +246,4 @@ GameSchema.methods.addChat = function(message, source) {
     this.chat.lines.push(newMessage);
 };
 
-modele.exports = mongoose.model('Game', GameSchema);
+module.exports = mongoose.model('Game', GameSchema);
