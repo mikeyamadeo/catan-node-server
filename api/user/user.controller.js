@@ -1,6 +1,6 @@
 'use strict'
 
-var UserModel = require('./user.model'),
+var model = require('./user.model'),
     auth = require('../../auth');
 
 var UserController = {
@@ -12,10 +12,17 @@ var UserController = {
    * @param {function} next - next command
    */
     login : function(req, res, next) {
-        console.log(req.body);
-        res.send("Login");
-    },
-	
+        var body = req.body;
+        model.validateUser(body.username, body.password, function(err, valid) {
+            if (err) return callback(err);
+            if (valid) {
+                console.log("Logged in");
+            } else {
+                console.log("Invalid Crudentials");
+            }
+            res.send("Login needs to be implemented");
+        });
+    },	
 	/**
    * @desc request to register new user
    * @method register

@@ -11,7 +11,7 @@ UserSchema.methods.comparePasswords = function(password) {
 }
 
 UserSchema.statics.findByUsername = function(username, callback) {
-    return this.find({ username : username }, callback);
+    return this.findOne({ username : username }, callback);
 };
 
 UserSchema.statics.addNewUser = function(username, password, callback) {

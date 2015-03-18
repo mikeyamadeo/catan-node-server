@@ -1,7 +1,8 @@
 'use strict'
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    _ = require('lodash');
 
 var DevCardList = new Schema({
     monopoly : Number,
@@ -138,6 +139,64 @@ GameSchema.methods.updateRobber = function(hex) {
 
 GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
+};
+
+GameSchema.methods.addOldDevCard(player, devCard, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].oldDevCards[devCard] += amount;
+    }
+};
+
+GameSchema.methods.removeOldDevCard(player, devCard, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].oldDevCards[devCard] -= amount;
+    }
+};
+
+GameSchema.methods.addNewDevCard(player, devCard, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].newDevCards[devCard] += amount;
+    }
+};
+
+GameSchema.methods.removeNewDevCard(player, devCard, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].newDevCards[devCard] -= amount;
+    }
+};
+
+GameSchema.methods.addRoad(player, location) {
+    if (player >= 0 && player < players.length) {
+        var road = this.map.roads.find(function(road, index, array) {
+            return _.isEqual(road.location, location);
+        };
+        if (!road) {
+            this.map.roads.push({ owner : player, location : location });
+            this.players[player].roads -= 1;
+        }
+    }
+};
+
+GameSchema.methods.setDiscarded(players, discarded) {
+    players.map(function(player, index, array) {
+        if (player >= 0 && player < players.length) {
+            this.players[player].discarded = discarded;
+        }
+    });
+};
+
+GameSchema.methods.setPlayedDevCard(players, played) {
+    players.map(function(player, index, array) {
+        if (player >= 0 && player < players.length) {
+            this.players[player].playedDevCard = played;
+        }
+    });
+};
+
+GameSchema.methods.addSoldier(player, amount) {
+    if (player >= 0 && player < players.length) {
+        this.players[player].soldier += amount;                
+    }
 };
 
 GameSchema.methods.updateTurn = function(player) {

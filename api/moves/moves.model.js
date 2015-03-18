@@ -80,6 +80,8 @@ var MovesModel = {
             if (game) {
                 game.mergeDevCards(player);
                 game.updateTurn(player);
+                game.setPlayedDevCard([0, 1, 2, 3], false);
+                game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
                 return game.save(callback);
             } else {
@@ -92,9 +94,27 @@ var MovesModel = {
     * @method buyDevCard
     * @param {number} id - specifies game
     * @param {number} player - index of player
+    * @param {string} devCard - type of dev card to add
     * @param {function} callback - callback
     */
-    buyDevCard : function(id, player, callback) {},
+    buyDevCard : function(id, player, devCard, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.takeResource(player, 'sheep', 1);
+                game.takeResource(player, 'ore', 1);
+                game.takeResource(player , 'wheat', 1);
+                if (devCard === 'monument') {
+                    game.addOldDevCard(player, devCard, 1);
+                } else {
+                    gmae.addNewDevCard(player, devCard, 1);
+                }
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });     
+    },
     /**
     * @desc performs year of plenty operation
     * @method yearOfPlenty
@@ -104,7 +124,20 @@ var MovesModel = {
     * @param {string} second - second resource requested
     * @param {function} callback - callback
     */
-    yearOfPlenty : function(id, player, first, second, callback) {},
+    yearOfPlenty : function(id, player, first, second, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.giveResource(player, first, 1);
+                game.giveResource(player, second, 1);
+                game.incVersion();
+                game.setPlayedDevCard([player], true);
+                game.removeOldDevCard(player, 'yearOfPlenty', 1);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a road building card operation
     * @method roadBuilding
@@ -114,17 +147,44 @@ var MovesModel = {
     * @param {obejct} second - edge location of second road to be built
     * @param {function} callback - callback
     */
-    roadBuilding : function(id, player, first, second, callback) {},
+    roadBuilding : function(id, player, first, second, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.addRoad(player, first);
+                game.addRoad(player, second);
+                game.incVersion();
+                game.setPlayedDevCard([player], true);
+                game.removeOldDevCard(player, 'roadBuilding', 1);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a soldier operation
     * @method soldier
     * @param {number} id - specifies game
+    * @param {object} hex - new hex location of robber
     * @param {number} player - index of player
     * @param {number} victim - index of victim
-    * @param {object} hex - new hex location of robber
     * @param {function} callback - callback
     */
-    soldier : function(id, player, victim, hex, callback) {},
+    soldier : function(id, hex, player, victim, resource, status, callback) {
+        var self = this;
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                 self.robPlayer(id, player, victim, hex, resource, status, 
+                                function(err, game) {
+                                    game.addSoldier(player, 1);
+                                    game.removeOldDevCard(player, 'soldier', 1); 
+                                    return game.save(callback);
+                                });
+            }
+            return callback(null, null);
+        };
+    },
     /**
     * @desc performs a monopoly operation
     * @method monopoly
