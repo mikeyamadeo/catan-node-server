@@ -95,15 +95,15 @@ var GamesController = {
    */
   list: function(req, res, next) {
     /**
-         * Authentication:
-         * - Requires User Cookie ?
-         *
-         * Request type: GET
-         *
-         * POST CONDITIONS:
-         * Returns a list of Games where a game has a title, an id, and an array of players
-         * and a player has a name, a color, and an id
-         */
+     * Authentication:
+     * - Requires User Cookie ?
+     *
+     * Request type: GET
+     *
+     * POST CONDITIONS:
+     * Returns a list of Games where a game has a title, an id, and an array of players
+     * and a player has a name, a color, and an id
+     */
   },
   /**
    * @desc request to create new game
@@ -145,21 +145,21 @@ var GamesController = {
    */
   join: function(req, res, next) {
     /**
-         * Authentication:
-         * - Requires User Cookie
-         * - sets Game cookie
-         *
-         * Request type: POST
-         * Schema:
-         * {
-         *    "id": "integer", -- game id
-         *    "color": "string"
-         * }
-         *
-         *
-         * POST CONDITIONS:
-         * Adds user to game
-         */
+     * Authentication:
+     * - Requires User Cookie
+     * - sets Game cookie
+     *
+     * Request type: POST
+     * Schema:
+     * {
+     *    "id": "integer", -- game id
+     *    "color": "string"
+     * }
+     *
+     *
+     * POST CONDITIONS:
+     * Adds user to game
+     */
   },
   /**
    * @desc request to store current state of game
