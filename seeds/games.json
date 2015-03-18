@@ -1,6 +1,6 @@
 [
     {
-        "id" : 0,
+        "_id" : 0,
         "title" : "Best Game Ever",
         "players" : [
             {

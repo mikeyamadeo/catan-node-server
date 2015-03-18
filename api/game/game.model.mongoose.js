@@ -17,9 +17,9 @@ var Message = new Schema({
     source : String
 });
 
-var MessageList = new Schema({
+var MessageList = {
     lines : [Message]
-});
+};
 
 var DevCardList = {
     monopoly : Number,
@@ -51,20 +51,20 @@ var hexLocation = {
     y : Number
 };
 
-var HexLocation = new Schema({
+var HexLocation = {
     x : Number,
     y : Number
-});
+};
 
 var Hex = new Schema({
-    location : [HexLocation],
+    location : HexLocation,
     resource : String,
     chit : Number
 });
 
 var Port = new Schema({
     resource : String,
-    location : [HexLocation],
+    location : HexLocation,
     direction : String,
     ratio : Number
 }); 
@@ -87,40 +87,40 @@ var VertexObject = new Schema({
     }
 });
 
-var Map = new Schema({
+var Map = {
     hexes : [Hex],
     ports : [Port],
     roads : [Road],
     settlements : [VertexObject],
     cities : [VertexObject],
     radius : Number,
-    robber : [HexLocation]
-});
+    robber : HexLocation
+};
 
-var TradeOffer = new Schema({
+var TradeOffer = {
     sender : Number,
     receiver : Number,
-    offer : [ResourceList]
-});
+    offer : ResourceList
+};
 
-var TurnTracker = new Schema({
+var TurnTracker = {
     currentTurn : Number,
     status : String,
     longestRoad : Number,
     largestArmy : Number
-});
+};
 
 var GameSchema = new Schema({
-    id : { type : Number, unique : true },
+    _id : { type : Number, unique : true },
     title : String,
     players : [Player],
     game : {
-        bank : [ResourceList],
-        chat : [MessageList],
-        log : [MessageList],
-        map : [Map],
-        tradeOffer : [TradeOffer],
-        turnTracker : [TurnTracker],
+        bank : ResourceList,
+        chat : MessageList,
+        log : MessageList,
+        map : Map,
+        tradeOffer : TradeOffer,
+        turnTracker : TurnTracker,
         version : Number,
         winner : Number
     }
