@@ -4,21 +4,13 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('lodash');
 
-var DevCardList = new Schema({
-    monopoly : Number,
-    monument : Number,
-    roadBuilding : Number,
-    soldier : Number,
-    yearOfPlenty : Number
-});
-
-var ResourceList = new Schema({
+var ResourceList = {
     brick : Number,
     ore : Number,
     sheep : Number,
     wheat : Number,
     wood : Number
-});
+};
 
 var Message = new Schema({
     message : String,
@@ -29,22 +21,35 @@ var MessageList = new Schema({
     lines : [Message]
 });
 
+var DevCardList = {
+    monopoly : Number,
+    monument : Number,
+    roadBuilding : Number,
+    soldier : Number,
+    yearOfPlenty : Number
+};
+
 var Player = new Schema({
     cities : Number,
     color : String,
     discarded : Boolean,
     monuments : Number,
     name : String,
-    newDevCards : [DevCardList],
-    oldDevCards : [DevCardList],
+    newDevCards : DevCardList,
+    oldDevCards : DevCardList,
     index : Number,
     playedDevCard : Boolean,
-    resources : [ResourceList],
+    resources : ResourceList,
     roads : Number,
     settlements : Number,
     soldiers : Number,
     victoryPoints : Number
 });
+
+var hexLocation = {
+    x : Number,
+    y : Number
+};
 
 var HexLocation = new Schema({
     x : Number,
@@ -106,6 +111,7 @@ var TurnTracker = new Schema({
 });
 
 var GameSchema = new Schema({
+    id : { type : Number, unique : true },
     title : String,
     players : [Player],
     game : {
