@@ -27,20 +27,31 @@
         <article>
             <pre class="prettyprint source"><code>'use strict'
 
+var model = require('../game/game.model.mongoose');
+var fs = require('fs'),
+    config = require('../../config');
+
 var GamesModel = {
     /**
     * @desc retrieve games from server model
     * @method listGames
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, games)
     */
-    listGames : function(callback) {},
+    listGames : function(callback) {
+        model.find().exec(callback);    
+    },
     /**
     * @desc add a game to the database
     * @method addGame
     * @param {object} game - game object to be stored
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, saved)
     */
-    addGame : function(game, callback) {},
+    addGame : function(game, callback) {
+        model.create(game, function(err, saved) {
+            if (err) return callback(err);
+            callback(null, saved);
+        });    
+    },
     /**
     * @desc adds a player to currently existing game
     * @method addPlayer
@@ -49,23 +60,84 @@ var GamesModel = {
     * @param {string} name - name of new player
     * @param {function} callback - callback
     */
-    addPlayer : function(id, color, name, callback) {},
+    addPlayer : function(id, color, name, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                var player = {
+                    cities : 4,
+                    color : color,
+                    discarded : false,
+                    monuments : 0,
+                    name : name,
+                    newDevCards : {
+                        monopoly : 0,
+                        monument : 0,
+                        roadBuilding : 0,
+                        soldier : 0,
+                        yearOfPlenty : 0 
+                    },
+                    oldDevCards : {
+                        monopoly : 0,
+                        monument : 0,
+                        roadsBuilding : 0,
+                        soldier : 0,
+                        yearOfPlenty : 0
+                    },
+                    index : game.players.length,
+                    playedDevCard : false,
+                    resources : {
+                        brick : 0,
+                        ore : 0,
+                        sheep : 0,
+                        wheat : 0,
+                        wood : 0
+                    },
+                    roads : 15,
+                    settlements : 5,
+                    soldiers : 0,
+                    victoryPoints : 0
+                }; 
+                game.players.push(player);
+                return callback(null, true);
+            }
+                return callback(null, false);   
+        });
+    },
     /**
     * @desc saves the state of the current game
     * @method saveGame
     * @param {number} id - game id for saved game
     * @param {string} name - file location to save game
     * @param {array} commands - list of commands to be saved
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, boolean)
     */
-    saveGame : function(id, name, commands, callback) {},
+    saveGame : function(id, name, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                fs.writeFile(config.saves + '/' + name, 
+                             JSON.stringify(game), function(err) {
+                    if (err) return callback(err);
+                    return callback(null, true);
+                });        
+            } else {
+                return callback(null, false);
+            }
+        });
+    },
     /**
     * @desc loads the state of specified game
     * @method loadGame
     * @param {string} name - file location to load game
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, game)
     */
-    loadGame : function(name, callback) {},
+    loadGame : function(name, callback) {
+        fs.readFile(config.saves + '/' + name, function(err, data) {
+            if (err) return callback(err);
+            callback(null, JSON.parse(data));    
+        });
+    },
 }
 
 module.exports = GamesModel; 
@@ -80,13 +152,13 @@ module.exports = GamesModel;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Mar 13 2015 18:07:31 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Mar 16 2015 00:36:01 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,5 +1,7 @@
 'use strict'
 
+var model = require('./game.model.mongoose');
+
 var GameModel = {
     /**
     * @desc retrieves game model of specified game
@@ -7,7 +9,12 @@ var GameModel = {
     * @param {number} id - id of game to retrieve
     * @param {function} callback - callback
     */
-    getModel : function(id, callback) {},
+    getModel : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            return callback(null, game.game);
+        }); 
+    },
     /**
     * @desc retrieves executed commands for specified game
     * @method getCommands
