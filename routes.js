@@ -1,5 +1,6 @@
 'use strict';
 
+var auth = require('./auth/Authentication.js');
 var HttpError = require('http-error').HttpError;
 
 // var auth = require('./auth/auth.middleware');
@@ -8,7 +9,7 @@ module.exports = function(app) {
   ///////////////////////////
   // Authentication Routes //
   ///////////////////////////
-  // app.use(auth.authenticate());
+  app.use(auth.authenticate());
   // app.use('/auth', require('./auth'));
 
   /////////////////////////
