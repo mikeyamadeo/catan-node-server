@@ -249,7 +249,7 @@ GameSchema.methods.addChat = function(message, source) {
         message : message,
         source : source
     };
-    this.chat.lines.push(newMessage);
+    this.game.chat.lines.push(newMessage);
 };
 
 module.exports = mongoose.model('Game', GameSchema);

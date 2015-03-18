@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
-    model = require('../game/game.model');
+    model = require('./moves.model');
 
 /**
  * Example of getting access to required models:
@@ -22,12 +22,16 @@ var MovesController = {
    * @param {function} next - next command
    */
   sendChat: function(req, res, next) {
+    console.log("Are we here -- controller");
     var data = req.body;
     var gameId = 0;
     var playerId = data.playerIndex;
     var message = data.content;
     model.addChat(gameId, playerId, message, function(err, game) {
-        if (err) { next(); }
+        if (err) {
+            console.log(err); 
+            next(); 
+        }
         console.log(game);
         res.json(game);
     });
