@@ -43,7 +43,7 @@ module.exports = function(app) {
 
     /** Only log the stack trace if error status code is greater than 404 */
     res.status(err.code || err.status || 500).json({
-      error: "this is an error message"
+      error: "I'm a jerk for not working"
 
     });
   });

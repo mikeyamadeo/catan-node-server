@@ -2,18 +2,16 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    username : String,
+    username : { type : String, unique : true },
     password : String
 });
-
-var User = mongoose.model('User', UserSchema);
 
 UserSchema.methods.comparePasswords = function(password) {
     return password === this.password;
 }
 
 UserSchema.statics.findByUsername = function(username, callback) {
-    return this.find({ username : username }, callback);
+    return this.findOne({ username : username }, callback);
 };
 
 UserSchema.statics.addNewUser = function(username, password, callback) {
@@ -23,5 +21,7 @@ UserSchema.statics.addNewUser = function(username, password, callback) {
     });
     return newUser.save(callback);
 }
+
+var User = mongoose.model('User', UserSchema);
 
 module.exports = User

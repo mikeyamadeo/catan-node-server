@@ -21,6 +21,8 @@
     "sqlite3": "^3.0.5"
   },
   "devDependencies": {
-    "grunt-jsdoc": "~0.5.8"
+    "frisby": "^0.8.5",
+    "grunt-jsdoc": "~0.5.8",
+    "jasmine": "^2.2.1"
   }
 }

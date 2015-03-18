@@ -2,11 +2,11 @@
 
 var express = require('express');
 
-var ctrl = require('./moves.ctrl');
+var ctrl = require('./moves.controller');
 
 var router = express.Router();
 
-router.post('/sendChat',        ctrl.sendChat);
+router.post('/sendChat',         ctrl.sendChat);
 router.post('/rollNumber',      ctrl.rollNumber);
 router.post('/robPlayer',       ctrl.robPlayer);
 router.post('/finishTurn',      ctrl.finishTurn);
