@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    model = require('./moves.model');
 
 /**
  * Example of getting access to required models:
@@ -21,7 +22,20 @@ var MovesController = {
    * @param {function} next - next command
    */
   sendChat: function(req, res, next) {
-
+    console.log("Are we here -- controller");
+    var data = req.body;
+    var gameId = 0;
+    var playerId = data.playerIndex;
+    var message = data.content;
+    model.addChat(gameId, playerId, message, function(err, game) {
+        if (err) {
+            console.log(err); 
+            next(); 
+        }
+        console.log(game);
+        res.json(game);
+    });
+    
     /*
       Things to do:
       1. pull model from request body.
@@ -42,7 +56,6 @@ var MovesController = {
         })
     */
     console.log(req.body);
-    res.send({child: "children"});
   },
   /**
    * @desc get rolled number and based on the 

@@ -4,30 +4,30 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('lodash');
 
-var DevCardList = new Schema({
-    monopoly : Number,
-    monument : Number,
-    roadBuilding : Number,
-    soldier : Number,
-    yearOfPlenty : Number
-});
-
-var ResourceList = new Schema({
+var ResourceList = {
     brick : Number,
     ore : Number,
     sheep : Number,
     wheat : Number,
     wood : Number
-});
+};
 
 var Message = new Schema({
     message : String,
     source : String
 });
 
-var MessageList = new Schema({
+var MessageList = {
     lines : [Message]
-});
+};
+
+var DevCardList = {
+    monopoly : Number,
+    monument : Number,
+    roadBuilding : Number,
+    soldier : Number,
+    yearOfPlenty : Number
+};
 
 var Player = new Schema({
     cities : Number,
@@ -35,31 +35,36 @@ var Player = new Schema({
     discarded : Boolean,
     monuments : Number,
     name : String,
-    newDevCards : [DevCardList],
-    oldDevCards : [DevCardList],
+    newDevCards : DevCardList,
+    oldDevCards : DevCardList,
     index : Number,
     playedDevCard : Boolean,
-    resources : [ResourceList],
+    resources : ResourceList,
     roads : Number,
     settlements : Number,
     soldiers : Number,
     victoryPoints : Number
 });
 
-var HexLocation = new Schema({
+var hexLocation = {
     x : Number,
     y : Number
-});
+};
+
+var HexLocation = {
+    x : Number,
+    y : Number
+};
 
 var Hex = new Schema({
-    location : [HexLocation],
+    location : HexLocation,
     resource : String,
     chit : Number
 });
 
 var Port = new Schema({
     resource : String,
-    location : [HexLocation],
+    location : HexLocation,
     direction : String,
     ratio : Number
 }); 
@@ -82,39 +87,40 @@ var VertexObject = new Schema({
     }
 });
 
-var Map = new Schema({
+var Map = {
     hexes : [Hex],
     ports : [Port],
     roads : [Road],
     settlements : [VertexObject],
     cities : [VertexObject],
     radius : Number,
-    robber : [HexLocation]
-});
+    robber : HexLocation
+};
 
-var TradeOffer = new Schema({
+var TradeOffer = {
     sender : Number,
     receiver : Number,
-    offer : [ResourceList]
-});
+    offer : ResourceList
+};
 
-var TurnTracker = new Schema({
+var TurnTracker = {
     currentTurn : Number,
     status : String,
     longestRoad : Number,
     largestArmy : Number
-});
+};
 
 var GameSchema = new Schema({
+    _id : { type : Number, unique : true },
     title : String,
     players : [Player],
     game : {
-        bank : [ResourceList],
-        chat : [MessageList],
-        log : [MessageList],
-        map : [Map],
-        tradeOffer : [TradeOffer],
-        turnTracker : [TurnTracker],
+        bank : ResourceList,
+        chat : MessageList,
+        log : MessageList,
+        map : Map,
+        tradeOffer : TradeOffer,
+        turnTracker : TurnTracker,
         version : Number,
         winner : Number
     }
@@ -243,7 +249,7 @@ GameSchema.methods.addChat = function(message, source) {
         message : message,
         source : source
     };
-    this.chat.lines.push(newMessage);
+    this.game.chat.lines.push(newMessage);
 };
 
 module.exports = mongoose.model('Game', GameSchema);
