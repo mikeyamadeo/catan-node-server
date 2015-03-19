@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    autoIncrement = require('mongoose-auto-increment');
 
 var UserSchema = new Schema({
     username : { type : String, unique : true },
@@ -21,6 +22,11 @@ UserSchema.statics.addNewUser = function(username, password, callback) {
     });
     return newUser.save(callback);
 }
+
+var connection = mongoose.createConnection("mongodb://localhost/catan");
+
+autoIncrement.initialize(connection);
+UserSchema.plugin(autoIncrement.plugin, 'User');
 
 var User = mongoose.model('User', UserSchema);
 

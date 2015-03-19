@@ -63,4 +63,4 @@ var GameController = {
   addAI: function(req, res, next) {},
 };
 
-module.exports = MovesController;
+module.exports = GameController;
