@@ -43,12 +43,9 @@ var MovesModel = {
             if (game) {
                 resources.map(function(tuple, index, array) {
                     var resourceMap = tuple.resourceMap;
-                    for (resource in resourceMap) {
-                        if (resourceMap.hasOwnProperty(resource)) {
-                            game.modifyResource(tuple.player, 
-                                                resource, resourceMap[resource]);
-                        }
-                    }    
+                    _.forOwn(resourceMap, function(value, key) {
+                        game.modifyResource(tuple.player, key, value);
+                    });
                 });
                 game.updateStatus(status);
                 game.incVersion();
@@ -219,12 +216,9 @@ var MovesModel = {
             if (game) {
                 resources.map(function(tuple, index, array) {
                     var resourceMap = tuple.resourceMap;
-                    for (resource in resourceMap) {
-                        if (resourceMap.hasOwnProperty(resource)) {
-                            game.modifyResource(tuple.player, resource, 
-                                                resourceMap(resource)); 
-                        }
-                    }
+                    _.forOwn(resourceMap, function(value, key) {
+                        game.modifyResource(tuple.player, key, value);
+                    });
                 });
                 game.setPlayedDevCard(player, true);
                 game.modifyOldDevCard(player, 'monopoly', -1);
