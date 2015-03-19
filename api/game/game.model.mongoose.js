@@ -2,7 +2,8 @@
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    _ = require('lodash');
+    _ = require('lodash'),
+    autoIncrement = require('mongoose-auto-increment');
 
 var ResourceList = {
     brick : Number,
@@ -15,7 +16,7 @@ var ResourceList = {
 var Message = new Schema({
     message : String,
     source : String
-});
+}, { _id : false });
 
 var MessageList = {
     lines : [Message]
@@ -44,7 +45,7 @@ var Player = new Schema({
     settlements : Number,
     soldiers : Number,
     victoryPoints : Number
-});
+}, { _id : false });
 
 var hexLocation = {
     x : Number,
@@ -60,14 +61,14 @@ var Hex = new Schema({
     location : HexLocation,
     resource : String,
     chit : Number
-});
+}, { _id : false });
 
 var Port = new Schema({
     resource : String,
     location : HexLocation,
     direction : String,
     ratio : Number
-}); 
+}, { _id : false }); 
 
 var Road = new Schema({
     owner : Number,
@@ -76,7 +77,7 @@ var Road = new Schema({
         y : Number,
         direction : String
     }
-});
+}, { _id : false });
 
 var VertexObject = new Schema({
     owner : Number,
@@ -85,7 +86,7 @@ var VertexObject = new Schema({
         y : Number,
         direction : String
     }
-});
+}, { _id : false });
 
 var Map = {
     hexes : [Hex],
@@ -111,7 +112,6 @@ var TurnTracker = {
 };
 
 var GameSchema = new Schema({
-    _id : { type : Number, unique : true },
     title : String,
     players : [Player],
     game : {
@@ -126,15 +126,18 @@ var GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.giveResource = function(player, resource, amount) {
+GameSchema.methods.modifyResource = function(player, resource, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].resources[resource] += amount;
     }
 };
 
-GameSchema.methods.takeResource = function(player, resource, amount) {
+GameSchema.methods.modifyVictoryPoint = function(player, amount) {
     if (player >= 0 && player < players.length) {
-        this.players[player].resources[resource] -= amount;
+        this.players[player].victoryPoints += amount;
+        if (this.players[player].victoryPoints >= 10) {
+            this.game.winner = player;
+        }
     }
 };
 
@@ -147,38 +150,27 @@ GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
 };
 
-GameSchema.methods.addOldDevCard = function(player, devCard, amount) {
+GameSchema.methods.modifyOldDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].oldDevCards[devCard] += amount;
     }
 };
 
-GameSchema.methods.removeOldDevCard = function(player, devCard, amount) {
-    if (player >= 0 && player < players.length) {
-        this.players[player].oldDevCards[devCard] -= amount;
-    }
-};
-
-GameSchema.methods.addNewDevCard = function(player, devCard, amount) {
+GameSchema.methods.modifyNewDevCard = function(player, devCard, amount) {
     if (player >= 0 && player < players.length) {
         this.players[player].newDevCards[devCard] += amount;
     }
 };
 
-GameSchema.methods.removeNewDevCard = function(player, devCard, amount) {
+GameSchema.methods.addStructure = function(player, location, structure) {
     if (player >= 0 && player < players.length) {
-        this.players[player].newDevCards[devCard] -= amount;
-    }
-};
-
-GameSchema.methods.addRoad = function(player, location) {
-    if (player >= 0 && player < players.length) {
-        var road = this.map.roads.find(function(road, index, array) {
-            return _.isEqual(road.location, location);
+        var structures = this.game.map[structure];
+        var structure = structures.find(function(structure, index, array) {
+            return _.isEqual(structure.location, locataion);
         });
-        if (!road) {
-            this.map.roads.push({ owner : player, location : location });
-            this.players[player].roads -= 1;
+        if (!structure) {
+            structures.push({ owner : player, location : location });
+            this.players[player][structure] -= 1;
         }
     }
 };
@@ -205,6 +197,12 @@ GameSchema.methods.addSoldier = function(player, amount) {
     }
 };
 
+GameSchema.methods.getResourceCount = function(player, resource) {
+    if (player >= 0 && player < players.length) {
+        return this.players[player].resouces[resource];
+    }
+};
+
 GameSchema.methods.updateTurn = function(player) {
     var newTurn = -1;
     switch (player) {
@@ -219,7 +217,7 @@ GameSchema.methods.updateTurn = function(player) {
         default : break;
     }
     if (newTurn != -1) {
-        this.turnTracker.currentTurn = newTurn;
+        this.game.turnTracker.currentTurn = newTurn;
     }
 };
 
@@ -251,5 +249,11 @@ GameSchema.methods.addChat = function(message, source) {
     };
     this.game.chat.lines.push(newMessage);
 };
+
+var connection = mongoose.createConnection("mongodb://localhost/catan");
+
+autoIncrement.initialize(connection);
+
+GameSchema.plugin(autoIncrement.plugin, 'Game');
 
 module.exports = mongoose.model('Game', GameSchema);

@@ -5,15 +5,27 @@ var model = require('./user.model.mongoose');
 var UserModel = {
     /**
     * @desc retrieves a specified user from the database
-    * @method getUser
+    * @method getUserByUsername
     * @param {string} username - name of user to retrieve
     * @param {function} callback - callback(err, user)
     */
-    getUser : function(username, callback) {
+    getUserByUsername : function(username, callback) {
         model.findByUsername(username, function(err, user) {
             if (err) callback(err);
             return callback(null, user);
         }); 
+    },
+    /**
+    * @desc retrieves user from the database by id
+    * @method getUserById
+    * @param {number} id - id of the user to retrieve
+    * @param {function} callback - callback(err, user)
+    */
+    getUserById : function(id, callback) {
+        model.findById(id, function(err, user) {
+            if (err) return callback(err);
+            return callback(null, user);
+        });
     },
     /**
     * @desc adds a user to the database

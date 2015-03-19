@@ -10,7 +10,6 @@ var _ = require('lodash'),
  */
 
 var newGame = {
-    _id : 0,
     title : "Best Game",
     players : [
         {
