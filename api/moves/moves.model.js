@@ -32,14 +32,24 @@ var MovesModel = {
     * @param {number} id - specifies the game
     * @param {string} status - new status of game
     * @param {object} resources - resources to add for each player 
-    * (e.g. [{ player : 0, { brick : 0, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
+    * (e.g. [{ player : 0, 
+               resourceMap : { brick : 0, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
     *   etc...])
     * @param {function} callback - callback
     */
-    rollNumber : function(id, status, resourceSet, callback) {
+    rollNumber : function(id, status, resources, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                resources.map(function(tuple, index, array) {
+                    var resourceMap = tuple.resourceMap;
+                    for (resource in resourceMap) {
+                        if (resourceMap.hasOwnProperty(resource)) {
+                            game.modifyResource(tuple.player, 
+                                                resource, resourceMap[resource]);
+                        }
+                    }    
+                });
                 game.updateStatus(status);
                 game.incVersion();
                 return game.save(callback);
@@ -198,14 +208,24 @@ var MovesModel = {
     * @param {number} id - specifies game
     * @param {number} player - index of player
     * @param {object} resources - resources to add for each player 
-    * (e.g. [{ player : 0, { brick : 0, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
+    * (e.g. [{ player : 0, 
+               resourceMap : { brick : -1, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
     *   etc...])
     * @param {function} callback - callback
     */
-    monopoly : function(id, player, resourceSet, callback) {
+    monopoly : function(id, player, resources, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                resources.map(function(tuple, index, array) {
+                    var resourceMap = tuple.resourceMap;
+                    for (resource in resourceMap) {
+                        if (resourceMap.hasOwnProperty(resource)) {
+                            game.modifyResource(tuple.player, resource, 
+                                                resourceMap(resource)); 
+                        }
+                    }
+                });
                 game.setPlayedDevCard(player, true);
                 game.modifyOldDevCard(player, 'monopoly', -1);
                 game.incVersion();
@@ -291,7 +311,20 @@ var MovesModel = {
     * @param {object} vertex - vertex location of city to be built
     * @param {function} callback - callback
     */
-    buildCity : function(id, player, vertex, callback) {},
+    buildCity : function(id, player, vertex, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err, game);
+            if (game) {
+                game.addStructue(player, vertex, 'city');
+                game.removeStructure(player, vertex, 'settlement');
+                game.modifyResource(player, 'ore', -3);
+                game.modifyResource(player, 'wheat', -2);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a offer trade operation
     * @method offerTrade
@@ -301,7 +334,9 @@ var MovesModel = {
     * @param {number} receiver - index of receiver
     * @param {function} callback - callback
     */
-    offerTrade : function(id, player, offer, receiver, callback) {},
+    offerTrade : function(id, player, offer, receiver, callback) {
+        
+    },
     /**
     * @desc performs an accept trade operation
     * @method acceptTrade

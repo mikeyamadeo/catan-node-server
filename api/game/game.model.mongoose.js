@@ -162,16 +162,25 @@ GameSchema.methods.modifyNewDevCard = function(player, devCard, amount) {
     }
 };
 
-GameSchema.methods.addStructure = function(player, location, structure) {
+GameSchema.methods.addStructure = function(player, location, type) {
     if (player >= 0 && player < players.length) {
-        var structures = this.game.map[structure];
-        var structure = structures.find(function(structure, index, array) {
-            return _.isEqual(structure.location, locataion);
+        var structures = this.game.map[type];
+        var found = _.find(structures, function(structure) {
+            return _.isEqual(structure.location, location);
         });
-        if (!structure) {
+        if (!found) {
             structures.push({ owner : player, location : location });
-            this.players[player][structure] -= 1;
+            this.players[player][type] -= 1;
         }
+    }
+};
+
+GameSchema.methods.removeStructure = function(player, location, type) {
+    if (player >= 0 && player < players.length) {
+        var structures = this.game.map[type];
+        _.remove(structures, function(structure) {
+            return _.isEqual(structure.location, location);
+        });
     }
 };
 
