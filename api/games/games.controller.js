@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    model = require('./games.model');
+    gameModel = require('./games.model'),
+    gamesModel = require('./game.model');
 /**
  * Example of getting access to required models:
  *
@@ -154,6 +155,22 @@ var GamesController = {
    * @param {function} next - next command
    */
   join: function(req, res, next) {
+     var body = req.body;
+        model.findById(id, function(err, game){
+            if (err) console.log(err);
+            if (game) 
+
+        }
+
+        model.validateUser(body.username, body.password, function(err, valid) {
+            if (err) return callback(err);
+            if (valid) {
+                res.cookie("catan.user", user);
+                console.log("Logged in");
+            } else {
+                console.log("Invalid Crudentials");
+            }
+            res.send("Login needs to be implemented");
     /**
      * Authentication:
      * - Requires User Cookie

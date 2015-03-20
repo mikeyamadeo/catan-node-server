@@ -16,6 +16,7 @@ var UserController = {
         model.validateUser(body.username, body.password, function(err, valid) {
             if (err) return callback(err);
             if (valid) {
+                res.cookie("catan.user", user);
                 console.log("Logged in");
             } else {
                 console.log("Invalid Crudentials");

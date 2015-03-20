@@ -22,7 +22,7 @@ var validateUser = function() {
 		if (success == false) {
 			res.status(403).send('Unauthorized');
 		}
-	});
+	}); 
 }
 
 var validateGame = function() {

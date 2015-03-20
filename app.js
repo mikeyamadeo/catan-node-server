@@ -3,6 +3,8 @@
 var express = require('express'),
     bodyParser = require('body-parser');
 
+var cookieParser = require('cookie-parser');
+
 /////////////////////////////////
 // Application Initialization  //
 /////////////////////////////////
@@ -18,6 +20,7 @@ mongoose.connect('mongodb://localhost/catan');
 // Application Middleware      //
 /////////////////////////////////
 app.use(bodyParser.json({ inflate : true }));
+app.use(cookieParser());
 require('./routes')(app);
 
 module.exports = app;
