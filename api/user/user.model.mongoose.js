@@ -10,7 +10,7 @@ var usernameValidator = function(username) {
 var passwordValidator = function(password) {
     if (password.length < 5) return false;
     if (/^[a-z0-9_-]+$/i.test(password)) return true;
-    return false
+    return false;
 };
 
 var UserSchema = new Schema({
