@@ -126,9 +126,21 @@ var GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.modifyResource = function(player, resource, amount) {
+GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
+    this.game.tradeOffer = { 
+        sender : player,
+        receiver : receiver,
+        offer : offer
+    };
+};
+
+GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
     if (player >= 0 && player < players.length) {
         this.players[player].resources[resource] += amount;
+        if (bank) {
+            var reverse = -1 * amount;
+            this.game.bank[resource] += reverse;
+        }
     }
 };
 
