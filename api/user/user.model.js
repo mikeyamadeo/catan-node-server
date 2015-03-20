@@ -10,6 +10,7 @@ var UserModel = {
     * @param {function} callback - callback(err, user)
     */
     getUserByUsername : function(username, callback) {
+        console.log("i'm here");
         model.findByUsername(username, function(err, user) {
             if (err) callback(err);
             return callback(null, user);
@@ -56,7 +57,7 @@ var UserModel = {
                 return callback(null, false);
             }
         });
-    }    
+    }
 };
 
 module.exports = UserModel
