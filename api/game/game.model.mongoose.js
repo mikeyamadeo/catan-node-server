@@ -31,6 +31,7 @@ var DevCardList = {
 };
 
 var Player = new Schema({
+    user : { type : Number, ref : 'User' },
     cities : Number,
     color : String,
     discarded : Boolean,

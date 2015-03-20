@@ -1,10 +1,22 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    autoIncrement = require('mongoose-auto-increment');
+    autoIncrement = require('mongoose-auto-increment'),
+    _ = require('lodash');
+
+var usernameValidator = function(username) {
+    return username.length >= 3 && username.length <= 7;
+};
+
+var passwordValidator = function(password) {
+    if (password.length < 5) return false;
+    if (/^[a-z0-9_-]+$/i.test(password)) return true;
+    return false;
+};
 
 var UserSchema = new Schema({
-    username : { type : String, unique : true },
-    password : String
+    username : { type : String, unique : true, validate : usernameValidator,
+                 require : true },
+    password : { type : String, validate : passwordValidator, require : true }
 });
 
 UserSchema.methods.comparePasswords = function(password) {

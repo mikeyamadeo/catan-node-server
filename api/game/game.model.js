@@ -21,7 +21,9 @@ var GameModel = {
     * @param {number} id - id of game to retrieve commands
     * @param {function} callback - callback
     */
-    getCommands : function(id, callback) {},
+    getCommands : function(id, callback) {
+        
+    },
     /**
     * @desc reset specified game to initial state
     * @method resetGame
@@ -36,7 +38,52 @@ var GameModel = {
     * @param {array} commands - list of commands to add
     * @param {function} callback - callback
     */
-    addCommands : function(id, commands, callback) {}
+    addCommands : function(id, commands, callback) {},
+    /**
+    * @desc retrieves roads for a particular game
+    * @method getRoads
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, roads)
+    */
+    getRoads : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                return callback(null, game.map.roads);
+            }
+            return callback(null, null);
+        });
+    },
+    /**
+    * @desc retrieves settlement for a particular game
+    * @method getSettlements
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, settlements)
+    */
+    getSettlements : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                return callback(null, game.map.settlements);
+            }
+            return callback(null, null);
+        });
+    },
+    /**
+    * @desc retrieves city for a particular game
+    * @method getCities
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, cities)
+    */
+    getCities : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                return callback(null, game.map.cities);
+            }
+            return callback(null, null);
+        });
+    }
 };
 
 module.exports = GameModel;
