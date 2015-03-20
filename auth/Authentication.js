@@ -26,7 +26,7 @@ var validateUser = function() {
 }
 
 var validateGame = function() {
-	model.
+
 }
 
 validateUser : function(username, password, callback) {
