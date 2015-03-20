@@ -103,6 +103,17 @@ var GamesController = {
      * Returns a list of Games where a game has a title, an id, and an array of players
      * and a player has a name, a color, and an id
      */
+    model.listGames(function(err, games) {
+        if (err) {
+            console.log(err);
+            next();
+        }
+        if (games) {
+            return res.json(games);
+        } else {
+            res.json([]);
+        }
+    });
   },
   /**
    * @desc request to create new game
@@ -158,7 +169,7 @@ var GamesController = {
      *
      * POST CONDITIONS:
      * Adds user to game
-     */
+     */ 
   },
   /**
    * @desc request to store current state of game
