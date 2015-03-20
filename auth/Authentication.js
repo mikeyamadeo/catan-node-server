@@ -1,30 +1,51 @@
-var model = require('User.Model');
+var model = require('./../api/user/user.model.js');
+var model = require('./../api/games/games.model.js');
 
-var authenticate = {
+var authenticate = function(req, res){
 	//logic
 	var route = extract(req.baseUrl);
 
-  	if (req = "user")
+  	if (route = "user") {
 
-	else if (route = "games") {
+  	} else if (route = "games") {
 		validateUser()
 	} else {
 		validateUser()
-		validateGame()
+		//validateGame()
 	}
 
 }
 
 var validateUser = function() {
 
-	var user = model.getUser(req.cookies.name);
-	if (user.)
-
+	model.validateUser(req.cookies.name, req.cookies.password, function(error, success){
+		if (success == false) {
+			res.status(403).send('Unauthorized');
+		}
+	});
 }
+
+var validateGame = function() {
+	model.
+}
+
+validateUser : function(username, password, callback) {
+        model.findByUsername(username, function(err, user) {
+            if (err) callback(err);
+            if (user) {
+                return callback(null, user.comparePasswords(password));
+            } else {
+                return callback(null, false);
+            }
+        });
+    }  
 
 var extract = function(Url) {
 	var parts = Url.split("/");
-	return parts[parts.size - 1];
+	return parts[parts.length - 1];
 } 
 
-module.exports = authenticate;
+//build register cookie maker function
+//build login cookie maker function
+
+module.exports.authenticate = authenticate;

@@ -9,7 +9,7 @@ module.exports = function(app) {
   ///////////////////////////
   // Authentication Routes //
   ///////////////////////////
-  app.use(auth.authenticate());
+  app.use(auth.authenticate);
   // app.use('/auth', require('./auth'));
 
   /////////////////////////
