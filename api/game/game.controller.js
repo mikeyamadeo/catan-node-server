@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    model = require('./game.model');
 
 /**
  * Example of getting access to required models:
@@ -63,4 +64,4 @@ var GameController = {
   addAI: function(req, res, next) {},
 };
 
-module.exports = MovesController;
+module.exports = GameController;

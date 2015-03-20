@@ -11,7 +11,26 @@ var GamesModel = {
     * @param {function} callback - callback(err, games)
     */
     listGames : function(callback) {
-        model.find().exec(callback);    
+        model.find(function(err,games) {
+            if (err) return callback(err);
+            if (games) {
+                var gameHeaders = games.map(function(game, index, array) {
+                    return {
+                        players : games.players.map(function(player, index, array) {
+                            return {
+                                name : player.name,
+                                color : player.color,
+                                id : player.user
+                            }
+                        }),
+                        title : game.title,
+                        id : game._id
+                    }
+                });
+                return callback(null, gameHeaders);
+            }
+            return callback(null, null);
+        });
     },
     /**
     * @desc add a game to the database
@@ -29,52 +48,17 @@ var GamesModel = {
     * @desc adds a player to currently existing game
     * @method addPlayer
     * @param {number} id - game id for game
-    * @param {string} color - color for new player
-    * @param {string} name - name of new player
+    * @param {object} player - player object 
     * @param {function} callback - callback
     */
-    addPlayer : function(id, color, name, callback) {
+    addPlayer : function(id, player, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                var player = {
-                    cities : 4,
-                    color : color,
-                    discarded : false,
-                    monuments : 0,
-                    name : name,
-                    newDevCards : {
-                        monopoly : 0,
-                        monument : 0,
-                        roadBuilding : 0,
-                        soldier : 0,
-                        yearOfPlenty : 0 
-                    },
-                    oldDevCards : {
-                        monopoly : 0,
-                        monument : 0,
-                        roadsBuilding : 0,
-                        soldier : 0,
-                        yearOfPlenty : 0
-                    },
-                    index : game.players.length,
-                    playedDevCard : false,
-                    resources : {
-                        brick : 0,
-                        ore : 0,
-                        sheep : 0,
-                        wheat : 0,
-                        wood : 0
-                    },
-                    roads : 15,
-                    settlements : 5,
-                    soldiers : 0,
-                    victoryPoints : 0
-                }; 
-                game.players.push(player);
-                return callback(null, true);
+                game.addPlayer(player);
+                return game.save(callback);
             }
-                return callback(null, false);   
+            return callback(null, null);
         });
     },
     /**

@@ -24,4 +24,4 @@ var UtilController = {
 
 };
 
-module.exports = MovesController;
+module.exports = UtilController;
