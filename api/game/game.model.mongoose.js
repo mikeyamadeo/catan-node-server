@@ -48,11 +48,6 @@ var Player = new Schema({
     victoryPoints : Number
 }, { _id : false });
 
-var hexLocation = {
-    x : Number,
-    y : Number
-};
-
 var HexLocation = {
     x : Number,
     y : Number
@@ -136,9 +131,11 @@ GameSchema.methods.isGameAvailable = function() {
 };
 
 GameSchema.methods.isPlayerInGame = function(username) {
-    _.find(this.players, function(player, index, array) {
+    var found = _.find(this.players, function(player, index, array) {
         return player.name === username;
     });
+    if (found) return true;
+    return false;
 };
 
 GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
