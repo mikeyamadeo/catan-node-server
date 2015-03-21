@@ -3,15 +3,13 @@
 var auth = require('./auth/Authentication.js');
 var HttpError = require('http-error').HttpError;
 
-// var auth = require('./auth/auth.middleware');
+var auth = require('./auth/Authentication');
 
 module.exports = function(app) {
   ///////////////////////////
   // Authentication Routes //
   ///////////////////////////
-  app.use(auth.authenticate);
-  // app.use('/auth', require('./auth'));
-
+  app.use('/games', auth.validateUser);
   /////////////////////////
   // Define routes here //
   /////////////////////////

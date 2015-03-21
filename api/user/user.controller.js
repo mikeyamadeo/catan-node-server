@@ -1,7 +1,8 @@
 'use strict'
 
 var model = require('./user.model'),
-    auth = require('../../auth');
+    auth = require('../../auth'),
+    _ = require('lodash');
 
 var UserController = {
 	/**
@@ -11,33 +12,37 @@ var UserController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
+    /**
+     * Authentication:
+     * - none required
+     * - sets user cookie
+     *
+     * Request type: POST
+     * 
+     * Schema:
+     * {
+     *    "username": "string",
+     *    "password": "string"
+     *  }
+     * POST CONDITIONS:
+     * Logs in a user
+     */
     login : function(req, res, next) {
         var body = req.body;
-        model.validateUser(body.username, body.password, function(err, valid) {
+        model.validateUser(body.username, body.password, function(err, user) {
             if (err) return callback(err);
-            if (valid) {
-                res.cookie("catan.user", user);
-                console.log("Logged in");
+            if (user) {
+                var cleanUser = {
+                    name : user.username,
+                    password : user.password,
+                    id : user._id
+                };
+                res.cookie("catan.user", cleanUser);
+                res.send("Success");
             } else {
-                console.log("Invalid Crudentials");
+                res.send("login failed");
             }
-            res.send("Login needs to be implemented");
-            /**
-             * Authentication:
-             * - none required
-             * - sets user cookie
-             *
-             * Request type: POST
-             * 
-             * Schema:
-             * {
-             *    "username": "string",
-             *    "password": "string"
-             *  }
-             * POST CONDITIONS:
-             * Logs in a user
-             */
-            });
+        });
     },
 	/**
    * @desc request to register new user
@@ -46,28 +51,42 @@ var UserController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
+    /**
+     * Authentication:
+     * - none required
+     * - sets user cookie
+     *
+     * Request type: POST
+     * Schema:
+     * {
+     *    "username": "string",
+     *    "password": "string"
+     *  }
+     *
+     * PRE CONDITIONS: 
+     * Verify that username is available
+     * Verify that password is legit
+     *
+     * POST CONDITIONS:
+     * Logs in user
+     */
     register : function(req, res, next) {
-        console.log(req.body);
-        res.send("Register");
-        /**
-         * Authentication:
-         * - none required
-         * - sets user cookie
-         *
-         * Request type: POST
-         * Schema:
-         * {
-         *    "username": "string",
-         *    "password": "string"
-         *  }
-         *
-         * PRE CONDITIONS: 
-         * Verify that username is available
-         * Verify that password is legit
-         *
-         * POST CONDITIONS:
-         * Logs in user
-         */
+        console.log("Tried to register");
+        var body = req.body;
+        model.addUser(body.username, body.password, function(err, user) {
+            if (err) console.log(err);
+            if (user) {
+                var cleanUser = {
+                    name : user.username,
+                    password : user.password,
+                    id : user._id
+                };
+                res.cookie('catan.user', cleanUser);
+                res.send("Success");
+            } else {
+                res.send("Register failed");
+            }
+        });
     }
 }
 

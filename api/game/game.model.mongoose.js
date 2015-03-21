@@ -31,7 +31,6 @@ var DevCardList = {
 };
 
 var Player = new Schema({
-    user : { type : Number, ref : 'User' },
     cities : Number,
     color : String,
     discarded : Boolean,
@@ -61,7 +60,7 @@ var HexLocation = {
 var Hex = new Schema({
     location : HexLocation,
     resource : String,
-    chit : Number
+    number : Number
 }, { _id : false });
 
 var Port = new Schema({
@@ -126,6 +125,20 @@ var GameSchema = new Schema({
         winner : Number
     }
 });
+
+GameSchema.methods.addPlayer = function(player) {
+    this.players.push(player);
+};
+
+GameSchema.methods.isGameAvailable = function() {
+    return this.players.length < 4;
+};
+
+GameSchema.methods.isPlayerInGame = function(username) {
+    _.find(this.players, function(player, index, array) {
+        return player.name === username;
+    });
+};
 
 GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
     this.game.tradeOffer = { 

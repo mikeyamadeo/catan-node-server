@@ -21,7 +21,7 @@ var GamesModel = {
                                 name : player.name,
                                 color : player.color,
                                 id : player.user
-                            }
+                            };
                         }),
                         title : game.title,
                         id : game._id
@@ -49,16 +49,35 @@ var GamesModel = {
     * @method addPlayer
     * @param {number} id - game id for game
     * @param {object} player - player object 
-    * @param {function} callback - callback
+    * @param {function} callback - callback(err, game)
     */
     addPlayer : function(id, player, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                player.index = game.players.length;
                 game.addPlayer(player);
                 return game.save(callback);
             }
             return callback(null, null);
+        });
+    },
+    /**
+    * @desc determines if the given player is in the specified game
+    * @method isPlayerInGame
+    * @param {number} id - specifies game
+    * @param {string} username - specifies user
+    * @param {function} callback -callback(err, valid)
+    */
+    isPlayerInGame : function(id, username, callback) {
+        console.log(arguments);
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                return callback(null, game.isPlayerInGame(username));
+            } else {
+                return callback(null, false);
+            }
         });
     },
     /**
@@ -95,6 +114,23 @@ var GamesModel = {
             callback(null, JSON.parse(data));    
         });
     },
+    /**
+    * @desc determines if game has an open player position
+    * @method isGameAvailable
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, open)
+    */
+    isGameAvailable : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                if (game.isGameAvailable()) {
+                    return callback(null, true);
+                }
+            }
+            return callback(null, false);
+        });   
+    }
 }
 
 module.exports = GamesModel; 

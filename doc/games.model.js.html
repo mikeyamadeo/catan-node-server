@@ -38,7 +38,26 @@ var GamesModel = {
     * @param {function} callback - callback(err, games)
     */
     listGames : function(callback) {
-        model.find().exec(callback);    
+        model.find(function(err,games) {
+            if (err) return callback(err);
+            if (games) {
+                var gameHeaders = games.map(function(game, index, array) {
+                    return {
+                        players : games.players.map(function(player, index, array) {
+                            return {
+                                name : player.name,
+                                color : player.color,
+                                id : player.user
+                            };
+                        }),
+                        title : game.title,
+                        id : game._id
+                    }
+                });
+                return callback(null, gameHeaders);
+            }
+            return callback(null, null);
+        });
     },
     /**
     * @desc add a game to the database
@@ -56,52 +75,36 @@ var GamesModel = {
     * @desc adds a player to currently existing game
     * @method addPlayer
     * @param {number} id - game id for game
-    * @param {string} color - color for new player
-    * @param {string} name - name of new player
-    * @param {function} callback - callback
+    * @param {object} player - player object 
+    * @param {function} callback - callback(err, game)
     */
-    addPlayer : function(id, color, name, callback) {
+    addPlayer : function(id, player, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                var player = {
-                    cities : 4,
-                    color : color,
-                    discarded : false,
-                    monuments : 0,
-                    name : name,
-                    newDevCards : {
-                        monopoly : 0,
-                        monument : 0,
-                        roadBuilding : 0,
-                        soldier : 0,
-                        yearOfPlenty : 0 
-                    },
-                    oldDevCards : {
-                        monopoly : 0,
-                        monument : 0,
-                        roadsBuilding : 0,
-                        soldier : 0,
-                        yearOfPlenty : 0
-                    },
-                    index : game.players.length,
-                    playedDevCard : false,
-                    resources : {
-                        brick : 0,
-                        ore : 0,
-                        sheep : 0,
-                        wheat : 0,
-                        wood : 0
-                    },
-                    roads : 15,
-                    settlements : 5,
-                    soldiers : 0,
-                    victoryPoints : 0
-                }; 
-                game.players.push(player);
-                return callback(null, true);
+                player.index = game.players.length;
+                game.addPlayer(player);
+                return game.save(callback);
             }
-                return callback(null, false);   
+            return callback(null, null);
+        });
+    },
+    /**
+    * @desc determines if the given player is in the specified game
+    * @method isPlayerInGame
+    * @param {number} id - specifies game
+    * @param {string} username - specifies user
+    * @param {function} callback -callback(err, valid)
+    */
+    isPlayerInGame : function(id, username, callback) {
+        console.log(arguments);
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                return callback(null, game.isPlayerInGame(username));
+            } else {
+                return callback(null, false);
+            }
         });
     },
     /**
@@ -138,6 +141,23 @@ var GamesModel = {
             callback(null, JSON.parse(data));    
         });
     },
+    /**
+    * @desc determines if game has an open player position
+    * @method isGameAvailable
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, open)
+    */
+    isGameAvailable : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                if (game.isGameAvailable()) {
+                    return callback(null, true);
+                }
+            }
+            return callback(null, false);
+        });   
+    }
 }
 
 module.exports = GamesModel; 
@@ -152,13 +172,13 @@ module.exports = GamesModel;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Mar 16 2015 00:36:01 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -33,12 +33,12 @@ var UserModel = {
     * @method addUser
     * @param {string} username - username of new user
     * @param {string} password - password of new user
-    * @param {function} callback - callback(err, boolean)
+    * @param {function} callback - callback(err, user)
     */
     addUser : function(username, password, callback) {
-        model.addNewUser(username, password, function(err, added) {
+        model.addNewUser(username, password, function(err, user) {
             if (err) callback(err);
-            return callback(null, added);
+            return callback(null, user);
         });
     },
     /**
@@ -46,15 +46,17 @@ var UserModel = {
     * @method validateUser
     * @param {string} username - username of user
     * @param {string} password - password of user
-    * @param {function} callback - callback(err, boolean)
+    * @param {function} callback - callback(err, user)
     */
     validateUser : function(username, password, callback) {
         model.findByUsername(username, function(err, user) {
             if (err) callback(err);
             if (user) {
-                return callback(null, user.comparePasswords(password));
+                if (user.comparePasswords(password)) {
+                    return callback(null, user);
+                }
             } else {
-                return callback(null, false);
+                return callback(null, null);
             }
         });
     }

@@ -39,8 +39,12 @@ var MovesModel = {
     * @param {function} callback - callback(err, game)
     */
     addChat : function(id, player, message, callback) {
+        console.log("Are we here");
         model.findById(id, function(err, game) {
-            if (err) return callback(err);
+            if (err) {
+                console.log(err);
+                return callback(err);
+            }
             if (game) {
                 game.addChat(message, player);
                 game.incVersion();
@@ -54,12 +58,22 @@ var MovesModel = {
     * @method rollNumber
     * @param {number} id - specifies the game
     * @param {string} status - new status of game
+    * @param {object} resources - resources to add for each player 
+    * (e.g. [{ player : 0, 
+               resourceMap : { brick : 0, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
+    *   etc...])
     * @param {function} callback - callback
     */
-    rollNumber : function(id, status, callback) {
+    rollNumber : function(id, status, resources, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                resources.map(function(tuple, index, array) {
+                    var resourceMap = tuple.resourceMap;
+                    _.forOwn(resourceMap, function(value, key) {
+                        game.modifyResource(tuple.player, key, value, true);
+                    });
+                });
                 game.updateStatus(status);
                 game.incVersion();
                 return game.save(callback);
@@ -82,8 +96,8 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 if (victim != -1) {
-                    game.giveResource(player, resource, 1);
-                    game.takeResource(victim, resource, 1);
+                    game.modifyResource(player, resource, 1, false);
+                    game.modifyResource(victim, resource, -1, false);
                 }
                 game.updateRobber(hex); 
                 game.updateStatus(status);
@@ -107,6 +121,8 @@ var MovesModel = {
             if (game) {
                 game.mergeDevCards(player);
                 game.updateTurn(player);
+                game.setPlayedDevCard([0, 1, 2, 3], false);
+                game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
                 return game.save(callback);
             } else {
@@ -119,9 +135,27 @@ var MovesModel = {
     * @method buyDevCard
     * @param {number} id - specifies game
     * @param {number} player - index of player
+    * @param {string} devCard - type of dev card to add
     * @param {function} callback - callback
     */
-    buyDevCard : function(id, player, callback) {},
+    buyDevCard : function(id, player, devCard, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.modifyResource(player, 'sheep', -1, true);
+                game.modifyResource(player, 'ore', -1, true);
+                game.modifyResource(player , 'wheat', -1, true);
+                if (devCard === 'monument') {
+                    game.modifyDevCard(player, devCard, 1);
+                } else {
+                    game.modifyNewDevCard(player, devCard, 1);
+                }
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });     
+    },
     /**
     * @desc performs year of plenty operation
     * @method yearOfPlenty
@@ -131,7 +165,20 @@ var MovesModel = {
     * @param {string} second - second resource requested
     * @param {function} callback - callback
     */
-    yearOfPlenty : function(id, player, first, second, callback) {},
+    yearOfPlenty : function(id, player, first, second, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.modifyResource(player, first, 1, true);
+                game.modifyResource(player, second, 1, true);
+                game.incVersion();
+                game.setPlayedDevCard([player], true);
+                game.modifyOldDevCard(player, 'yearOfPlenty', -1);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a road building card operation
     * @method roadBuilding
@@ -141,26 +188,73 @@ var MovesModel = {
     * @param {obejct} second - edge location of second road to be built
     * @param {function} callback - callback
     */
-    roadBuilding : function(id, player, first, second, callback) {},
+    roadBuilding : function(id, player, first, second, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.addStructure(player, first, 'road');
+                game.addStructure(player, second, 'road');
+                game.incVersion();
+                game.setPlayedDevCard([player], true);
+                game.modifyOldDevCard(player, 'roadBuilding', -1);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a soldier operation
     * @method soldier
     * @param {number} id - specifies game
+    * @param {object} hex - new hex location of robber
     * @param {number} player - index of player
     * @param {number} victim - index of victim
-    * @param {object} hex - new hex location of robber
     * @param {function} callback - callback
     */
-    soldier : function(id, player, victim, hex, callback) {},
+    soldier : function(id, hex, player, victim, resource, status, callback) {
+        var self = this;
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                 self.robPlayer(id, player, victim, hex, resource, status, 
+                                function(err, game) {
+                                    game.addSoldier(player, 1);
+                                    game.modifyOldDevCard(player, 'soldier', -1); 
+                                    return game.save(callback);
+                                });
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a monopoly operation
     * @method monopoly
     * @param {number} id - specifies game
     * @param {number} player - index of player
-    * @param {string} resource - resource to monopolize
+    * @param {object} resources - resources to add for each player 
+    * (e.g. [{ player : 0, 
+               resourceMap : { brick : -1, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
+    *   etc...])
     * @param {function} callback - callback
     */
-    monopoly : function(id, player, resource, callback) {},
+    monopoly : function(id, player, resources, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                resources.map(function(tuple, index, array) {
+                    var resourceMap = tuple.resourceMap;
+                    _.forOwn(resourceMap, function(value, key) {
+                        game.modifyResource(tuple.player, key, value, false);
+                    });
+                });
+                game.setPlayedDevCard(player, true);
+                game.modifyOldDevCard(player, 'monopoly', -1);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });     
+    },
     /**
     * @desc performs monument operation
     * @method monument
@@ -168,7 +262,18 @@ var MovesModel = {
     * @param {number} player - index of player
     * @param {function} callback - callback
     */
-    monument : function(id, player, callback) {},
+    monument : function(id, player, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.modifyOldDevCard(player, 'monument', -1);
+                game.incVersion();
+                game.modifyVictoryPoint(player, 1);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        }); 
+    },
     /**
     * @desc performs a build road operation
     * @method buildRoad
@@ -178,7 +283,21 @@ var MovesModel = {
     * @param {boolean} free - whether or not the road should be free
     * @param {function} callback - callback
     */
-    buildRoad : function(id, player, edge, free, callback) {},
+    buildRoad : function(id, player, edge, free, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.addStructure(player, edge, 'road');
+                if (!free) {
+                    game.modifyResource(player, 'wood', -1, true);
+                    game.modifyResource(player, 'brick', -1, true);
+                }
+                game.incVersion();
+                game.save(callback);
+            }
+            return callback(null, null);
+        });               
+    },
     /**
     * @desc performs a build settlement operation
     * @method buildSettlement
@@ -188,7 +307,23 @@ var MovesModel = {
     * @param {boolean} free - whethere of not the settlement should be free
     * @param {function} callback - callback
     */
-    buildSettlement : function(id, player, vertex, free, callback) {},
+    buildSettlement : function(id, player, vertex, free, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err, game);
+            if (game) {
+                game.addStructure(player, vertex, 'settlement');
+                if (!free) {
+                    game.modifyResource(player, 'brick', -1, true);
+                    game.modifyResource(player, 'sheep', -1, true);
+                    game.modifyResource(player, 'wood', -1, true);
+                    game.modifyResource(player, 'wheat', -1, true);
+                }
+                game.incVersion();
+                game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a build city operation
     * @method buildCity
@@ -197,7 +332,20 @@ var MovesModel = {
     * @param {object} vertex - vertex location of city to be built
     * @param {function} callback - callback
     */
-    buildCity : function(id, player, vertex, callback) {},
+    buildCity : function(id, player, vertex, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err, game);
+            if (game) {
+                game.addStructue(player, vertex, 'city');
+                game.removeStructure(player, vertex, 'settlement');
+                game.modifyResource(player, 'ore', -3, true);
+                game.modifyResource(player, 'wheat', -2, true);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs a offer trade operation
     * @method offerTrade
@@ -207,16 +355,48 @@ var MovesModel = {
     * @param {number} receiver - index of receiver
     * @param {function} callback - callback
     */
-    offerTrade : function(id, player, offer, receiver, callback) {},
+    offerTrade : function(id, player, offer, receiver, callback) {        
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.addTradeOffer(player, receiver, offer);
+                game.incVersion();
+                game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
     /**
     * @desc performs an accept trade operation
     * @method acceptTrade
     * @param {number} id - specifies game
     * @param {number} player - index of player
     * @param {boolean} acceptance - whether or not the trade was accepted
+    * @param {object} resources - resources to add for each player 
+    * (e.g. [{ player : 0, 
+               resourceMap : { brick : -1, ore : 1, sheep : 2, wheat : 5, wood : 0 }}, 
+    *   etc...])
     * @param {function} callback - callback
     */
-    acceptTrade : function(id, player, acceptance, callback) {},
+    acceptTrade : function(id, player, acceptance, resources, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.removeTradeOffer()            
+                if (acceptance) {
+                    resources.map(function(tuple, index, array) {
+                        var resourceMap = tuple.resourceMap;
+                        _.forOwn(resourceMap, function(value, key) {
+                            game.modifyResource(tuple.player, key, value, false);
+                        });
+                    });
+                }
+                game.incVersion();
+                return game.save(callback);
+            }
+            callback(null, null);
+        });
+    },
     /**
     * @desc performs a maritime trade operation
     * @method maritimeTrade
@@ -227,16 +407,42 @@ var MovesModel = {
     * @param {string} output - output resource
     * @param {function} callback - callback
     */
-    maritimeTrade : function(id, player, ratio, input, output, callback) {},
+    maritimeTrade : function(id, player, ratio, input, output, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.modifyResource(player, input, -ratio, true);
+                game.modifyResource(player, output, 1, true);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+                
+    },
     /**
     * @desc performs a discard cards operation
     * @method discardCards
     * @param {number} id - specifies game
     * @param {number} player - index of player
-    * @param {object} discarded - cards to discard
+    * @param {object} resources - resources to add for each player 
+    * (e.g. { brick : -1, ore : -1, sheep : -2, wheat : -5, wood : 0 })
     * @param {function} callback - callback
     */
-    discardCards : function(id, player, discarded, callback) {}
+    discardCards : function(id, player, discarded, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                _.forOwn(discarded, function(value, key) {
+                    game.modifyResource(player, key, value, true);
+                });
+                game.setDiscarded(player, true);
+                game.incVersion();
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    }
 };
 
 module.exports = MovesModel;  
@@ -250,13 +456,13 @@ module.exports = MovesModel;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#MovesController">MovesController</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Mar 16 2015 00:36:01 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

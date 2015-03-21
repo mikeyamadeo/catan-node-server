@@ -4,6 +4,18 @@ var model = require('./game.model.mongoose');
 
 var GameModel = {
     /**
+    * @desc retrieves game by id
+    * @method getGame
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, game)
+    */
+    getGame : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            return callback(null, game);
+        });
+    },
+    /**
     * @desc retrieves game model of specified game
     * @method getModel
     * @param {number} id - id of game to retrieve

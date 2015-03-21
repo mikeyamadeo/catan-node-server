@@ -1,87 +1,15 @@
 'use strict';
 
 var _ = require('lodash'),
-    gameModel = require('./games.model'),
-    gamesModel = require('./game.model');
+    gameModel = require('../game/game.model'),
+    gamesModel = require('./games.model'),
+    helper = require('./games.controller.helper');
 /**
  * Example of getting access to required models:
  *
  * var Model = require('../model');
  * var MovesModel = require('./moves.model');
  */
-
-var newGame = {
-    title : "Best Game",
-    players : [
-        {
-            cities : 4,
-            color : "red",
-            discarded : false,
-            monuments : 0,
-            name : "Pete",
-            newDevDards : {
-                monopoly : 0,
-                monument : 0,
-                roadBuilding : 0,
-                soldier : 0,
-                yearOfPlenty : 0
-            },
-            oldDevCards : {
-                monopoly : 0,
-                monument : 0,
-                roadBuilding : 0,
-                soldier : 0,
-                yearOfPlenty : 0
-            },
-            index : 0,
-            playedDevCard : false,
-            resources : {
-                brick : 0,
-                ore : 0,
-                sheep : 0,
-                wheat : 0,
-                wood : 0
-            },
-            roads : 14,
-            settlements : 5,
-            soldiers : 0,
-            victoryPoints : 0
-        }
-    ],
-    game : {
-        bank : {
-            brick : 19,
-            ore : 19,
-            sheep : 19,
-            wheat : 19,
-            wood : 19
-        },
-        chat : [],
-        log : [],
-        map : {
-            hexes : [],
-            ports : [],
-            settlements : [],
-            cities : [],
-            radius : 3,
-            robber : {
-                x : 0,
-                y : -2
-            }
-        },
-        tradeOffer : {},
-        turnTracker : {
-            currentTurn : 0,
-            status : "Setup",
-            longestRoad : -1,
-            largestArmy : -1
-        },
-        version : 0,
-        winner : -1
-    }
-};
-    
-                 
 
 var GamesController = {
   /** CREATE **/
@@ -104,7 +32,7 @@ var GamesController = {
      * Returns a list of Games where a game has a title, an id, and an array of players
      * and a player has a name, a color, and an id
      */
-    model.listGames(function(err, games) {
+    gamesModel.listGames(function(err, games) {
         if (err) {
             console.log(err);
             next();
@@ -141,9 +69,14 @@ var GamesController = {
      * POST CONDITIONS:
      * Creates a new game on server
      */
-    model.addGame(newGame, function(err, saved) {
+    var body = req.body,
+        tiles = body.randomTiles,
+        chits = body.randomNumber,
+        ports = body.randomPorts,
+        name = body.name;
+    var newGame = helper.createNewGame(tiles, chits, ports, name);
+    gamesModel.addGame(newGame, function(err, saved) {
         if (err) { console.log(err); }
-        console.log(saved);
         res.json(saved);
     });
   },
@@ -154,23 +87,6 @@ var GamesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  join: function(req, res, next) {
-     var body = req.body;
-        model.findById(id, function(err, game){
-            if (err) console.log(err);
-            if (game) 
-
-        }
-
-        model.validateUser(body.username, body.password, function(err, valid) {
-            if (err) return callback(err);
-            if (valid) {
-                res.cookie("catan.user", user);
-                console.log("Logged in");
-            } else {
-                console.log("Invalid Crudentials");
-            }
-            res.send("Login needs to be implemented");
     /**
      * Authentication:
      * - Requires User Cookie
@@ -187,6 +103,32 @@ var GamesController = {
      * POST CONDITIONS:
      * Adds user to game
      */ 
+  join: function(req, res, next) {
+    var user = req.user;
+    var body = req.body;
+    gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
+        if (err) return res.status(404).send("Join failed");
+        if (inGame) {
+            res.cookie('catan.game', body.id);
+            return res.send("Success");
+        } else {
+            gamesModel.isGameAvailable(body.id, function(err, available) {
+                if (err) return res.status(404).send("Join failed");
+                if (available) {
+                    var newPlayer = helper.createNewPlayer(user.name, body.color);
+                    gamesModel.addPlayer(body.id, newPlayer, function(err, game) {
+                        if (err || !game) {
+                            return res.status(404).send("Join failed");
+                        }
+                        res.cookie('catan.game', game._id);
+                        return res.send("Success");
+                    });
+                } else {
+                    return res.status(404).send("Join failed");
+                }
+            });
+        }
+    });
   },
   /**
    * @desc request to store current state of game
