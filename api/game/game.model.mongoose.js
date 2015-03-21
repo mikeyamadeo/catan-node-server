@@ -31,6 +31,7 @@ var DevCardList = {
 };
 
 var Player = new Schema({
+    id : Number,
     cities : Number,
     color : String,
     discarded : Boolean,
