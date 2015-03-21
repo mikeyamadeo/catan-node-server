@@ -149,7 +149,7 @@ GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
 };
 
 GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;
@@ -159,7 +159,7 @@ GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
 };
 
 GameSchema.methods.modifyVictoryPoint = function(player, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].victoryPoints += amount;
         if (this.players[player].victoryPoints >= 10) {
             this.game.winner = player;
@@ -177,19 +177,19 @@ GameSchema.methods.updateStatus = function(status) {
 };
 
 GameSchema.methods.modifyOldDevCard = function(player, devCard, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].oldDevCards[devCard] += amount;
     }
 };
 
 GameSchema.methods.modifyNewDevCard = function(player, devCard, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].newDevCards[devCard] += amount;
     }
 };
 
 GameSchema.methods.addStructure = function(player, location, type) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         var found = _.find(structures, function(structure) {
             return _.isEqual(structure.location, location);
@@ -202,7 +202,7 @@ GameSchema.methods.addStructure = function(player, location, type) {
 };
 
 GameSchema.methods.removeStructure = function(player, location, type) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
             return _.isEqual(structure.location, location);
@@ -211,29 +211,29 @@ GameSchema.methods.removeStructure = function(player, location, type) {
 };
 
 GameSchema.methods.setDiscarded = function(players, discarded) {
-    players.map(function(player, index, array) {
-        if (player >= 0 && player < players.length) {
+    this.players.map(function(player, index, array) {
+        if (player >= 0 && player < this.players.length) {
             this.players[player].discarded = discarded;
         }
     });
 };
 
 GameSchema.methods.setPlayedDevCard = function(players, played) {
-    players.map(function(player, index, array) {
-        if (player >= 0 && player < players.length) {
+    this.players.map(function(player, index, array) {
+        if (player >= 0 && player < this.players.length) {
             this.players[player].playedDevCard = played;
         }
     });
 };
 
 GameSchema.methods.addSoldier = function(player, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].soldier += amount;                
     }
 };
 
 GameSchema.methods.getResourceCount = function(player, resource) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         return this.players[player].resouces[resource];
     }
 };
@@ -257,7 +257,7 @@ GameSchema.methods.updateTurn = function(player) {
 };
 
 GameSchema.methods.mergeDevCards = function(player) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var oldDevCards = this.players[player].oldDevCards;
         var newDevCards = this.players[player].newDevCards;
         oldDevCards.monument += newDevCards.monument;
