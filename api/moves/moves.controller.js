@@ -43,18 +43,6 @@ var MovesController = {
         - add chat object to the chat object array
     */
 
-    /* Psuedo code
-        //Example of how we can store commands for the command pattern
-        var body = req.body;
-        Model.storeCommand(body);
-
-        //store chat message
-        MovesModel.storeMessage(body, function(err, msg) {
-            //send back response after message stored
-            if(err) return next(err);
-            res.status(201);
-        })
-    */
     console.log(req.body);
   },
   /**
@@ -129,6 +117,16 @@ var MovesController = {
    * @param {function} next - next command
    */
   finishTurn: function(req, res, next) {
+    console.log("I'm in finishTurn",req.game);
+    Model.finishTurn(req.game, req.body.playerIndex, function(err) {
+      if (err) {
+            console.log(err); 
+            next(); 
+        }
+        console.log("finishTurn");
+        res.json({cheerUp: "young homie"});
+    });
+
     /*
       Things to do:
       1. pull model from request body.

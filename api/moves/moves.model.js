@@ -89,6 +89,7 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     finishTurn : function(id, player, callback) {
+        console.log("in model",player);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
