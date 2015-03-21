@@ -12,15 +12,15 @@ y : 0
 x : 2
 y : -2
 
-var createMap = function(randomTiles, randomChits, ports) {
+var createMap = function(randomTiles, randomChits, randomPorts) {
     var hexes = [];
     // These are not in the correct order. This will need to be changed later
-    var chits = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 11, 10, 9, 8, 6, 5, 4, 3];
-    var tiles = [   "brick", "brick", "brick", 
-                    "ore", "ore", "ore",
-                    "sheep", "sheep", "sheep", "sheep",
-                    "wheat", "wheat", "wheat", "wheat",
-                    "wood", "wood", "wood", "wood"
+    var chits = [6, 12, 11, 10, 5, 9, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
+    var tiles = [   "wheat", "sheep", "wood", 
+                    "sheep", "brick", "ore",
+                    "brick", "wheat", "wood", "wheat",
+                    "wood", "ore", "sheep", "sheep",
+                    "brick", "wood", "wheat", "ore"
                 ];
     if (randomChits) {
         chits = randomizeArray(chits);
@@ -36,7 +36,7 @@ var createMap = function(randomTiles, randomChits, ports) {
                 x : i,
                 y : j - count
             };
-            if (location.x == 0 && location.y == -1) {
+            if (location.x == 0 && location.y == -2) {
                 hexes.push({ location : location });
             } else {
                 hexes.push({
@@ -46,7 +46,9 @@ var createMap = function(randomTiles, randomChits, ports) {
                 });
             }
         }
-        count++
+        if (count != 2) {
+            count++
+        }
     }
     var ports = [],
         roads = [],
@@ -62,7 +64,7 @@ var createMap = function(randomTiles, randomChits, ports) {
         radius : 3,
         robber : {
             x : 0,
-            y : -1
+            y : -2
         }
     };
 };
@@ -113,16 +115,17 @@ module.exports = {
         };
     },
     createNewGame : function(tiles, chits, ports, name) {
+        console.log(arguments);
         return {
             title : name,
             players : [],
             game : {
                 bank : {
-                    brick : 19,
-                    ore : 19,
-                    sheep : 19,
-                    wheat : 19,
-                    wood : 19
+                    brick : 25,
+                    ore : 25,
+                    sheep : 25,
+                    wheat : 25,
+                    wood : 25
                 },
                 chat : {
                    lines : []

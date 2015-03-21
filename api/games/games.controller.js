@@ -71,7 +71,7 @@ var GamesController = {
      */
     var body = req.body,
         tiles = body.randomTiles,
-        chits = body.randomNumber,
+        chits = body.randomNumbers,
         ports = body.randomPorts,
         name = body.name;
     var newGame = helper.createNewGame(tiles, chits, ports, name);
