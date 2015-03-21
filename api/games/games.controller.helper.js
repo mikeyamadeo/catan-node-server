@@ -80,7 +80,7 @@ module.exports = {
             discarded : false,
             monuments : 0,
             name : name,
-            newDevDards : {
+            newDevCards : {
                 monopoly : 0,
                 monument : 0,
                 roadBuilding : 0,

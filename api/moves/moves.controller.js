@@ -119,9 +119,9 @@ var MovesController = {
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
     Model.finishTurn(req.game, req.body.playerIndex, function(err) {
-      if (err) {
+        if (err) {
             console.log(err); 
-            next(); 
+            return next(); 
         }
         console.log("finishTurn");
         res.json({cheerUp: "young homie"});
