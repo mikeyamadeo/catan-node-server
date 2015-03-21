@@ -44,7 +44,7 @@ var GamesController = {
               gamePlayers.push({
                 name: game.players[i].name,
                 color: game.players[i].color,
-                ID: -1 // this needs to be changed to a player's id (not index)
+                ID: game.players[i].id
               });
             };
             
