@@ -15,8 +15,8 @@ var app = express();
 // Swagger Imp Initialization  //
 /////////////////////////////////
 swagger.setAppHandler(app);
-var swaggerModels = require('./swagger/models');
-swagger.addModels(swaggerModels);
+//var swaggerModels = require('./swagger/models');
+//swagger.addModels(swaggerModels);
 
 /////////////////////////////////
 // Database Initialization     //
