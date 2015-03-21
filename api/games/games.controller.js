@@ -38,7 +38,26 @@ var GamesController = {
             next();
         }
         if (games) {
-            return res.json(games);
+          var gameHeaders = games.map(function(game, index, array) {
+            var gamePlayers = [];
+            for (var i = 0; i < game.players.length; i++) {
+              gamePlayers.push({
+                name: game.players[i].name,
+                color: game.players[i].color,
+                ID: -1 // this needs to be changed to a player's id (not index)
+              });
+            };
+            
+            while(gamePlayers.length < 4) {
+              gamePlayers.push({});
+            }
+            return {
+              players: gamePlayers,
+              title: game.title,
+              id: game._id
+            };
+          });
+            return res.json(gameHeaders);
         } else {
             res.json([]);
         }

@@ -14,20 +14,20 @@ var GamesModel = {
         model.find(function(err,games) {
             if (err) return callback(err);
             if (games) {
-                var gameHeaders = games.map(function(game, index, array) {
-                    return {
-                        players : games.players.map(function(player, index, array) {
-                            return {
-                                name : player.name,
-                                color : player.color,
-                                id : player.user
-                            };
-                        }),
-                        title : game.title,
-                        id : game._id
-                    }
-                });
-                return callback(null, gameHeaders);
+                // var gameHeaders = games.map(function(game, index, array) {
+                //     return {
+                //         players : games.players.map(function(player, index, array) {
+                //             return {
+                //                 name : player.name,
+                //                 color : player.color,
+                //                 id : player.user
+                //             };
+                //         }),
+                //         title : game.title,
+                //         id : game._id
+                //     }
+                // });
+                return callback(null, games);
             }
             return callback(null, null);
         });
