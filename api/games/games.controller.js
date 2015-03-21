@@ -115,7 +115,8 @@ var GamesController = {
             gamesModel.isGameAvailable(body.id, function(err, available) {
                 if (err) return res.status(404).send("Join failed");
                 if (available) {
-                    var newPlayer = helper.createNewPlayer(user.name, body.color);
+                    var newPlayer = helper.createNewPlayer(user.id, user.name, 
+                                    body.color);
                     gamesModel.addPlayer(body.id, newPlayer, function(err, game) {
                         if (err || !game) {
                             return res.status(404).send("Join failed");
