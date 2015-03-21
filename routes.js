@@ -11,6 +11,7 @@ module.exports = function(app) {
   ///////////////////////////
   app.use('/games', auth.validateUser);
   app.use('/moves', auth.validateGame);
+  app.use('/game', auth.validateGame);
   /////////////////////////
   // Define routes here //
   /////////////////////////
