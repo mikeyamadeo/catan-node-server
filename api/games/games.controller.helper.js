@@ -6,15 +6,10 @@ var randomizeArray = function(array) {
     return shuffle(array);
 }; 
 
-x : -2
-y : 0
-
-x : 2
-y : -2
-
 var createMap = function(randomTiles, randomChits, ports) {
     var hexes = [];
     // These are not in the correct order. This will need to be changed later
+    // We also don't handle ports correctly
     var chits = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 11, 10, 9, 8, 6, 5, 4, 3];
     var tiles = [   "brick", "brick", "brick", 
                     "ore", "ore", "ore",
@@ -72,12 +67,14 @@ module.exports = {
     /**
      * @desc creates a new user
      * @method createNewUser
+     * @method {number} id - user id of player
      * @param {string} name - name of new user
      * @param {string} color - color of new player
      * @return {object} player object
      */
-    createNewPlayer : function(name, color) {
+    createNewPlayer : function(id, name, color) {
         return {
+            id : id, 
             cities : 4,
             color : color,
             discarded : false,
@@ -97,7 +94,7 @@ module.exports = {
                 soldier : 0,
                 yearOfPlenty : 0
             },
-            index : 0,
+            index : -1,
             playedDevCard : false,
             resources : {
                 brick : 0,
