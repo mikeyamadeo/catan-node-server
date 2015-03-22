@@ -79,7 +79,7 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                fs.writeFile(config.saves + '/' + name, 
+                fs.writeFile(config.saves + 'saves/' + name, 
                              JSON.stringify(game), function(err) {
                     if (err) return callback(err);
                     return callback(null, true);
@@ -96,7 +96,7 @@ var GamesModel = {
     * @param {function} callback - callback(err, game)
     */
     loadGame : function(name, callback) {
-        fs.readFile(config.saves + '/' + name, function(err, data) {
+        fs.readFile(config.saves + 'saves/' + name, function(err, data) {
             if (err) return callback(err);
             callback(null, JSON.parse(data));    
         });
