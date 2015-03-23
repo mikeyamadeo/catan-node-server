@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    model = require('./moves.model');
+    model = require('./moves.model'),
+    helper = require('./moves.controller.helper');
 
 /**
  * Example of getting access to required models:
@@ -55,6 +56,28 @@ var MovesController = {
    * @param {function} next - next command
    */
   rollNumber: function(req, res, next) {
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.index;
+    var number = body.number;
+
+    if (number < 2 || number > 12) {
+        return res.status(400).send("Command Execution Failed");
+    } 
+    model.currentPlayer(gameId, function(err, currentTurn) {
+        if (err || index != currentTurn) {
+            return res.status(400).send("Command Execution Failed");
+        }
+        if (number == 7) {
+            model.rollNumber(gameId, 'Discarding', [], function(err, game) {
+                if (err || !game) {
+                    return res.status(400).send("Command Execution Failed");
+                }
+                return res.json(helper.gameToModel(game));
+            });
+        }
+    });
+    
     /*
       Things to do:
       1. pull model from request body.
