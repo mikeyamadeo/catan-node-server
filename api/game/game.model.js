@@ -10,9 +10,9 @@ var GameModel = {
     * @param {function} callback - callback(err, game)
     */
     getGame : function(id, callback) {
-        model.findById(id, function(err, game) {
+        model.findById(id, function(err, obj) {
             if (err) return callback(err);
-            return callback(null, game);
+            return callback(null, obj.game);
         });
     },
     /**
@@ -22,9 +22,9 @@ var GameModel = {
     * @param {function} callback - callback
     */
     getModel : function(id, callback) {
-        model.findById(id, function(err, game) {
+        model.findById(id, function(err, obj) {
             if (err) return callback(err);
-            return callback(null, game.game);
+            return callback(null, obj);
         }); 
     },
     /**
@@ -58,10 +58,10 @@ var GameModel = {
     * @param {function} callback - callback(err, roads)
     */
     getRoads : function(id, callback) {
-        model.findById(id, function(err, game) {
+        model.findById(id, function(err, obj) {
             if (err) return callback(err);
-            if (game) {
-                return callback(null, game.map.roads);
+            if (obj) {
+                return callback(null, obj.map.roads);
             }
             return callback(null, null);
         });
@@ -73,10 +73,10 @@ var GameModel = {
     * @param {function} callback - callback(err, settlements)
     */
     getSettlements : function(id, callback) {
-        model.findById(id, function(err, game) {
+        model.findById(id, function(err, obj) {
             if (err) return callback(err);
-            if (game) {
-                return callback(null, game.map.settlements);
+            if (obj) {
+                return callback(null, obj.game.map.settlements);
             }
             return callback(null, null);
         });
@@ -88,10 +88,11 @@ var GameModel = {
     * @param {function} callback - callback(err, cities)
     */
     getCities : function(id, callback) {
-        model.findById(id, function(err, game) {
+        model.findById(id, function(err, obj) {
+            console.log(game.game.map);
             if (err) return callback(err);
-            if (game) {
-                return callback(null, game.map.cities);
+            if (obj) {
+                return callback(null, obj.game.map.cities);
             }
             return callback(null, null);
         });
