@@ -122,6 +122,74 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.getBank = function() {
+    return this.game.bank;
+};
+
+GameSchema.methods.getResources = function(index) {
+    if (index >= 0 && index < this.players.length) {
+        return this.players[index].resources;
+    }
+    return null
+};
+
+GameSchema.methods.getRobber = function() {
+    return this.game.map.robber;
+};
+
+GameSchema.methods.getOwnedRoads = function(index) {
+    var roads = this.game.map.roads;
+    return roads.filter(function(road) {
+        if (road.owner == index) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.getOwnedPorts = function(index) {
+    var settlements = this.getOwnedStructures(index, 'settlements');
+    var cities = this.getOwnedStructures(index, 'cities');
+    var ports = this.game.map.ports;
+    return ports.filter(function(port) {
+        var foundSettlemnt = _.find(settlements, function(settlement) {
+            if (_.isEqual(settlement.location, port.location)) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        var foundCity = _.find(cities, function(city) {
+            if (_.isEqual(city.location, port.location)) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (foundSettlement || foundCity) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.getOwnedStructures = function(index, structure) {
+    var structures = this.game.map[structure];
+    return structures.filter(function(struct, index, array) {
+        if (struct.owner == index) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.currentPlayer = function() {
+    return this.game.turnTracker.currentTurn;
+};
+
 GameSchema.methods.addPlayer = function(player) {
     this.players.push(player);
 };
