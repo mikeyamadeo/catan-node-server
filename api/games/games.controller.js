@@ -44,7 +44,7 @@ var GamesController = {
               gamePlayers.push({
                 name: game.players[i].name,
                 color: game.players[i].color,
-                ID: -1 // this needs to be changed to a player's id (not index)
+                ID: game.players[i].id
               });
             };
             
@@ -158,6 +158,11 @@ var GamesController = {
    * @param {function} next - next command
    */
   save: function(req, res, next) {
+    var body = req.body;
+    gamesModel.save(body.id, body.name, function(err, saved) {
+      if(err) return res.status(403).send("File not found");
+      if(saved) return res.send("Success");
+    });
     /**
          * Authentication:
          * - Requires User Cookie
@@ -205,6 +210,11 @@ var GamesController = {
          * POST CONDITIONS:
          * Loads 
          */
+    var body = req.body;
+    gamesModel.save(body.name, function(err, loaded) {
+      if(err) return res.status(403).send("File not found");
+      if(loaded) return res.send("Success");
+    });
   },
 
 };
