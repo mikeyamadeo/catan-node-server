@@ -37,10 +37,10 @@ var UserController = {
                     password : user.password,
                     id : user._id
                 };
-                res.cookie("catan.user", cleanUser);
+                return res.cookie("catan.user", cleanUser);
                 res.send("Success");
             } else {
-                res.send("login failed");
+                return res.send("login failed");
             }
         });
     },
@@ -82,9 +82,9 @@ var UserController = {
                     id : user._id
                 };
                 res.cookie('catan.user', cleanUser);
-                res.send("Success");
+                return res.send("Success");
             } else {
-                res.send("Register failed");
+                return res.status(403).send("Register failed");
             }
         });
     }
