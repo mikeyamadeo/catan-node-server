@@ -37,8 +37,8 @@ var UserController = {
                     password : user.password,
                     id : user._id
                 };
-                return res.cookie("catan.user", cleanUser);
-                res.send("Success");
+                res.cookie("catan.user", cleanUser);
+                return res.send("Success");
             } else {
                 return res.send("login failed");
             }
