@@ -31,6 +31,7 @@ var DevCardList = {
 };
 
 var Player = new Schema({
+    id : Number,
     cities : Number,
     color : String,
     discarded : Boolean,
@@ -46,11 +47,6 @@ var Player = new Schema({
     soldiers : Number,
     victoryPoints : Number
 }, { _id : false });
-
-var hexLocation = {
-    x : Number,
-    y : Number
-};
 
 var HexLocation = {
     x : Number,
@@ -126,6 +122,74 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.getBank = function() {
+    return this.game.bank;
+};
+
+GameSchema.methods.getResources = function(index) {
+    if (index >= 0 && index < this.players.length) {
+        return this.players[index].resources;
+    }
+    return null
+};
+
+GameSchema.methods.getRobber = function() {
+    return this.game.map.robber;
+};
+
+GameSchema.methods.getOwnedRoads = function(index) {
+    var roads = this.game.map.roads;
+    return roads.filter(function(road) {
+        if (road.owner == index) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.getOwnedPorts = function(index) {
+    var settlements = this.getOwnedStructures(index, 'settlements');
+    var cities = this.getOwnedStructures(index, 'cities');
+    var ports = this.game.map.ports;
+    return ports.filter(function(port) {
+        var foundSettlemnt = _.find(settlements, function(settlement) {
+            if (_.isEqual(settlement.location, port.location)) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        var foundCity = _.find(cities, function(city) {
+            if (_.isEqual(city.location, port.location)) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (foundSettlement || foundCity) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.getOwnedStructures = function(index, structure) {
+    var structures = this.game.map[structure];
+    return structures.filter(function(struct, index, array) {
+        if (struct.owner == index) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+};
+
+GameSchema.methods.currentPlayer = function() {
+    return this.game.turnTracker.currentTurn;
+};
+
 GameSchema.methods.addPlayer = function(player) {
     this.players.push(player);
 };
@@ -135,9 +199,11 @@ GameSchema.methods.isGameAvailable = function() {
 };
 
 GameSchema.methods.isPlayerInGame = function(username) {
-    _.find(this.players, function(player, index, array) {
+    var found = _.find(this.players, function(player, index, array) {
         return player.name === username;
     });
+    if (found) return true;
+    return false;
 };
 
 GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
@@ -149,7 +215,7 @@ GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
 };
 
 GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;
@@ -159,7 +225,7 @@ GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
 };
 
 GameSchema.methods.modifyVictoryPoint = function(player, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].victoryPoints += amount;
         if (this.players[player].victoryPoints >= 10) {
             this.game.winner = player;
@@ -177,19 +243,19 @@ GameSchema.methods.updateStatus = function(status) {
 };
 
 GameSchema.methods.modifyOldDevCard = function(player, devCard, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].oldDevCards[devCard] += amount;
     }
 };
 
 GameSchema.methods.modifyNewDevCard = function(player, devCard, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].newDevCards[devCard] += amount;
     }
 };
 
 GameSchema.methods.addStructure = function(player, location, type) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         var found = _.find(structures, function(structure) {
             return _.isEqual(structure.location, location);
@@ -202,7 +268,7 @@ GameSchema.methods.addStructure = function(player, location, type) {
 };
 
 GameSchema.methods.removeStructure = function(player, location, type) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
             return _.isEqual(structure.location, location);
@@ -211,29 +277,29 @@ GameSchema.methods.removeStructure = function(player, location, type) {
 };
 
 GameSchema.methods.setDiscarded = function(players, discarded) {
-    players.map(function(player, index, array) {
-        if (player >= 0 && player < players.length) {
+    this.players.map(function(player, index, array) {
+        if (player >= 0 && player < this.players.length) {
             this.players[player].discarded = discarded;
         }
     });
 };
 
 GameSchema.methods.setPlayedDevCard = function(players, played) {
-    players.map(function(player, index, array) {
-        if (player >= 0 && player < players.length) {
+    this.players.map(function(player, index, array) {
+        if (player >= 0 && player < this.players.length) {
             this.players[player].playedDevCard = played;
         }
     });
 };
 
 GameSchema.methods.addSoldier = function(player, amount) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         this.players[player].soldier += amount;                
     }
 };
 
 GameSchema.methods.getResourceCount = function(player, resource) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         return this.players[player].resouces[resource];
     }
 };
@@ -257,7 +323,7 @@ GameSchema.methods.updateTurn = function(player) {
 };
 
 GameSchema.methods.mergeDevCards = function(player) {
-    if (player >= 0 && player < players.length) {
+    if (player >= 0 && player < this.players.length) {
         var oldDevCards = this.players[player].oldDevCards;
         var newDevCards = this.players[player].newDevCards;
         oldDevCards.monument += newDevCards.monument;

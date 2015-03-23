@@ -74,18 +74,20 @@ module.exports = {
     /**
      * @desc creates a new user
      * @method createNewUser
+     * @method {number} id - user id of player
      * @param {string} name - name of new user
      * @param {string} color - color of new player
      * @return {object} player object
      */
-    createNewPlayer : function(name, color) {
+    createNewPlayer : function(id, name, color) {
         return {
+            id : id, 
             cities : 4,
             color : color,
             discarded : false,
             monuments : 0,
             name : name,
-            newDevDards : {
+            newDevCards : {
                 monopoly : 0,
                 monument : 0,
                 roadBuilding : 0,
@@ -99,7 +101,7 @@ module.exports = {
                 soldier : 0,
                 yearOfPlenty : 0
             },
-            index : 0,
+            index : -1,
             playedDevCard : false,
             resources : {
                 brick : 0,

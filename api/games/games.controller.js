@@ -38,7 +38,26 @@ var GamesController = {
             next();
         }
         if (games) {
-            return res.json(games);
+          var gameHeaders = games.map(function(game, index, array) {
+            var gamePlayers = [];
+            for (var i = 0; i < game.players.length; i++) {
+              gamePlayers.push({
+                name: game.players[i].name,
+                color: game.players[i].color,
+                ID: game.players[i].id
+              });
+            };
+            
+            while(gamePlayers.length < 4) {
+              gamePlayers.push({});
+            }
+            return {
+              players: gamePlayers,
+              title: game.title,
+              id: game._id
+            };
+          });
+            return res.json(gameHeaders);
         } else {
             res.json([]);
         }
@@ -115,7 +134,8 @@ var GamesController = {
             gamesModel.isGameAvailable(body.id, function(err, available) {
                 if (err) return res.status(404).send("Join failed");
                 if (available) {
-                    var newPlayer = helper.createNewPlayer(user.name, body.color);
+                    var newPlayer = helper.createNewPlayer(user.id, user.name, 
+                                    body.color);
                     gamesModel.addPlayer(body.id, newPlayer, function(err, game) {
                         if (err || !game) {
                             return res.status(404).send("Join failed");
@@ -138,6 +158,11 @@ var GamesController = {
    * @param {function} next - next command
    */
   save: function(req, res, next) {
+    var body = req.body;
+    gamesModel.save(body.id, body.name, function(err, saved) {
+      if(err) return res.status(403).send("File not found");
+      if(saved) return res.send("Success");
+    });
     /**
          * Authentication:
          * - Requires User Cookie
@@ -185,6 +210,11 @@ var GamesController = {
          * POST CONDITIONS:
          * Loads 
          */
+    var body = req.body;
+    gamesModel.save(body.name, function(err, loaded) {
+      if(err) return res.status(403).send("File not found");
+      if(loaded) return res.send("Success");
+    });
   },
 
 };

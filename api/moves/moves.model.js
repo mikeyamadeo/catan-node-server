@@ -89,6 +89,7 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     finishTurn : function(id, player, callback) {
+        console.log("in model",player);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
@@ -414,6 +415,144 @@ var MovesModel = {
                 return game.save(callback);
             }
             return callback(null, null);
+        });
+    },
+    /**
+    * @desc retrieves current turn
+    * @method currentPlayer
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, index)
+    */
+    currentPlayer : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) { 
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.currentPlayer);
+            } else {
+                return callback(null, -1);
+            }
+        });
+    },
+    /**
+    * @desc retrieves structures owned by specified player
+    * @method getOwnedStructures
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {string} structure - type of structure to retrieve (city/settelement)
+    * @param {function} callback - callback(err, [VertexObject])
+    */
+    getOwnedStructures : function(id, index, structure, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getOwnedStructures(index, structure));
+            } else {
+                return callback(null, []);
+            }
+        });
+    },
+    /**
+    * @desc retrieves ports owned by specified player
+    * @method getOwnedPorts
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, [Port])
+    */
+    getOwnedPorts : function(id, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getOwnedPorts(index));
+            } else {
+                return callback(null, []);
+            }
+        });
+    },
+    /**
+    * @desc retrieves the roads owned by specified player
+    * @method getOwnedRoads
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, [Road])
+    */
+    getOwnedRoads : function(id, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getOwnedRaods(index));
+            } else {
+                return callback(null, []);
+            }
+        });
+    },
+    /**
+    * @desc retrieves the location of the robber
+    * @method getRobber
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, robber)
+    */
+    getRobber : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getRobber());
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    /**
+    * @desc retrieves the resource set of a player
+    * @method getResources
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, resources)
+    */
+    getResources : function(id, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getResources(index));
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    /**
+    * @desc retrieves the resources in the bank
+    * @method getBank
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, bank)
+    */
+    getBank : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getBank());
+            } else {
+                return callback(null, null);
+            }
         });
     }
 };

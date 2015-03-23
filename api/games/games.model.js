@@ -14,20 +14,7 @@ var GamesModel = {
         model.find(function(err,games) {
             if (err) return callback(err);
             if (games) {
-                var gameHeaders = games.map(function(game, index, array) {
-                    return {
-                        players : games.players.map(function(player, index, array) {
-                            return {
-                                name : player.name,
-                                color : player.color,
-                                id : player.user
-                            };
-                        }),
-                        title : game.title,
-                        id : game._id
-                    }
-                });
-                return callback(null, gameHeaders);
+                return callback(null, games);
             }
             return callback(null, null);
         });
@@ -92,7 +79,7 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                fs.writeFile(config.saves + '/' + name, 
+                fs.writeFile(config.saves + 'saves/' + name, 
                              JSON.stringify(game), function(err) {
                     if (err) return callback(err);
                     return callback(null, true);
@@ -109,7 +96,7 @@ var GamesModel = {
     * @param {function} callback - callback(err, game)
     */
     loadGame : function(name, callback) {
-        fs.readFile(config.saves + '/' + name, function(err, data) {
+        fs.readFile(config.saves + 'saves/' + name, function(err, data) {
             if (err) return callback(err);
             callback(null, JSON.parse(data));    
         });
