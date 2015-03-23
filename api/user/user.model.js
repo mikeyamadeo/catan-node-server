@@ -12,7 +12,7 @@ var UserModel = {
     getUserByUsername : function(username, callback) {
         console.log("i'm here");
         model.findByUsername(username, function(err, user) {
-            if (err) callback(err);
+            if (err) return callback(err);
             return callback(null, user);
         }); 
     },
@@ -37,7 +37,8 @@ var UserModel = {
     */
     addUser : function(username, password, callback) {
         model.addNewUser(username, password, function(err, user) {
-            if (err) callback(err);
+            console.log("Model error: ", err);
+            if (err) return callback(err);
             return callback(null, user);
         });
     },
@@ -50,7 +51,7 @@ var UserModel = {
     */
     validateUser : function(username, password, callback) {
         model.findByUsername(username, function(err, user) {
-            if (err) callback(err);
+            if (err) return callback(err);
             if (user) {
                 if (user.comparePasswords(password)) {
                     return callback(null, user);
