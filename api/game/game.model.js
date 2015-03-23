@@ -89,7 +89,6 @@ var GameModel = {
     */
     getCities : function(id, callback) {
         model.findById(id, function(err, obj) {
-            console.log(game.game.map);
             if (err) return callback(err);
             if (obj) {
                 return callback(null, obj.game.map.cities);
