@@ -696,6 +696,8 @@ var MovesModel = {
             }
             return callback(null, model.TurnTracker.status);
 
-};
+        });
+    }
+}
 
 module.exports = MovesModel;  

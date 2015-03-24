@@ -2,7 +2,7 @@
 
 var auth = require('./auth/Authentication.js');
 var HttpError = require('http-error').HttpError;
-var movesVerifier = require('./api/moves/verification.js');
+var movesVerifier = require('./api/moves/moves.verification.js');
 
 var auth = require('./auth/Authentication');
 
