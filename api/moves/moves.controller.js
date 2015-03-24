@@ -227,7 +227,7 @@ var MovesController = {
     var index = body.playerIndex;
     var first = body.resource1;
     var second = body.resource2;
-    async.waterfall([
+    async.series([
         function(callback) {
             model.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
                 if (err) {
@@ -282,7 +282,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result);
+        return res.status(200).json(result.pop());
     });
   },
   /**

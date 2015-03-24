@@ -295,17 +295,19 @@ GameSchema.methods.removeStructure = function(player, location, type) {
 };
 
 GameSchema.methods.setDiscarded = function(players, discarded) {
-    this.players.map(function(player, index, array) {
-        if (player >= 0 && player < this.players.length) {
-            this.players[player].discarded = discarded;
+    var self = this;
+    players.map(function(player) {
+        if (player >= 0 && player < self.players.length) {
+            self.players[player].discarded = discarded;
         }
     });
 };
 
 GameSchema.methods.setPlayedDevCard = function(players, played) {
-    this.players.map(function(player, index, array) {
-        if (player >= 0 && player < this.players.length) {
-            this.players[player].playedDevCard = played;
+    var self = this;
+    players.map(function(player) {
+        if (player >= 0 && player < self.players.length) {
+            self.players[player].playedDevCard = played;
         }
     });
 };
