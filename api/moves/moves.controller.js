@@ -2,7 +2,8 @@
 
 var _ = require('lodash'),
     model = require('./moves.model'),
-    helper = require('./moves.controller.helper');
+    helper = require('./moves.controller.helper'),
+    async = require('async');
 
 /**
  * Example of getting access to required models:
@@ -226,34 +227,62 @@ var MovesController = {
     var index = body.playerIndex;
     var first = body.resource1;
     var second = body.resource2;
-    model.
-    model.getBank(gameId, function(err, bank) {
-        if (err || !bank) {
-            console.log(err.stack);
-            return res.status(400).send("failure");
-        }
-        if ((first === second && bank[first] > 1) || 
-            (bank[first] > 0 && bank[second] > 0)) {
+    async.waterfall([
+        function(callback) {
+            model.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
+                if (err) {
+                    return callback(err);
+                } else if (playedDevCard) {
+                    return callback(new Error("You have already played a dev card"));
+                }
+                return callback(null)
+            });
+        },
+        function(callback) {
+            model.getBank(gameId, function(err, bank) {
+                if (err) {
+                    return callback(err);
+                } else if (!bank) {
+                    return callback(new Error("Bank does not exist"));
+                }
+                console.log("first: ", first, "second: ", second);
+                if ((first === second && bank[first] > 1) || 
+                    (bank[first] > 0 && bank[second] > 0)) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Not enough resources in bank"));
+                }
+            });
+        },
+        function(callback) {
             model.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
-                if (err || !devCards) {
-                    console.log(err.stack);
-                    return res.status(400).send("failure");
+                if (err) {
+                    return callback(err);
+                } else if (!devCards) {
+                    return callback(new Error("Dev Cards do not exist"));
                 }
                 if (devCards.yearOfPlenty > 0) {
-                    model.yearOfPlenty(gameId, index, first, second, function(err, game) {
-                        if (err || !game) {
-                            console.log(err.stack);
-                            return res.status(400).send("failure");
-                        }
-                        return res.status(200).json(game);
-                    });
+                    return callback(null);
                 } else {
-                    return res.status(400).send("insufficient year of plenty cards");
+                    return callback(new Error("No year of plenty dev card"));
                 }
-            }); 
-        } else {
-            return res.status(400).send("insufficient resources in bank");
+            });
+        },
+        function(callback) {
+            model.yearOfPlenty(gameId, index, first, second, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
         }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result);
     });
   },
   /**

@@ -575,6 +575,26 @@ var MovesModel = {
                 return callback(null, null);
             }
         });
+    },
+    /**
+    * @desc retrieves whether or not a player has played a dev card this turn
+    * @method getPlayedDevCard
+    * @param {number} id - specifies game
+    * @param {number] index - specifies player
+    * @param {function} callback - callback(err, playedCard)
+    */
+    getPlayedDevCard : function(id, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getPlayedDevCard(index));
+            } else {
+                return callback(null, null);
+            }
+        });
     }
 };
 
