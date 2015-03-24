@@ -6,15 +6,8 @@ var randomizeArray = function(array) {
     return shuffle(array);
 }; 
 
-x : -2
-y : 0
-
-x : 2
-y : -2
-
 var createMap = function(randomTiles, randomChits, randomPorts) {
     var hexes = [];
-    // These are not in the correct order. This will need to be changed later
     var chits = [6, 12, 11, 10, 5, 9, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
     var tiles = [   "wheat", "sheep", "wood", 
                     "sheep", "brick", "ore",
@@ -22,11 +15,26 @@ var createMap = function(randomTiles, randomChits, randomPorts) {
                     "wood", "ore", "sheep", "sheep",
                     "brick", "wood", "wheat", "ore"
                 ];
+    var ports = [];
+    var portResource = ["sheep", "ore",
+                        "wheat", "brick", "wood"
+                        ];
+    var portType = [ null, 2, null, 3, 3, 
+                     null, null, 2, 3, 
+                     null, null, 2, 2,
+                     null, null,  2,
+                     null, 3
+            ];
+
     if (randomChits) {
         chits = randomizeArray(chits);
     }
     if (randomTiles) {
         tiles = randomizeArray(tiles);
+    }
+    if (randomPorts) {
+       randomizeArray(portResource);
+       randomizeArray(portType);
     }
     var count = 0;
     for (var i = -2; i < 3; i++) {
@@ -50,8 +58,64 @@ var createMap = function(randomTiles, randomChits, randomPorts) {
             count++
         }
     }
-    var ports = [],
-        roads = [],
+
+
+var addToPorts = function(loc) {
+    var x = portType.pop();
+    if (x != null) {
+        if (x == 3) {
+            var y = {ratio : x, location : location}
+        } else {
+            var z = portResource.pop();
+            var y = {ratio : x, resource : z, location : location}
+        }
+        ports.push(y);
+    }
+}
+
+    var count = 0;
+    for (var i = -3; i < 4; i++) {
+        var range = 7 - Math.abs(i);
+        for (var j = 0; j < range; j++) {
+            var location = {
+                x : i,
+                y : j - count
+            };
+
+            if (location.x == -3) {
+               addToPorts(location);
+            } else if (location.x == -2 && location.y == -1) {
+               addToPorts(location);
+            } else if (location.x == -2 && location.y == 3) {
+                addToPorts(location);
+            } else if (location.x == -1 && location.y == -2) {
+                addToPorts(location);
+            } else if (location.x == -1 && location.y == 3) {
+               addToPorts(location);
+            } else if (location.x == 0 && location.y == -3) {
+                addToPorts(location);
+            } else if (location.x == 0 && location.y == 3) {
+               addToPorts(location);
+            } else if (location.x == 1 && location.y == -3) {
+               addToPorts(location);
+            } else if (location.x == 1 && location.y == 2) {
+               addToPorts(location);
+            } else if (location.x == 2 && location.y == -3) {
+                addToPorts(location);
+            } else if (location.x == 2 && location.y == 1) {
+                addToPorts(location);
+            } else if (location.x == 3) {
+                addToPorts(location);
+            } else {
+
+            }
+        }
+        if (count != 3) {
+            count++
+        }
+    }
+
+    var roads = [],
         settlements = [],
         cities = [];
 
@@ -69,6 +133,7 @@ var createMap = function(randomTiles, randomChits, randomPorts) {
     };
 };
     
+
 
 module.exports = {
     /**
