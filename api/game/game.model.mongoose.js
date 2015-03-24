@@ -122,6 +122,12 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.getDevCards = function(index, type) {
+    if (index >= 0 && index < this.players.length) {
+        return this.players[index][type];
+    }
+};
+
 GameSchema.methods.getBank = function() {
     return this.game.bank;
 };

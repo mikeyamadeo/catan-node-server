@@ -221,6 +221,28 @@ var MovesController = {
         if true for all of the above
           decrement resources from bank and add to player
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var first = body.resource1;
+    var second = body.resource2;
+    model.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
+        if (err || !devCards) {
+            console.log(err.stack);
+            return res.status(400).send("failure");
+        }
+        if (devCards.yearOfPlenty > 0) {
+            model.yearOfPlenty(gameId, index, first, second, function(err, game) {
+                if (err || !game) {
+                    console.log(err.stack);
+                    return res.status(400).send("failure");
+                }
+                return res.status(200).json(game);
+            });
+        } else {
+            return res.status(400).send("insufficient year of plenty cards");
+        }
+    }); 
   },
   /**
    * @desc receives a request to play a road building card and 

@@ -554,6 +554,27 @@ var MovesModel = {
                 return callback(null, null);
             }
         });
+    },
+    /**
+    * @desc retrieves the oldDevCards of a player
+    * @method getOldDevCards
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {string} type - oldDevCards | newDevCards
+    * @parma {function} callback - callback(err, DevCardList)
+    */
+    getDevCards : function(id, index, type, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getDevCards(index, type));
+            } else {
+                return callback(null, null);
+            }
+        });
     }
 };
 
