@@ -1,9 +1,11 @@
 'use strict';
 
-var _ = require('lodash'),
-    model = require('./moves.model'),
-    helper = require('./moves.controller.helper'),
-    async = require('async');
+
+var _ = require('lodash');
+var gameHelpers = require('../game/game.helpers');
+var  model = require('./moves.model');
+var  helper = require('./moves.controller.helper');
+var  async = require('async');
 
 /**
  * Example of getting access to required models:
@@ -11,7 +13,8 @@ var _ = require('lodash'),
  * var Model = require('../model');
  * var MovesModel = require('./moves.model');
  */
-var Model = require('./moves.model');
+var MovesModel = require('./moves.model');
+var GameModel = require('../game/game.model');
 
 var MovesController = {
   /** CREATE **/
@@ -29,7 +32,7 @@ var MovesController = {
     var gameId = 0;
     var playerId = data.playerIndex;
     var message = data.content;
-    model.addChat(gameId, playerId, message, function(err, game) {
+    MovesModel.addChat(gameId, playerId, message, function(err, game) {
         if (err) {
             console.log(err); 
             next(); 
@@ -57,26 +60,52 @@ var MovesController = {
    * @param {function} next - next command
    */
   rollNumber: function(req, res, next) {
-    var body = req.body;
-    var gameId = req.game;
-    var index = body.index;
-    var number = body.number;
 
-    if (number < 2 || number > 12) {
-        return res.status(400).send("Command Execution Failed");
-    } 
-    model.currentPlayer(gameId, function(err, currentTurn) {
-        if (err || index != currentTurn) {
-            return res.status(400).send("Command Execution Failed");
-        }
-        if (number == 7) {
-            model.rollNumber(gameId, 'Discarding', [], function(err, game) {
-                if (err || !game) {
-                    return res.status(400).send("Command Execution Failed");
-                }
-                return res.json(helper.gameToModel(game));
+    GameModel.getModel(req.game, function(err, model) {
+      var players = model.players;
+      var map = model.game.map;
+      var numberRolled = req.body.number;
+
+      //hexes that have the chit number that was roller
+      var hotHexes = map.hexes.filter(function(hex, i) {
+        return hex.number == numberRolled;
+      });
+      
+      //use cities to determine if player has
+      GameModel.getCities(req.game, function(err, cities) {
+        //for each hex that the has the number chit rolled
+        hotHexes.forEach(function(hex) {
+          cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
+          cities.forEach(function(city) {
+            if (gameHelpers.locationIsEqual(hex.location, city.location)) {
+              var player = gameHelpers.getPlayerFromPlayers(players, city.id);
+              console.log(players);
+              var resources = player.resources;
+              gameHelpers.addToPlayersResources(hex.resource, 2, resources);
+            }
+          });
+
+        });
+
+        //do it all over again with settlements
+        GameModel.getSettlements(req.game, function(err, settlements) {
+          hotHexes.forEach(function(hex) {
+            settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
+            settlements.forEach(function(settlement) {
+              if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
+                var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
+                var resources = player.resources;
+                gameHelpers.addToPlayersResources(hex.resource, 1, resources);
+              }
             });
-        }
+
+            res.json({players: players});
+
+          });
+        });//end of get settlements
+        
+      });
+
     });
     
     /*
@@ -101,7 +130,6 @@ var MovesController = {
           else
             change state to 'discarding'
     */
-    console.log("number rolled");
   },
   /**
    * @desc gets a rob player request and updates
@@ -142,13 +170,12 @@ var MovesController = {
    */
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
-    Model.finishTurn(req.game, req.body.playerIndex, function(err) {
+    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err) {
         if (err) {
             console.log(err); 
             return next(); 
         }
-        console.log("finishTurn");
-        res.json({cheerUp: "young homie"});
+        res.json({cheerUp: "young homie. your turn is finished."});
     });
 
     /*
