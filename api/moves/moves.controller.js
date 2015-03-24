@@ -413,66 +413,57 @@ var MovesController = {
   buildRoad: function(req, res, next) {
 
     console.log("Building a road",req.game);
-    var error;
-    var result;
 
-    //verify enough roads
-    result = helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
-        if (err) {
-           console.log(err.stack); 
-            return res.status(500).send();  
+
+    async.series([
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        /*
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                console.log("road built");
+                return callback(null, game);
+            });
         }
-        console.log("roads avail result is " + result);
-        return roadsAvail;
-    });
-
-    if (error) {
-        console.log(err); 
-        return res.status(500).send();   
-    }  
-    if (!result)  {   
-        console.log("roads avail result after function is " + result);  
-        return res.status(403).send("Player doesn't have any roads left");
-    }
-
-
-    //verify resources
-    if (req.body.free === false) {
-
-        MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
-            error = err;            
-            result = (resources["brick"] >= 1 && resources["wood"] >= 1);
-        }); 
-
-        if (error) {
-          console.log(err); 
-          return res.status(500).send();   
-        }  
-        if (!result)       
-            return res.status(403).send("Player doesn't have enough resources");
-    }
-
-    //verify road location
-    helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, res) {
-        error = err;            
-        result = res;
-    });
-
-    if (error) {
-        console.log(err); 
-        return res.status(500).send();   
-    }  
-    if (!result)       
-        return res.status(403).send("PThis road location is not acceptable");
-
-
-    MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+    ], function(err, result) {
         if (err) {
-            console.log(err); 
-            return res.status(500).send();
+            return res.status(400).send(err.message);
         }
-        console.log("road built");
-        res.json(game);
+        return res.status(200).json(result.pop());
     });
     /*
           remove resources and place back in bank

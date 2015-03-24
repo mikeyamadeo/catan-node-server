@@ -5,6 +5,7 @@ var movesModel = require('./moves.model.js');
 var gamesModel = require('./../games/games.model.js');
 var gameModel = require('./../game/game.model.js');
 var helpers = require('./../../common/common.helper.js');
+var  async = require('async');
 
 module.exports = {
 
@@ -35,26 +36,8 @@ module.exports = {
     @param addedroad is for the use in roadBuildingCard - a road 1 that is not in the model yet
     */    
     verifyRoadLocation : function (gameId, playerIndex, buildRoad, addedRoad, callback) {
-        
-        // on the map, not water
-        movesModel.verifyEdge(gameId, buildRoad.location, function (err, result) {
-            if (err || !result)
-                return callback(err, false);
-        });
 
-        //no road on that place
-        gameModel.getRoads(gameId, function (err, roads) {
-            if (err)
-                return callback(err, null);
-            for (var road in roads) {
-                if (helpers.isLocationEqual(road.location, buildRoad.location))
-                    return callback(null, false);
-            }
-            if (addedroad)
-                if (helpers.isLocationEqual(addedRoad.location, buildRoad.location))
-                    return callback(null, false);
-        });
-
+/*
         //initial round? not adj to other road!
         //adjacent to another player's road
         //no other person's settlent at the intersection
@@ -71,6 +54,68 @@ module.exports = {
         });
 
         return callback(null, true);   
+        */
+
+        async.series([
+        function(callback) {
+            movesModel.verifyEdge(gameId, buildRoad.location, function (err, result) {
+                if (err) {
+                      return callback(err); 
+                } else if (!result) {
+                	console.log("location outside the map");
+                    return callback(new Error("location is not on the map"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            gameModel.getRoads(gameId, function (err, roads) {
+                if (err) {
+                      return callback(err); 
+                } else {
+                	console.log("i got roads " + roads);
+                	for (var road in roads) {
+		                if (helpers.isLocationEqual(road.location, buildRoad.location)) {
+		                	console.log("location occupied");
+		                    return callback(new Error("location is already occupied"));
+		                }
+		            }
+		            if (addedroad)
+		                if (helpers.isLocationEqual(addedRoad.location, buildRoad.location)) {
+		                	console.log("location occupied");
+		                    return callback(new Error("location is already occupied"));
+		                }
+		        }
+                return callback(null);
+            });
+        }
+        /*
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                console.log("road built");
+                return callback(null, game);
+            });
+        ]
+        */
+    ], function(err, result) {
+    	if (err)
+    		return callback(null, false);
+    	else
+        	return callback(null, true);
+    });
     },
 
     /* 

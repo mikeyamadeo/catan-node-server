@@ -600,56 +600,67 @@ var MovesModel = {
 
     verifyEdge : function (id, location, callback) {
 
-        model.getModel(id, function(err, model) {
-            var hexes = model.map.hexes;
-            for (var hex in hexes) {
-                if (hex.location.x == location.x && hex.location.y == location.y)
-                    return callback(null, true);
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
             }
+            if (game)
+                return callback( null, 
+                    game.getHexes(id, function(err, hexes) {
+                        console.log("i got hexes");
+                        for (var hex in hexes) {
+                            if (hex.location.x === location.x && hex.location.y === location.y) {
+                                console.log("found the location");
+                                return callback(null, true);
+                            }
+                        }
+                        switch (location.x) {
+                            case -3:
+                                if (location.y >=1 && location.y <=3 && location.direction === "NE")
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 3:
+                                if (location.y >=-2 && location.y <=0 && location.direction === "NW")
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case -1:
+                            case -2:
+                                if (location.y === 3 && (location.direction === "NE" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 1:
+                                if (location.y == 2 && (location.direction === "NW" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;   
+                            case 2:
+                                if (location.y == 1 && (location.direction === "NW" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 0:
+                                if (location.y === 3)
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            default:
+                                return callback(null, false);
+                                break;
+                        }
+                    })
+                );
         });
 
-        switch (location.x) {
-            case -3:
-                if (location.y >=1 && location.y <=3 && location.direction === "NE")
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;
-            case 3:
-                if (location.y >=-2 && location.y <=0 && location.direction === "NW")
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;
-            case -1:
-            case -2:
-                if (location.y === 3 && (location.direction === "NE" || location.direction === "N"))
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;
-            case 1:
-                if (location.y == 2 && (location.direction === "NW" || location.direction === "N"))
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;   
-            case 2:
-                if (location.y == 1 && (location.direction === "NW" || location.direction === "N"))
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;
-            case 0:
-                if (location.y === 3)
-                    return callback(null, true);
-                else
-                    return callback(null, false);
-                break;
-            default:
-                return callback(null, false);
-                break;
-        }
     },
 
     getAdjacentEdges: function (id, location, callback) {
@@ -675,27 +686,32 @@ var MovesModel = {
                 break;
         }
         var finalEdges = [];
-        for (var edge in adjEdges) {
-            verifyEdge(id, location, function(err, result) {
+        for (var i = 0 ; i < adjEdges.length; i++) {
+            verifyEdge(id, adjEdges[i], function(err, result) {
                 if (err)
                     return callback(err, null);
                 else
                     if (result) {
                         finalEdges.push(edge);
+                        if (i == djEdges.length+1)
+                            return callback(null, finalEdges);
                     }
             });
         }
-        return callback(null, finalEdges);
+        
     },
 
     getGameState: function (id, callback) {
-        model.getModel(id, function(err, model) {
-            if (err || !model.TurnTracker) {
+        model.findById(id, function(err, game) {
+            if (err) {
                 console.log(err.stack);
                 return callback(err);
             }
-            return callback(null, model.TurnTracker.status);
-
+            if (game) {
+                return callback(null, game.getStatus(index));
+            } else {
+                return callback(null, null);
+            }
         });
     }
 }

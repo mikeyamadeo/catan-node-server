@@ -145,6 +145,14 @@ GameSchema.methods.getResources = function(index) {
     return null
 };
 
+GameSchema.methods.getHexes = function(index) {
+    return this.game.map.hexes;
+};
+
+GameSchema.methods.getStatus = function(index) {
+    return his.game.turnTracker.status;
+};
+
 GameSchema.methods.getRobber = function() {
     return this.game.map.robber;
 };

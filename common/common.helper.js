@@ -1,10 +1,5 @@
 module.exports = {
 
-    reportError : function (err, res, callback) {
-     
-
-    },
-
 
     //works for edges and verticies
     isLocationEqual : function(loc1, loc2) {
@@ -15,7 +10,6 @@ module.exports = {
         var connected = false;
         for (var edge in adjEdges) {
                 if (helpers.isLocationEqual(road.location, edge)) {
-                    //code for settlement & city check will go here
                     connected = true;
                     break;
                 }
