@@ -38,9 +38,9 @@ var UserController = {
                     id : user._id
                 };
                 res.cookie("catan.user", cleanUser);
-                res.send("Success");
+                return res.send("Success");
             } else {
-                res.send("login failed");
+                return res.send("login failed");
             }
         });
     },
@@ -74,6 +74,7 @@ var UserController = {
         console.log("Tried to register");
         var body = req.body;
         model.addUser(body.username, body.password, function(err, user) {
+            console.log("Error: ", err, "User: ", user);
             if (err) console.log(err);
             if (user) {
                 var cleanUser = {
@@ -82,12 +83,12 @@ var UserController = {
                     id : user._id
                 };
                 res.cookie('catan.user', cleanUser);
-                res.send("Success");
+                return res.send("Success");
             } else {
-                res.send("Register failed");
+                return res.status(403).send("Register failed");
             }
         });
     }
-}
+};
 
 module.exports = UserController;

@@ -1,7 +1,11 @@
 'use strict';
 
+
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
+var  model = require('./moves.model');
+var  helper = require('./moves.controller.helper');
+var  async = require('async');
 
 /**
  * Example of getting access to required models:
@@ -56,6 +60,7 @@ var MovesController = {
    * @param {function} next - next command
    */
   rollNumber: function(req, res, next) {
+
     GameModel.getModel(req.game, function(err, model) {
       var players = model.players;
       var map = model.game.map;
@@ -100,6 +105,7 @@ var MovesController = {
         });//end of get settlements
         
       });
+
     });
     
     /*
@@ -124,7 +130,6 @@ var MovesController = {
           else
             change state to 'discarding'
     */
-    console.log("number rolled");
   },
   /**
    * @desc gets a rob player request and updates
@@ -244,6 +249,68 @@ var MovesController = {
         if true for all of the above
           decrement resources from bank and add to player
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var first = body.resource1;
+    var second = body.resource2;
+    async.series([
+        function(callback) {
+            model.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
+                if (err) {
+                    return callback(err);
+                } else if (playedDevCard) {
+                    return callback(new Error("You have already played a dev card"));
+                }
+                return callback(null)
+            });
+        },
+        function(callback) {
+            model.getBank(gameId, function(err, bank) {
+                if (err) {
+                    return callback(err);
+                } else if (!bank) {
+                    return callback(new Error("Bank does not exist"));
+                }
+                console.log("first: ", first, "second: ", second);
+                if ((first === second && bank[first] > 1) || 
+                    (bank[first] > 0 && bank[second] > 0)) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Not enough resources in bank"));
+                }
+            });
+        },
+        function(callback) {
+            model.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
+                if (err) {
+                    return callback(err);
+                } else if (!devCards) {
+                    return callback(new Error("Dev Cards do not exist"));
+                }
+                if (devCards.yearOfPlenty > 0) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("No year of plenty dev card"));
+                }
+            });
+        },
+        function(callback) {
+            model.yearOfPlenty(gameId, index, first, second, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
   },
   /**
    * @desc receives a request to play a road building card and 
