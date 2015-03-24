@@ -293,7 +293,7 @@ var MovesModel = {
                     game.modifyResource(player, 'wheat', -1, true);
                 }
                 game.incVersion();
-                game.save(callback);
+                return game.save(callback);
             }
             return callback(null, null);
         });
@@ -335,7 +335,7 @@ var MovesModel = {
             if (game) {
                 game.addTradeOffer(player, receiver, offer);
                 game.incVersion();
-                game.save(callback);
+                return game.save(callback);
             }
             return callback(null, null);
         });
@@ -556,13 +556,51 @@ var MovesModel = {
         });
     },
 
-    verifyEdge : function (id, location, callback) {
-
-        model.getModel(id, function(err, model) {
+    /**
+    * @desc retrieves the oldDevCards of a player
+    * @method getOldDevCards
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {string} type - oldDevCards | newDevCards
+    * @parma {function} callback - callback(err, DevCardList)
+    */
+    getDevCards : function(id, index, type, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }            
+            if (game) {
+                return callback(null, game.getDevCards(index, type));
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    /**
+    * @desc retrieves whether or not a player has played a dev card this turn
+    * @method getPlayedDevCard
+    * @param {number} id - specifies game
+    * @param {number] index - specifies player
+    * @param {function} callback - callback(err, playedCard)
+    */
+    getPlayedDevCard : function(id, index, callback) {
+        model.findById(id, function(err, game) {
             if (err) {
                 console.log(err.stack);
                 return callback(err);
             }
+            if (game) {
+                return callback(null, game.getPlayedDevCard(index));
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+
+    verifyEdge : function (id, location, callback) {
+
+        model.getModel(id, function(err, model) {
             var hexes = model.map.hexes;
             for (var hex in hexes) {
                 if (hex.location.x == location.x && hex.location.y == location.y)
@@ -657,8 +695,7 @@ var MovesModel = {
                 return callback(err);
             }
             return callback(null, model.TurnTracker.status);
-        });
-    }
+
 };
 
 module.exports = MovesModel;  
