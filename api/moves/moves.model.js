@@ -267,7 +267,7 @@ var MovesModel = {
                     game.modifyResource(player, 'brick', -1, true);
                 }
                 game.incVersion();
-                game.save(callback);
+                return game.save(callback);
             }
             return callback(null, null);
         });               
@@ -293,7 +293,7 @@ var MovesModel = {
                     game.modifyResource(player, 'wheat', -1, true);
                 }
                 game.incVersion();
-                game.save(callback);
+                return game.save(callback);
             }
             return callback(null, null);
         });
@@ -335,7 +335,7 @@ var MovesModel = {
             if (game) {
                 game.addTradeOffer(player, receiver, offer);
                 game.incVersion();
-                game.save(callback);
+                return game.save(callback);
             }
             return callback(null, null);
         });
