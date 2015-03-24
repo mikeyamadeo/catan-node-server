@@ -97,11 +97,11 @@ module.exports = {
             index : -1,
             playedDevCard : false,
             resources : {
-                brick : 0,
+                brick : 1,
                 ore : 0,
                 sheep : 0,
                 wheat : 0,
-                wood : 0
+                wood : 1
             },
             roads : 15,
             settlements : 5,

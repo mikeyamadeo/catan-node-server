@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    model = require('./moves.model');
+    model = require('./moves.model'),
+    verifier = require('./verification.js');
 
 /**
  * Example of getting access to required models:
@@ -298,16 +299,70 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildRoad: function(req, res, next) {
+
+    console.log("Building a road",req.game);
+    var error;
+    var result;
+
+    //verify enough roads
+    result = verifier.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+        if (err) {
+           console.log(err.stack); 
+            return res.status(500).send();  
+        }
+        console.log("roads avail result is " + result);
+        return roadsAvail;
+    });
+
+    if (error) {
+        console.log(err); 
+        return res.status(500).send();   
+    }  
+    if (!result)  {   
+        console.log("roads avail result after function is " + result);  
+        return res.status(403).send("Player doesn't have any roads left");
+    }
+
+
+    //verify resources
+    if (req.body.free === false) {
+
+        Model.getResources(req.game, req.body.playerIndex, function (err, resources) {
+            error = err;            
+            result = (resources["brick"] >= 1 && resources["wood"] >= 1);
+        }); 
+
+        if (error) {
+          console.log(err); 
+          return res.status(500).send();   
+        }  
+        if (!result)       
+            return res.status(403).send("Player doesn't have enough resources");
+    }
+
+    //verify road location
+    verifier.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, res) {
+        error = err;            
+        result = res;
+    });
+
+    if (error) {
+        console.log(err); 
+        return res.status(500).send();   
+    }  
+    if (!result)       
+        return res.status(403).send("PThis road location is not acceptable");
+
+
+    Model.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+        if (err) {
+            console.log(err); 
+            return res.status(500).send();
+        }
+        console.log("road built");
+        res.json(game);
+    });
     /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        verify player
-        verify availability of resources and road pieces
-        verify road location
-        if above is true
-          add road to map
-          decrement road pieces
           remove resources and place back in bank
           run longest road algorithm
     */

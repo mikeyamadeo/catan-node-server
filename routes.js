@@ -2,6 +2,7 @@
 
 var auth = require('./auth/Authentication.js');
 var HttpError = require('http-error').HttpError;
+var movesVerifier = require('./api/moves/verification.js');
 
 var auth = require('./auth/Authentication');
 
@@ -12,6 +13,9 @@ module.exports = function(app) {
   app.use('/games', auth.validateUser);
   app.use('/moves', auth.validateGame);
   app.use('/game', auth.validateGame);
+
+  //app.use('/moves', movesVerifier.validatePlayersTurn);
+  //app.use('/moves', movesVerifier.validateGameFull);
   /////////////////////////
   // Define routes here //
   /////////////////////////
