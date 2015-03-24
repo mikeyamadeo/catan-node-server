@@ -61,7 +61,7 @@ var GameModel = {
         model.findById(id, function(err, obj) {
             if (err) return callback(err);
             if (obj) {
-                return callback(null, obj.map.roads);
+                return callback(null, obj.game.map.roads);
             }
             return callback(null, null);
         });

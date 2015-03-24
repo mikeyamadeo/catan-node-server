@@ -261,7 +261,7 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.addStructure(player, edge, 'road');
+                game.addStructure(player, edge, 'roads');
                 if (!free) {
                     game.modifyResource(player, 'wood', -1, true);
                     game.modifyResource(player, 'brick', -1, true);
@@ -491,7 +491,7 @@ var MovesModel = {
                 return callback(err);
             }
             if (game) {
-                return callback(null, game.getOwnedRaods(index));
+                return callback(null, game.getOwnedRoads(index));
             } else {
                 return callback(null, []);
             }
@@ -555,6 +555,7 @@ var MovesModel = {
             }
         });
     },
+
     /**
     * @desc retrieves the oldDevCards of a player
     * @method getOldDevCards
@@ -568,7 +569,7 @@ var MovesModel = {
             if (err) {
                 console.log(err.stack);
                 return callback(err);
-            }
+            }            
             if (game) {
                 return callback(null, game.getDevCards(index, type));
             } else {
@@ -595,7 +596,124 @@ var MovesModel = {
                 return callback(null, null);
             }
         });
+    },
+
+    verifyEdge : function (id, location, callback) {
+
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game)
+                return callback( null, 
+                    game.getHexes(id, function(err, hexes) {
+                        console.log("i got hexes");
+                        for (var hex in hexes) {
+                            if (hex.location.x === location.x && hex.location.y === location.y) {
+                                console.log("found the location");
+                                return callback(null, true);
+                            }
+                        }
+                        switch (location.x) {
+                            case -3:
+                                if (location.y >=1 && location.y <=3 && location.direction === "NE")
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 3:
+                                if (location.y >=-2 && location.y <=0 && location.direction === "NW")
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case -1:
+                            case -2:
+                                if (location.y === 3 && (location.direction === "NE" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 1:
+                                if (location.y == 2 && (location.direction === "NW" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;   
+                            case 2:
+                                if (location.y == 1 && (location.direction === "NW" || location.direction === "N"))
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            case 0:
+                                if (location.y === 3)
+                                    return callback(null, true);
+                                else
+                                    return callback(null, false);
+                                break;
+                            default:
+                                return callback(null, false);
+                                break;
+                        }
+                    })
+                );
+        });
+
+    },
+
+    getAdjacentEdges: function (id, location, callback) {
+        var adjEdges = [];
+        switch (location.direction) {
+            case "N":
+                adjEdges.push({x: location.x, y: location.y, direction: "NE"}); 
+                adjEdges.push({x: location.x, y: location.y, direction: "NW"}); 
+                adjEdges.push({x: location.x+1, y: location.y-1, direction: "NW"}); 
+                adjEdges.push({x: location.x-1, y: location.y, direction: "NE"}); 
+                break;
+            case "NE":
+                adjEdges.push({x: location.x, y: location.y, direction: "N"}); 
+                adjEdges.push({x: location.x+1, y: location.y, direction: "NW"}); 
+                adjEdges.push({x: location.x+1, y: location.y-1, direction: "NW"}); 
+                adjEdges.push({x: location.x+1, y: location.y, direction: "N"}); 
+                break;
+            case "NW":
+                adjEdges.push({x: location.x, y: location.y, direction: "N"}); 
+                adjEdges.push({x: location.x-1, y: location.y, direction: "NE"}); 
+                adjEdges.push({x: location.x-1, y: location.y+1, direction: "NE"}); 
+                adjEdges.push({x: location.x-1, y: location.y+1, direction: "N"}); 
+                break;
+        }
+        var finalEdges = [];
+        for (var i = 0 ; i < adjEdges.length; i++) {
+            verifyEdge(id, adjEdges[i], function(err, result) {
+                if (err)
+                    return callback(err, null);
+                else
+                    if (result) {
+                        finalEdges.push(edge);
+                        if (i == djEdges.length+1)
+                            return callback(null, finalEdges);
+                    }
+            });
+        }
+        
+    },
+
+    getGameState: function (id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            }
+            if (game) {
+                return callback(null, game.getStatus(index));
+            } else {
+                return callback(null, null);
+            }
+        });
     }
-};
+}
 
 module.exports = MovesModel;  

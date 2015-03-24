@@ -411,16 +411,61 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildRoad: function(req, res, next) {
+
+    console.log("Building a road",req.game);
+
+
+    async.series([
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        /*
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                console.log("road built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
     /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        verify player
-        verify availability of resources and road pieces
-        verify road location
-        if above is true
-          add road to map
-          decrement road pieces
           remove resources and place back in bank
           run longest road algorithm
     */
