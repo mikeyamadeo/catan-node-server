@@ -154,14 +154,16 @@ GameSchema.methods.getOwnedPorts = function(index) {
     var ports = this.game.map.ports;
     return ports.filter(function(port) {
         var foundSettlemnt = _.find(settlements, function(settlement) {
-            if (_.isEqual(settlement.location, port.location)) {
+            if (settlement.location.x === port.location.x &&
+                settlement.location.y === port.location.y) {
                 return true;
             } else {
                 return false;
             }
         });
         var foundCity = _.find(cities, function(city) {
-            if (_.isEqual(city.location, port.location)) {
+            if (city.location.x === port.location.x &&
+                city.location.y === port.location.y) {
                 return true;
             } else {
                 return false;
@@ -258,7 +260,9 @@ GameSchema.methods.addStructure = function(player, location, type) {
     if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         var found = _.find(structures, function(structure) {
-            return _.isEqual(structure.location, location);
+            return (structure.location.x === location.x &&
+                    structure.location.y === location.y &&
+                    structure.location.direction === location.direction);
         });
         if (!found) {
             structures.push({ owner : player, location : location });
@@ -271,7 +275,9 @@ GameSchema.methods.removeStructure = function(player, location, type) {
     if (player >= 0 && player < this.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
-            return _.isEqual(structure.location, location);
+            return (structure.location.x === location.x &&
+                    structure.location.y === location.y &&
+                    structure.location.direction === location.direction);
         });
     }
 };
