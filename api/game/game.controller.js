@@ -22,6 +22,7 @@ var GameController = {
    * @param {function} next - next command
    */
   model: function(req, res, next) {},
+
   /**
    * @desc get request to get commands in command log
    * @method getCommands

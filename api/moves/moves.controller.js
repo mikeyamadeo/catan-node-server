@@ -637,6 +637,64 @@ var MovesController = {
         if above is valid, set as trade offer
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var offer = body.offer;
+    var recever = body.receiver;
+    if (offer.brick < 0)
+    async.series([
+        function(callback) {
+            if (index == receiver) {
+                return callback(new Error("You cannot trade with yourself"));
+            } else {
+                return callback(null);
+            }
+        },
+        function(callback) {
+            model.getResources(gameId, victim, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (offer.brick < 0) {
+                      if (!(resource.brick >= Math.abs(offer.brick))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.ore < 0) {
+                      if (!(resource.ore >= Math.abs(offer.ore))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.sheep < 0) {
+                      if (!(resource.sheep >= Math.abs(offer.sheep))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.wheat < 0) {
+                      if (!(resource.wheat >= Math.abs(offer.wheat))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.wood < 0) {
+                      if (!(resource.wood >= Math.abs(offer.wood))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else {
+                        return callback(null));
+                    }
+                }
+            });
+        },
+        function(callback) {
+            model.offerTrade(gameId, index, offer, receiver, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
   },
   /**
    * @desc gets a request to accept a trade, validates
@@ -671,13 +729,47 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
-        verify player
+        verify player[x]
         verify player owns port and gets ratio (?)
         verify availablility of output resource
         verify player has enough input resource
         if above is true
           transfer resources
     */
+
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var input = body.inputResource;
+    var output = body.outputResource;
+    async.series([
+      function(callback) {
+        model.getOwnedPorts(gameId, index,  function(err, ports) {
+          if (err) {
+            return callback(err);
+          } else if (!ports) {
+            return callback(new Error("Ports don't exist"));
+          } else if (ports.)
+        });
+      },
+
+        function(callback) {
+            model.maritimeTrade(gameId, index, input, output, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
+
   },
   /**
    * @desc gets a request to discard cards, validates
