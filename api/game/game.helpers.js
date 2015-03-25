@@ -13,6 +13,9 @@ module.exports = {
 	},
 	addToPlayersResources: function(type, amount, resources) {
 		resources[type] += amount;
+	},
+	resourceIsAvailable: function(bank, type, amount) {
+		return bank[type] >= amount;
 	}
 
 }

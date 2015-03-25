@@ -3,9 +3,9 @@
 
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
-var  model = require('./moves.model');
-var  helper = require('./moves.controller.helper');
-var  async = require('async');
+var model = require('./moves.model');
+var helper = require('./moves.controller.helper');
+var async = require('async');
 
 /**
  * Example of getting access to required models:
@@ -61,14 +61,17 @@ var MovesController = {
    */
   rollNumber: function(req, res, next) {
     var gameId = req.game;
+
     GameModel.getModel(gameId, function(err, model) {
       var players = model.players;
       var map = model.game.map;
+      var bank = model.game.bank;
       var numberRolled = req.body.number;
 
+
       if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "discarding", players, function() {
-          res.json({args: [].slice.call(arguments)});
+        MovesModel.rollNumber(gameId, "discarding", players, function(err, game) {
+          res.json({game: game});
         });
       }
       else {
@@ -76,7 +79,6 @@ var MovesController = {
         var hotHexes = map.hexes.filter(function(hex, i) {
           return hex.number == numberRolled;
         });
-        res.json({model:model})
         //use cities to determine if player has property on hothexes
         //add to resources if so.
         GameModel.getCities(req.game, function(err, cities) {
@@ -86,9 +88,16 @@ var MovesController = {
             cities.forEach(function(city) {
               if (gameHelpers.locationIsEqual(hex.location, city.location)) {
                 var player = gameHelpers.getPlayerFromPlayers(players, city.id);
-                console.log(players);
                 var resources = player.resources;
-                gameHelpers.addToPlayersResources(hex.resource, 2, resources);
+                var amount = 0;
+
+                //only add resources if they are available
+                if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
+                  amount = 2;
+                } else {
+                  amount = bank[hex.resource];
+                }
+                gameHelpers.addToPlayersResources(hex.resource, amount, resources);
               }
             });
 
@@ -102,14 +111,20 @@ var MovesController = {
                 if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
                   var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
                   var resources = player.resources;
-                  gameHelpers.addToPlayersResources(hex.resource, 1, resources);
+                  var amount = 0;
+
+                  //only add resources if they are available
+                  if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
+                    amount = 1;
+                  }
+                  gameHelpers.addToPlayersResources(hex.resource, amount, resources);
                 }
               });
+              
 
-              MovesModel.rollNumber(gameId, "playing", players, function() {
-                res.json({args: [].slice.call(arguments)});
+              MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
+                return res.status(200).json({game: game});
               });
-              res.json({players: players});
 
             });
           });//end of get settlements

@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var _ = require('lodash');
 
 var MovesModel = {
     /**
