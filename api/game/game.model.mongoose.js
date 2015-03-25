@@ -269,15 +269,21 @@ GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
 };
 
-GameSchema.methods.modifyOldDevCard = function(player, devCard, amount) {
+GameSchema.methods.modifyOldDevCard = function(player, devCard, amount, exchange) {
     if (player >= 0 && player < this.players.length) {
         this.players[player].oldDevCards[devCard] += amount;
+        if (exchange && amount > 0) {
+            this.game.deck[devCard] -= amount;
+        }
     }
 };
 
-GameSchema.methods.modifyNewDevCard = function(player, devCard, amount) {
+GameSchema.methods.modifyNewDevCard = function(player, devCard, amount, exchange) {
     if (player >= 0 && player < this.players.length) {
         this.players[player].newDevCards[devCard] += amount;
+        if (exchange && amount > 0) {
+            this.game.deck[devCard] -= amount;
+        }
     }
 };
 
