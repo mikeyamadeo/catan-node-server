@@ -358,6 +358,108 @@ var MovesController = {
           see rob player function
           increment player soldier count
     */
+    var body = req.body;
+    var index = body.playerIndex;
+    var victim = body.victimIndex;
+    var location = body.location;
+    var gameId = req.game;
+    async.waterfall([
+        function(callback) {
+            model.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+                if (err) {
+                    return callback(err);
+                }
+                if (!cardList) {
+                    return callback(new Error("Dev cards do not exist"));
+                } else if (cardList.soldier > 0) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Insufficient soldier cards"));
+                }
+            });
+        },
+        function(callback) {
+            model.getPlayedDevCard(gameId, index, function(err, played) {
+                if (err) {
+                    return callback(err);
+                }
+                if (played) {
+                    return callback(new Error("You have already played a dev card " + 
+                        "this turn"));
+                } else {
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            if (index == victim) {
+                return callback(new Error("You are not allowed to rob yourself"));
+            } else {
+                return callback(null);
+            }
+        },
+        function(callback) {
+            model.getRobber(gameId, function(err, robber) {
+                if (err) {
+                    return callback(err);
+                }
+                if (!robber) {
+                    return callback(new Error("Robber does not exist"));
+                } else if (robber.x === location.x && robber.y === location.y) {
+                    return callback(new Error("The robber must be placed at a new " +
+                        "location"));
+                } else {
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            model.getResources(gameId, victim, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources.brick > 0) {
+                        return callback(null, 'brick');
+                    } else if (resources.ore > 0) {
+                        return callback(null, 'ore');
+                    } else if (resources.sheep > 0) {
+                        return callback(null, 'sheep');
+                    } else if (resources.wheat > 0) {
+                        return callback(null, 'wheat');
+                    } else if (resources.wood > 0) {
+                        return callback(null, 'wood');
+                    } else {
+                        return callback(new Error("Victim does not have any " + 
+                            "resources"));
+                    }
+                }
+            });
+        },
+        function(resource, callback) {
+            console.log(gameId);
+            model.soldier(gameId, location, index, victim, resource, 'Playing',
+                function(err, game) { 
+                if (err) {
+                    return callback(err);
+                }
+                if (!game) {
+                    return callback(new Error("Game does not exist"));
+                } else {
+                    return callback(null, game);
+                }
+            });
+        }],
+        function(err, result) {
+            if (err) {
+                return res.status(400).send(err.message);
+            } else if (!result) {
+                return res.status(500).send("Server Error");
+            } else {
+                return res.status(200).json(result);
+            }
+        });
   },
   /**
    * @desc gets a request to play a monopoly card, validates

@@ -3,23 +3,28 @@
     "_id" : 13,
     "title" : "Gonzo",
     "game" : {
+        "log" : {
+            "lines" : [ ]
+        },
+        "chat" : {
+            "lines" : [ ]
+        },
+        "bank" : {
+            "brick" : 25,
+            "ore" : 25,
+            "sheep" : 25,
+            "wheat" : 25,
+            "wood" : 25
+        },
         "version" : 0,
         "winner" : -1,
         "turnTracker" : {
-            "currentTurn" : 0,
             "status" : "Setup",
             "longestRoad" : -1,
-            "largestArmy" : -1
+            "largestArmy" : -1,
+            "currentTurn" : 0
         },
         "map" : {
-            "radius" : 3,
-            "robber" : {
-                "x" : 0,
-                "y" : -2
-            },
-            "cities" : [ ],
-            "settlements" : [ ],
-            "roads" : [ ],
             "ports" : [
                 {
                     "ratio" : 2,
@@ -95,25 +100,25 @@
                     "resource" : "wood",
                     "number" : 10,
                     "location" : {
-                        "x" : -2,
-                        "y" : 0
+                        "y" : 0,
+                        "x" : -2
                     }
                 },
                 {
-                    "resource" : "sheep",
-                    "number" : 12,
                     "location" : {
                         "x" : -2,
                         "y" : 1
-                    }
+                    },
+                    "resource" : "sheep",
+                    "number" : 12
                 },
                 {
-                    "resource" : "wood",
                     "number" : 10,
                     "location" : {
                         "x" : -2,
                         "y" : 2
-                    }
+                    },
+                    "resource" : "wood"
                 },
                 {
                     "resource" : "wood",
@@ -135,17 +140,17 @@
                     "resource" : "wheat",
                     "number" : 11,
                     "location" : {
-                        "x" : -1,
-                        "y" : 1
+                        "y" : 1,
+                        "x" : -1
                     }
                 },
                 {
-                    "resource" : "wheat",
-                    "number" : 9,
                     "location" : {
                         "x" : -1,
                         "y" : 2
-                    }
+                    },
+                    "resource" : "wheat",
+                    "number" : 9
                 },
                 {
                     "location" : {
@@ -202,20 +207,20 @@
                     }
                 },
                 {
-                    "resource" : "sheep",
                     "number" : 9,
                     "location" : {
                         "x" : 1,
                         "y" : 0
-                    }
+                    },
+                    "resource" : "sheep"
                 },
                 {
-                    "resource" : "ore",
-                    "number" : 5,
                     "location" : {
                         "x" : 1,
                         "y" : 1
-                    }
+                    },
+                    "resource" : "ore",
+                    "number" : 5
                 },
                 {
                     "resource" : "sheep",
@@ -226,12 +231,12 @@
                     }
                 },
                 {
-                    "resource" : "sheep",
                     "number" : 4,
                     "location" : {
                         "x" : 2,
                         "y" : -1
-                    }
+                    },
+                    "resource" : "sheep"
                 },
                 {
                     "resource" : "wheat",
@@ -241,31 +246,61 @@
                         "y" : 0
                     }
                 }
-            ]
-        },
-        "log" : {
-            "lines" : [ ]
-        },
-        "chat" : {
-            "lines" : [ ]
-        },
-        "bank" : {
-            "brick" : 25,
-            "ore" : 25,
-            "sheep" : 25,
-            "wheat" : 25,
-            "wood" : 25
+            ],
+            "radius" : 3,
+            "robber" : {
+                "x" : 0,
+                "y" : -2
+            },
+            "cities" : [ ],
+            "settlements" : [ ],
+            "roads" : [ ]
         }
     },
     "players" : [
         {
-            "id" : 0,
             "cities" : 4,
-            "color" : "brown",
+            "index" : 0,
+            "soldiers" : 0,
+            "resources" : {
+                "brick" : 9,
+                "ore" : 0,
+                "sheep" : 0,
+                "wheat" : 0,
+                "wood" : 0
+            },
             "discarded" : false,
+            "oldDevCards" : {
+                "soldier" : 0,
+                "yearOfPlenty" : 1,
+                "monopoly" : 0,
+                "monument" : 0,
+                "roadBuilding" : 0
+            },
+            "newDevCards" : {
+                "monument" : 0,
+                "roadBuilding" : 0,
+                "soldier" : 0,
+                "yearOfPlenty" : 0,
+                "monopoly" : 0
+            },
+            "id" : 0,
+            "roads" : 15,
+            "settlements" : 5,
+            "color" : "brown",
             "monuments" : 0,
             "name" : "Peter",
-            "index" : 0,
+            "playedDevCard" : false,
+            "victoryPoints" : 0
+        },
+        {
+            "id" : 57,
+            "cities" : 4,
+            "color" : "darkness",
+            "discarded" : false,
+            "monuments" : 0,
+            "name" : "Jonny",
+            "index" : 1,
             "playedDevCard" : false,
             "roads" : 15,
             "settlements" : 5,
@@ -282,20 +317,20 @@
                 "monopoly" : 0,
                 "monument" : 0,
                 "roadBuilding" : 0,
-                "soldier" : 0,
-                "yearOfPlenty" : 1
+                "soldier" : 2,
+                "yearOfPlenty" : 0
             },
             "newDevCards" : {
                 "monopoly" : 0,
                 "monument" : 0,
                 "roadBuilding" : 0,
-                "soldier" : 0,
+                "soldier" : 1,
                 "yearOfPlenty" : 0
             }
         }
     ],
-    "__v" : 1
-}
+    "__v" : 2
+    }
 ]
         
                 
