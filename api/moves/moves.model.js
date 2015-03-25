@@ -69,6 +69,7 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 if (victim != -1) {
+                    console.log("Victim: ", victim, "Player: ", player);
                     game.modifyResource(player, resource, 1, false);
                     game.modifyResource(victim, resource, -1, false);
                 }
@@ -183,6 +184,8 @@ var MovesModel = {
     * @param {object} hex - new hex location of robber
     * @param {number} player - index of player
     * @param {number} victim - index of victim
+    * @param {string} resource - resource to take
+    * @param {string} status - new game status
     * @param {function} callback - callback
     */
     soldier : function(id, hex, player, victim, resource, status, callback) {
@@ -190,14 +193,16 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                 self.robPlayer(id, player, victim, hex, resource, status, 
+                 self.robPlayer(id, hex, player, victim, resource, status, 
                                 function(err, game) {
                                     game.addSoldier(player, 1);
                                     game.modifyOldDevCard(player, 'soldier', -1); 
+                                    game.setPlayedDevCard([player], true);
                                     return game.save(callback);
                                 });
+            } else {
+                return callback(null, null);
             }
-            return callback(null, null);
         });
     },
     /**
