@@ -188,12 +188,19 @@ module.exports = {
             players : [],
             game : {
                 bank : {
-                    brick : 25,
-                    ore : 25,
-                    sheep : 25,
-                    wheat : 25,
-                    wood : 25
+                    brick : 24,
+                    ore : 24,
+                    sheep : 24,
+                    wheat : 24,
+                    wood : 24
                 },
+                deck : {
+                    monopoly : 2,
+                    monument : 5,
+                    roadBuilding : 2,
+                    soldier : 14,
+                    yearOfPlenty : 2
+                }, 
                 chat : {
                    lines : []
                 },

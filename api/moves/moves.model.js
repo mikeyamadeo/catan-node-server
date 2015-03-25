@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var _ = require('lodash');
 
 var MovesModel = {
     /**
@@ -42,9 +43,9 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 resources.map(function(tuple, index, array) {
-                    var resourceMap = tuple.resourceMap;
+                    var resourceMap = tuple.resources;
                     _.forOwn(resourceMap, function(value, key) {
-                        game.modifyResource(tuple.player, key, value, true);
+                        game.modifyResource(tuple.id, key, value, true);
                     });
                 });
                 game.updateStatus(status);
@@ -121,9 +122,9 @@ var MovesModel = {
                 game.modifyResource(player, 'ore', -1, true);
                 game.modifyResource(player , 'wheat', -1, true);
                 if (devCard === 'monument') {
-                    game.modifyDevCard(player, devCard, 1);
+                    game.modifyOldDevCard(player, devCard, 1, true);
                 } else {
-                    game.modifyNewDevCard(player, devCard, 1);
+                    game.modifyNewDevCard(player, devCard, 1, true);
                 }
                 game.incVersion();
                 return game.save(callback);
@@ -148,7 +149,7 @@ var MovesModel = {
                 game.modifyResource(player, second, 1, true);
                 game.incVersion();
                 game.setPlayedDevCard([player], true);
-                game.modifyOldDevCard(player, 'yearOfPlenty', -1);
+                game.modifyOldDevCard(player, 'yearOfPlenty', -1, false);
                 return game.save(callback);
             }
             return callback(null, null);
@@ -171,7 +172,7 @@ var MovesModel = {
                 game.addStructure(player, second, 'road');
                 game.incVersion();
                 game.setPlayedDevCard([player], true);
-                game.modifyOldDevCard(player, 'roadBuilding', -1);
+                game.modifyOldDevCard(player, 'roadBuilding', -1, false);
                 return game.save(callback);
             }
             return callback(null, null);
@@ -196,7 +197,7 @@ var MovesModel = {
                  self.robPlayer(id, hex, player, victim, resource, status, 
                                 function(err, game) {
                                     game.addSoldier(player, 1);
-                                    game.modifyOldDevCard(player, 'soldier', -1); 
+                                    game.modifyOldDevCard(player, 'soldier', -1, false); 
                                     game.setPlayedDevCard([player], true);
                                     return game.save(callback);
                                 });
@@ -227,7 +228,7 @@ var MovesModel = {
                     });
                 });
                 game.setPlayedDevCard(player, true);
-                game.modifyOldDevCard(player, 'monopoly', -1);
+                game.modifyOldDevCard(player, 'monopoly', -1, false);
                 game.incVersion();
                 return game.save(callback);
             }
@@ -245,7 +246,7 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.modifyOldDevCard(player, 'monument', -1);
+                game.modifyOldDevCard(player, 'monument', -1, false);
                 game.incVersion();
                 game.modifyVictoryPoint(player, 1);
                 return game.save(callback);
