@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
-    model = require('./game.model');
+    GameModel = require('./game.model');
 
 /**
  * Example of getting access to required models:
@@ -21,7 +21,15 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  model: function(req, res, next) {},
+  model: function(req, res, next) {
+    var gameId = req.game;
+    GameModel.getModel(gameId, function(err, model) {
+      if (err) {
+        return res.status(400).send(err.message);
+      }
+      return res.status(200).json(model);
+    });
+  },
   /**
    * @desc get request to get commands in command log
    * @method getCommands
