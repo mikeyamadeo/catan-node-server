@@ -95,6 +95,21 @@ var GameModel = {
             }
             return callback(null, null);
         });
+    },
+    /**
+    * @desc retrieves the deck
+    * @method getDeck
+    * @param {number} id - specifies game
+    * @param {function} callback - callback(err, deck)
+    */
+    getDeck : function(id, callback) {
+        model.findById(id, function(err, obj) {
+            if (err) return callback(err);
+            if (obj) {
+                return callback(null, obj.getDeck());
+            }
+            return callback(null, null);
+        });
     }
 };
 

@@ -112,6 +112,7 @@ var GameSchema = new Schema({
     players : [Player],
     game : {
         bank : ResourceList,
+        deck : DevCardList,
         chat : MessageList,
         log : MessageList,
         map : Map,
@@ -121,6 +122,10 @@ var GameSchema = new Schema({
         winner : Number
     }
 });
+
+GameSchema.methods.getDeck = function() {
+    return this.game.deck;
+};
 
 GameSchema.methods.getPlayedDevCard = function(index) {
     if (index >= 0 && index < this.players.length) {
