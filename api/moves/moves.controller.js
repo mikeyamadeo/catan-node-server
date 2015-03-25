@@ -106,7 +106,7 @@ var MovesController = {
           //do it all over again with settlements
           GameModel.getSettlements(req.game, function(err, settlements) {
             hotHexes.forEach(function(hex) {
-              // settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
+              settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
               settlements.forEach(function(settlement) {
                 if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
                   var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
@@ -120,7 +120,6 @@ var MovesController = {
                   gameHelpers.addToPlayersResources(hex.resource, amount, resources);
                 }
               });
-              
 
               MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
                 return res.status(200).json({game: game});
