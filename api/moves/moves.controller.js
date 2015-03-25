@@ -84,7 +84,7 @@ var MovesController = {
         GameModel.getCities(req.game, function(err, cities) {
           //for each hex that the has the number chit rolled
           hotHexes.forEach(function(hex) {
-            cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
+            // cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
             cities.forEach(function(city) {
               if (gameHelpers.locationIsEqual(hex.location, city.location)) {
                 var player = gameHelpers.getPlayerFromPlayers(players, city.id);
@@ -106,7 +106,7 @@ var MovesController = {
           //do it all over again with settlements
           GameModel.getSettlements(req.game, function(err, settlements) {
             hotHexes.forEach(function(hex) {
-              settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
+              // settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
               settlements.forEach(function(settlement) {
                 if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
                   var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
