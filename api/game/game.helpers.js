@@ -14,4 +14,5 @@ module.exports = {
 	addToPlayersResources: function(type, amount, resources) {
 		resources[type] += amount;
 	}
+
 }
