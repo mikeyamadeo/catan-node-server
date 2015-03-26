@@ -32,12 +32,12 @@ var UserController = {
         model.validateUser(body.username, body.password, function(err, user) {
             if (err) return callback(err);
             if (user) {
-                var cleanUser = {
+                res.clearCookie();
+                res.cookie("catan.user", {
                     name : user.username,
                     password : user.password,
-                    id : user._id
-                };
-                res.cookie("catan.user", cleanUser);
+                    playerID : user._id
+                });
                 return res.send("Success");
             } else {
                 return res.send("login failed");
