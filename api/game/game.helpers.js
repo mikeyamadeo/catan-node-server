@@ -16,6 +16,10 @@ module.exports = {
 	},
 	resourceIsAvailable: function(bank, type, amount) {
 		return bank[type] >= amount;
-	}
+	},
+	fillArrayWithValue: function(n, value) {
+    var arr = Array.apply(null, Array(n));
+    return arr.map(function (x, i) { return value });
+  }
 
 }
