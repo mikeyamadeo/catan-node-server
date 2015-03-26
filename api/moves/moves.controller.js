@@ -184,7 +184,57 @@ var MovesController = {
                 mark resource as being checked
         change state to 'playing'
     */
+    var gameId = req.game;
+    var playerId = req.body.playerIndex;
+    var victimId = req.body.victimIndex;
+    var location = req.body.location;
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.players;
+      MovesModel.getRobber(gameId, function(err, robber) {
+        
+        if (gameHelpers.locationIsEqual(location, robber)) {
+          return res.status(200).json("robber is already in that location young homie");
+        } else {
+          var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
+          var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
+          var vResources = victim.resources;
+
+          var victimHasResources = resourceTypes.every(function(type) {
+            return vResources[type] > 0;
+          });
+
+          if (victimHasResources) {
+            var allResources = [];
+
+            //create an array weighted by number of each type
+            resourceTypes.forEach(function(type) {
+              allResources = allResources.concat(gameHelpers.fillArrayWithValue(vResources[type], type))
+            });
+
+            var random = Math.floor(Math.random() * allResources.length);
+
+            MovesModel.robPlayer(gameId, location, playerId, victimId, allResources[random], "playing", function(err, result) {
+              if (err) {
+                return res.status(400).send(err.message);
+              } else if (!result) {
+                  return res.status(500).send("Server Error");
+              } else {
+                  return res.status(200).json(result);
+              }
+            });
+
+          } else {
+            return res.status(400).json("this young homie is poor. no resources to rob. soz");
+          }
+
+        }
+
+      })
+    });
   },
+
+
+
   /**
    * @desc recieves a finish turn request and updates
    * the turn tracker accordingly
@@ -247,19 +297,20 @@ var MovesController = {
 
       if (!cardsInDeck) {
         return res.json("no dev cards left to purchase");
+      } else {
+        //create an array weighted by number of each type
+        var allCards = [];
+        cardTypes.forEach(function(type) {
+          allCards = allCards.concat(gameHelpers.fillArrayWithValue(deck[type], type))
+        })
+
+        //get random value based on array length
+        var random = Math.floor(Math.random() * allCards.length);
+        MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
+          return res.status(200).json({result: result});
+        });
       }
 
-      //create an array weighted by number of each type
-      var allCards = [];
-      cardTypes.forEach(function(type) {
-        allCards = allCards.concat(gameHelpers.fillArrayWithValue(deck[type], type))
-      })
-
-      //get random value based on array length
-      var random = Math.floor(Math.random() * allCards.length);
-      MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
-        return res.status(200).json({result: result});
-      });
 
     });
 
@@ -592,16 +643,15 @@ var MovesController = {
             });
         },
         function(callback) {
-            if (req.body.free === true)
-                return callback(null);
             MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
                 if (err) {
                       return callback(err); 
-                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                } else if (resources["brick"] < 1 && resources["wood"] < 1 && req.body.free === false) {
                       return callback(new Error("Player doesn't have enough resources"));
                 }
                 return callback(null);
             });
+            
         },
         function(callback) {
             helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {

@@ -2,6 +2,7 @@
 
 var model = require('../game/game.model.mongoose');
 var _ = require('lodash');
+var async = require('async');
 
 var MovesModel = {
     /**
@@ -623,7 +624,7 @@ var MovesModel = {
             }
             if (game) {
                 var hexes = game.getHexes(id);
-                var matchingHexes = hexes.filter(function(hex, index) {
+                var matchingHexes = hexes.filter(function(hex) {
                     return (hex.location.x === location.x && hex.location.y === location.y);                 
                 })
                 if (matchingHexes.length > 0) 
@@ -696,19 +697,80 @@ var MovesModel = {
                 adjEdges.push({x: location.x-1, y: location.y+1, direction: "N"}); 
                 break;
         }
+        var that = this;
         var finalEdges = [];
-        adjEdges.forEach(function(edge, index) {
-            verifyEdge(id, adjEdges[i], function(err, result) {
+
+        async.waterfall([
+            function(callback) {
+                that.verifyEdge(id, adjEdges[0], function(err, result) {
+                    console.log("in the function, result is " + result);
+                    if (err)
+                        return callback(err, null);
+                    else{
+                        if (result)
+                            finalEdges.push(adjEdges[0]);
+                        return callback(null, finalEdges);
+                    }
+                });
+            },
+            function(finalEdges, callback) {
+                that.verifyEdge(id, adjEdges[1], function(err, result) {
+                    console.log("in the function, result is " + result);
+                    if (err)
+                        return callback(err, null);
+                    else{
+                        if (result)
+                            finalEdges.push(adjEdges[1]);
+                        return callback(null, finalEdges);
+                    }
+                });
+            },
+            function(finalEdges, callback) {
+                that.verifyEdge(id, adjEdges[2], function(err, result) {
+                    console.log("in the function, result is " + result);
+                    if (err)
+                        return callback(err, null);
+                    else{
+                        if (result)
+                            finalEdges.push(adjEdges[2]);
+                        return callback(null, finalEdges);
+                    }
+                });
+            },
+            function(finalEdges, callback) {
+                that.verifyEdge(id, adjEdges[3], function(err, result) {
+                    console.log("in the function, result is " + result);
+                    if (err)
+                        return callback(err, null);
+                    else{
+                        if (result)
+                            finalEdges.push(adjEdges[3]);
+                        return callback(null, finalEdges);
+                    }
+                });
+            }],
+        function(err, finalEdges) {
+            console.log("from func " + finalEdges);
+            if (err) {
+                return callback(err);
+            } else {
+                return callback(null, finalEdges);
+            }
+        });
+  
+        /*
+        var finalEdges = adjEdges.filter(function(edge) {
+            console.log(edge);
+            return that.verifyEdge(id, edge, function(err, result) {
+                console.log("in the function, result is " + result);
                 if (err)
                     return callback(err, null);
                 else
-                    if (result) {
-                        finalEdges.push(edge);
-                        if (i == djEdges.length-1)
-                            return callback(null, finalEdges);
-                    }
+                    return result;
             });        
         });
+        return callback(null, finalEdges);
+        */
         
     },
 
@@ -719,7 +781,7 @@ var MovesModel = {
                 return callback(err);
             }
             if (game) {
-                return callback(null, game.getStatus(index));
+                return callback(null, game.getStatus(id));
             } else {
                 return callback(null, null);
             }
