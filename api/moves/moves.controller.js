@@ -416,7 +416,7 @@ var MovesController = {
       var second = body.spot2;
       var gameId = req.game;
       async.waterfall([
-          /*function(callback) {
+          function(callback) {
             
               model.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
                   if (err) {
@@ -431,7 +431,6 @@ var MovesController = {
                   }
               });
           },
-          */
           function(callback) {
               model.getPlayedDevCard(gameId, index, function(err, played) {
                   if (err) {
