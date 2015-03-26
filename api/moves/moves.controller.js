@@ -257,7 +257,7 @@ var MovesController = {
       //get random value based on array length
       var random = Math.floor(Math.random() * allCards.length);
       MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
-        return res.json({result: result});
+        return res.status(200).json({result: result});
       });
 
     });
@@ -517,6 +517,44 @@ var MovesController = {
           loop through players and reduce resources of resource type to zero
           increment current player's resource by same number
     */
+    var gameId = req.game;
+    var resourceType = req.body.resource;
+    var playerId = req.body.playerIndex;
+
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.players;
+      var player = gameHelpers.getPlayerFromPlayers(players, playerId);
+      var amount = 0;
+
+      if (player.oldDevCards[resourceType] > 0 && !player.playedDevCard) {
+        
+        //loop through players and reduce resources of resource type to zero
+        players.forEach(function(user) {
+          if (user.id !== playerId) {
+            amount += user.resources[resourceTpe];
+            user.resources[resourceType] = 0;
+          }
+        });
+         
+        //increment current player's resource
+        player.resources[resourceType] += amount;
+
+        MovesModel.monopoly(gameId, playerId, players, function(err, result) {
+          if (err) {
+            return res.status(400).send(err.message);
+          } else if (!result) {
+            return res.status(500).send("Server Error");
+          } else {
+            return res.status(200).json(result);
+          }
+        });
+
+      } else {
+        return res.status(400).json("player either needs to wait a turn or already has playerd a dev card");
+      }
+
+    });
+
   },
   /**
    * @desc gets a request to play a monument card, validates

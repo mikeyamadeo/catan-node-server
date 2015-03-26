@@ -218,19 +218,24 @@ var MovesModel = {
     *   etc...])
     * @param {function} callback - callback
     */
-    monopoly : function(id, player, resources, callback) {
+    monopoly : function(id, player, players, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                resources.map(function(tuple, index, array) {
-                    var resourceMap = tuple.resourceMap;
+                // return callback(null, players)
+                players.map(function(tuple, index, array) {
+
+                    var resourceMap = tuple.resources;
                     _.forOwn(resourceMap, function(value, key) {
-                        game.modifyResource(tuple.player, key, value, false);
+
+                        game.modifyResource(tuple.id, key, value, false);
                     });
                 });
-                game.setPlayedDevCard(player, true);
+
+                game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'monopoly', -1, false);
                 game.incVersion();
+
                 return game.save(callback);
             }
             return callback(null, null);
