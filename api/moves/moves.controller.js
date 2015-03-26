@@ -584,8 +584,8 @@ var MovesController = {
                 console.log("road built");
                 return callback(null, game);
             });
-        }], 
-      function(err, result) {
+        }
+    ], function(err, result) {
         if (err) {
             return res.status(400).send(err.message);
         }
@@ -665,7 +665,8 @@ var MovesController = {
     var gameId = req.game;
     var index = body.playerIndex;
     var offer = body.offer;
-    var receiver = body.receiver;
+    var recever = body.receiver;
+    if (offer.brick < 0)
     async.series([
         function(callback) {
             if (index == receiver) {
@@ -675,42 +676,30 @@ var MovesController = {
             }
         },
         function(callback) {
-            model.getResources(gameId, index, function(err, resource) {
-              var noResource = true;
+            model.getResources(gameId, victim, function(err, resources) {
                 if (err) {
                     return callback(err);
-                } else if (!resource) {
+                } else if (!resources) {
                     return callback(new Error("Resources do not exist"));
                 } else {
                     if (offer.brick < 0) {
-                      noResource = false;
-                      if (!(resource.brick >= Math.abs(offer.brick))) 
+                      if (!(resource.brick >= Math.abs(offer.brick))
                         return callback(new Error("You don't have the resources to trade"));
-                    } 
-                    if (offer.ore < 0) {
-                      noResource = false;
-                      if (!(resource.ore >= Math.abs(offer.ore)))
+                    } else if (offer.ore < 0) {
+                      if (!(resource.ore >= Math.abs(offer.ore))
                         return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.sheep < 0) {
+                      if (!(resource.sheep >= Math.abs(offer.sheep))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.wheat < 0) {
+                      if (!(resource.wheat >= Math.abs(offer.wheat))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else if (offer.wood < 0) {
+                      if (!(resource.wood >= Math.abs(offer.wood))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } else {
+                        return callback(null));
                     }
-                    if (offer.sheep < 0) {
-                      noResource = false;
-                      if (!(resource.sheep >= Math.abs(offer.sheep)))
-                        return callback(new Error("You don't have the resources to trade"));
-                    }
-                    if (offer.wheat < 0) {
-                      noResource = false;
-                      if (!(resource.wheat >= Math.abs(offer.wheat)))
-                        return callback(new Error("You don't have the resources to trade"));
-                    }
-                    if (offer.wood < 0) {
-                      noResource = false;
-                      if (!(resource.wood >= Math.abs(offer.wood)))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } 
-                    if (noResource)
-                        return callback(new Error("You didn't allocate any resources to send"));
-                    noResource = true;
-                    return callback(null);
                 }
             });
         },
@@ -772,38 +761,38 @@ var MovesController = {
           transfer resources
     */
 
-    // var body = req.body;
-    // var gameId = req.game;
-    // var index = body.playerIndex;
-    // var input = body.inputResource;
-    // var output = body.outputResource;
-    // async.series([
-    //   function(callback) {
-    //     model.getOwnedPorts(gameId, index,  function(err, ports) {
-    //       if (err) {
-    //         return callback(err);
-    //       } else if (!ports) {
-    //         return callback(new Error("Ports don't exist"));
-    //       } else if (ports.)
-    //     });
-    //   },
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var input = body.inputResource;
+    var output = body.outputResource;
+    async.series([
+      function(callback) {
+        model.getOwnedPorts(gameId, index,  function(err, ports) {
+          if (err) {
+            return callback(err);
+          } else if (!ports) {
+            return callback(new Error("Ports don't exist"));
+          } else if (ports.)
+        });
+      },
 
-    //     function(callback) {
-    //         model.maritimeTrade(gameId, index, input, output, function(err, game) {
-    //             if (err) {
-    //                 return callback(err);
-    //             } else if (!game) {
-    //                 return callback(new Error("Game does not exist"));
-    //             }
-    //             return callback(null, game);
-    //         });
-    //     }
-    // ], function(err, result) {
-    //     if (err) {
-    //         return res.status(400).send(err.message);
-    //     }
-    //     return res.status(200).json(result.pop());
-    // });
+        function(callback) {
+            model.maritimeTrade(gameId, index, input, output, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
 
   },
   /**
