@@ -150,7 +150,7 @@ GameSchema.methods.getHexes = function(index) {
 };
 
 GameSchema.methods.getStatus = function(index) {
-    return his.game.turnTracker.status;
+    return this.game.turnTracker.status;
 };
 
 GameSchema.methods.getRobber = function() {
@@ -214,6 +214,12 @@ GameSchema.methods.currentPlayer = function() {
 
 GameSchema.methods.addPlayer = function(player) {
     this.players.push(player);
+};
+
+GameSchema.methods.addVictoryPoints = function(player, amount) {
+    if (player >= 0 && player < this.players.length) {
+        this.players[player].victoryPoints += amount;
+    }
 };
 
 GameSchema.methods.isGameAvailable = function() {
@@ -299,6 +305,7 @@ GameSchema.methods.removeStructure = function(player, location, type) {
                     structure.location.y === location.y &&
                     structure.location.direction === location.direction);
         });
+        this.players[player][type] += 1;
     }
 };
 

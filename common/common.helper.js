@@ -3,13 +3,13 @@ module.exports = {
 
     //works for edges and verticies
     isLocationEqual : function(loc1, loc2) {
-        return (loc1.location.x === loc2.location.x && loc1.location.y === loc2.location.y && loc1.location.direction === loc2.location.direction );
+        return (loc1.x === loc2.x && loc1.y === loc2.y && loc1.direction === loc2.direction );
     },
 
-    isRoadOnEdges : function (road, edges) {
+    containsEdge : function (edge, edges) {
         var connected = false;
         for (var edge in adjEdges) {
-                if (helpers.isLocationEqual(road.location, edge)) {
+                if (helpers.isLocationEqual(road, edge)) {
                     connected = true;
                     break;
                 }
