@@ -507,16 +507,7 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monopoly: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check to make sure player index is current player
-        check to make sure that the card was not bought that turn, and hasn't already been played
-        if above is true
-          loop through players and reduce resources of resource type to zero
-          increment current player's resource by same number
-    */
+
     var gameId = req.game;
     var resourceType = req.body.resource;
     var playerId = req.body.playerIndex;
@@ -565,19 +556,15 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monument: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check that player is current player
-        if we decide to take the easy route:
-          increment player's victory points
-        else
-          if player's victory points + total number of monument cards >= 10
-            increment player's victory points
-            set winner index to current player index
-            change game state?
-    */
+    MovesModel.monument(req.game, req.body.playerIndex, function(err, result) {
+      if (err) {
+        return res.status(400).send(err.message);
+      } else if (!result) {
+        return res.status(500).send("Server Error");
+      } else {
+        return res.status(200).json(result);
+      }
+    });
   },
   /**
    * @desc gets a request to build a road, validates
