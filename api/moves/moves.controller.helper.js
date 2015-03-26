@@ -118,6 +118,60 @@ module.exports = {
             }
         });        
         return total;
+    },
+
+    normalizeEdge : function(edge) {
+        
+        switch(edge.direction) {
+            case 'NW':
+            case 'NE':
+            case 'N':
+                break;
+            case 'SW':
+                edge.direction = 'NE';
+                edge.x = edge.x - 1;
+                edge.y = edge.y + 1;
+                break;
+            case 'SE':
+                edge.direction = 'NW';
+                edge.x = edge.x + 1;
+                break;
+            case 'S':
+                edge.direction = 'N';
+                edge.y = edge.y + 1;
+                break;
+            default:
+                break;
+        }
+        return edge;
+    },
+
+    normalizeVertex : function(vertex) {
+        switch(this.location.direction) {
+            case 'NW':
+            case 'NE':
+                break;
+            case 'W':
+                this.location.direction = 'NE';
+                this.location.x = this.location.x - 1;
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SW':
+                this.location.direction = 'NW';
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SE':
+                this.location.direction = 'NE';
+                this.location.y = this.location.y + 1;
+                break;
+            case 'E':
+                this.location.direction = 'NW';
+                this.location.x = this.location.x + 1;
+                break;
+            default:
+                break;
+        }
+        return this;
     }
 
 };

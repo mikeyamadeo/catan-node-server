@@ -578,7 +578,7 @@ var MovesController = {
   buildRoad: function(req, res, next) {
 
     console.log("Building a road",req.game);
-
+    req.body.roadLocation = helper.normalizeEdge(req.body.roadLocation);
 
     async.series([
         function(callback) {
@@ -642,6 +642,8 @@ var MovesController = {
   buildSettlement: function(req, res, next) {
 
     console.log("Building a settlement",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
 
 
     async.series([
@@ -709,6 +711,8 @@ var MovesController = {
    */
   buildCity: function(req, res, next) {
     console.log("Building a city",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
 
 
     async.series([
