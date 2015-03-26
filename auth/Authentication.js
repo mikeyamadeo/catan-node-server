@@ -7,7 +7,7 @@ module.exports = {
         if (cookies['catan.user']) {
             var username = cookies['catan.user'].name;
             var password = cookies['catan.user'].password;
-            var id = cookies['catan.user'].id;
+            var id = cookies['catan.user'].playerID;
             userModel.validateUser(username, password, function(error, success){
                 if (success == false) {
                     return res.status(403).send('Unauthorized');
@@ -29,7 +29,7 @@ module.exports = {
         if (cookies['catan.user'] && cookies['catan.game']) {
             var username = cookies['catan.user'].name;
             var password = cookies['catan.user'].password;
-            var id = cookies['catan.user'].id;
+            var id = cookies['catan.user'].playerID;
             var gameId = cookies['catan.game'];
             gamesModel.isPlayerInGame(gameId, username, function(err, valid) {
                 if (err || !valid) {
