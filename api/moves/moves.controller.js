@@ -764,7 +764,7 @@ var MovesController = {
       Things to do:
       1. pull model from request body.
       2. call correct execute method
-        verify player[x]
+        verify player
         verify player owns port and gets ratio (?)
         verify availablility of output resource
         verify player has enough input resource
