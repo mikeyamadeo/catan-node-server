@@ -127,6 +127,7 @@ var GamesController = {
     var user = req.user;
     var body = req.body;
     gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
+        console.log(body.id);
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
             res.cookie('catan.game', body.id);
