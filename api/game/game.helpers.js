@@ -18,6 +18,7 @@ module.exports = {
 		return bank[type] >= amount;
 	},
 	fillArrayWithValue: function(n, value) {
+		var n = (n >= 0) ? n : 0;
     var arr = Array.apply(null, Array(n));
     return arr.map(function (x, i) { return value });
   }

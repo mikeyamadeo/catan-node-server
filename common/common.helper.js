@@ -8,12 +8,13 @@ module.exports = {
 
     containsEdge : function (edge, edges) {
         var connected = false;
-        for (var edge in adjEdges) {
-                if (helpers.isLocationEqual(road, edge)) {
-                    connected = true;
-                    break;
-                }
-        }
+        var that = this;
+        edges.forEach(function (edge2) {
+            if (that.isLocationEqual(edge, edge2)) {
+                connected = true;
+                return;
+            }
+        });
         return connected;
     }
 };
