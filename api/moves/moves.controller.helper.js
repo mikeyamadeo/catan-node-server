@@ -14,7 +14,7 @@ module.exports = {
         return _.omit(game._doc, '_id');
     },
 
-    verifyRoadsAvailable : function (gameId, playerId, callback) {
+    verifyRoadsAvailable : function (gameId, playerId, amount, callback) {
 
         movesModel.getOwnedRoads(gameId, playerId, function (err, roads) {
             if (err) {
@@ -22,7 +22,7 @@ module.exports = {
                 return callback(err, true);
             }
             console.log("player has " + roads.length);
-            if (roads.length >= 15) {
+            if (roads.length > 15-amount) {
                 return callback(null, false);
             }
             else {
