@@ -115,6 +115,7 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     buyDevCard : function(id, player, devCard, callback) {
+        console.log(arguments);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
