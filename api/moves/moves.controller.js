@@ -841,11 +841,100 @@ var MovesController = {
       2. call correct execute method
         verify receiving player
         verify receiving player's cards
-        if above is ture and willAccept
+        if above is true and willAccept
           transfer cards
           set trade offer to null
     */
-    
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var acceptance = body.willAccept;
+    async.waterfall([
+        function(callback) {
+          var noResource = true;
+            model.getResources(gameId, victim, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources.brick > 0) {
+                      if (offer.brick <= resource.brick)
+                        return callback(null, 'brick');
+                    } else if (resources.ore > 0) {
+                        return callback(null, 'ore');
+                    } else if (resources.sheep > 0) {
+                        return callback(null, 'sheep');
+                    } else if (resources.wheat > 0) {
+                        return callback(null, 'wheat');
+                    } else if (resources.wood > 0) {
+                        return callback(null, 'wood');
+                    } else {
+                        return callback(new Error("Victim does not have any " + 
+                            "resources"));
+                    }
+                }
+            });
+
+            model.getResources(gameId, index, function(err, resource) {
+              console.log(resource);
+                if (err) {
+                    return callback(err);
+                } else if (!resource) {
+                    return callback(new Error("Resources do not exist"));
+                } else if (offer.brick <=0 && offer.ore <=0 && offer.sheep <=0 &&
+                    offer.wheat <=0 && offer.wood <=0) {
+                    return callback(new Error("No resources allocated to receive"));
+                } else {
+                    if (offer.brick < 0) {
+                      noResource = false;
+                      if (!(resource.brick >= Math.abs(offer.brick)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (offer.ore < 0) {
+                      noResource = false;
+                      if (!(resource.ore >= Math.abs(offer.ore)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.sheep < 0) {
+                      noResource = false;
+                      if (!(resource.sheep >= Math.abs(offer.sheep)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wheat < 0) {
+                      noResource = false;
+                      if (!(resource.wheat >= Math.abs(offer.wheat)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wood < 0) {
+                      noResource = false;
+                      if (!(resource.wood >= Math.abs(offer.wood)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (noResource) {
+                        return callback(new Error("You didn't allocate any resources to send"));
+                    }
+                    noResource = true;
+                    return callback(null);
+                }
+            });
+        },
+        function(resources, callback) {
+            model.acceptTrade(gameId, index, acceptance, resources, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
   },
   /**
    * @desc gets a request to offer a maritime trade, validates
