@@ -480,7 +480,7 @@ GameSchema.methods.incVersion = function() {
     this.game.version += 1;
 };
 
-GameSchema.methods.addChat = function(source, message) {
+GameSchema.methods.addChat = function(message, source) {
     var newMessage = {
         message : message,
         source : source
