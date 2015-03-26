@@ -211,7 +211,7 @@ module.exports = {
                 tradeOffer : {},
                 turnTracker : {
                     currentTurn : 0,
-                    status : "Setup",
+                    status : "First Round",
                     longestRoad : -1,
                     largestArmy : -1
                 },
