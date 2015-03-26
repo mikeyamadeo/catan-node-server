@@ -147,31 +147,31 @@ module.exports = {
     },
 
     normalizeVertex : function(vertex) {
-        switch(this.location.direction) {
+        switch(vertex.direction) {
             case 'NW':
             case 'NE':
                 break;
             case 'W':
-                this.location.direction = 'NE';
-                this.location.x = this.location.x - 1;
-                this.location.y = this.location.y + 1;
+                vertex.direction = 'NE';
+                vertex.x = vertex.x - 1;
+                vertex.y = tvertex.y + 1;
                 break;
             case 'SW':
-                this.location.direction = 'NW';
-                this.location.y = this.location.y + 1;
+                vertex.direction = 'NW';
+                vertex.y = vertex.y + 1;
                 break;
             case 'SE':
-                this.location.direction = 'NE';
-                this.location.y = this.location.y + 1;
+                vertex.direction = 'NE';
+                vertex.y = vertex.y + 1;
                 break;
             case 'E':
-                this.location.direction = 'NW';
-                this.location.x = this.location.x + 1;
+                vertex.direction = 'NW';
+                vertex.x = vertex.x + 1;
                 break;
             default:
                 break;
         }
-        return this;
+        return vertex;
     }
 
 };
