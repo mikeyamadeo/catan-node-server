@@ -203,6 +203,10 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.getPlayers = function() {
+    return this.players;
+};
+
 GameSchema.methods.getDeck = function() {
     return this.game.deck;
 };

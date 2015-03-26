@@ -415,16 +415,18 @@ var MovesModel = {
     * @param {number} player - index of player
     * @param {object} resources - resources to add for each player 
     * (e.g. { brick : -1, ore : -1, sheep : -2, wheat : -5, wood : 0 })
+    * @param {string} status - new game status
     * @param {function} callback - callback
     */
-    discardCards : function(id, player, discarded, callback) {
+    discardCards : function(id, player, discarded, status, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
                 _.forOwn(discarded, function(value, key) {
                     game.modifyResource(player, key, value, true);
                 });
-                game.setDiscarded(player, true);
+                game.updateStatus(status);
+                game.setDiscarded([player], true);
                 game.incVersion();
                 return game.save(callback);
             }
@@ -718,6 +720,42 @@ var MovesModel = {
             }
             if (game) {
                 return callback(null, game.getStatus(index));
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getPlayers : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.getPlayers());
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getTradeOffer : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.game.tradeOffer);
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getStatus : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.game.status);
             } else {
                 return callback(null, null);
             }
