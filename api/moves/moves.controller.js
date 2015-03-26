@@ -592,16 +592,15 @@ var MovesController = {
             });
         },
         function(callback) {
-            if (req.body.free === true)
-                return callback(null);
             MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
                 if (err) {
                       return callback(err); 
-                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                } else if (resources["brick"] < 1 && resources["wood"] < 1 && req.body.free === false) {
                       return callback(new Error("Player doesn't have enough resources"));
                 }
                 return callback(null);
             });
+            
         },
         function(callback) {
             helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
