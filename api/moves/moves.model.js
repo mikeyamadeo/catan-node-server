@@ -291,13 +291,14 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err, game);
             if (game) {
-                game.addStructure(player, vertex, 'settlement');
+                game.addStructure(player, vertex, 'settlements');
                 if (!free) {
                     game.modifyResource(player, 'brick', -1, true);
                     game.modifyResource(player, 'sheep', -1, true);
                     game.modifyResource(player, 'wood', -1, true);
                     game.modifyResource(player, 'wheat', -1, true);
-                }
+                }                                    
+                game.addVictoryPoints(player, 1);
                 game.incVersion();
                 return game.save(callback);
             }
@@ -316,10 +317,11 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err, game);
             if (game) {
-                game.addStructue(player, vertex, 'city');
-                game.removeStructure(player, vertex, 'settlement');
+                game.addStructure(player, vertex, 'cities');
+                game.removeStructure(player, vertex, 'settlements');
                 game.modifyResource(player, 'ore', -3, true);
                 game.modifyResource(player, 'wheat', -2, true);
+                game.addVictoryPoints(player, 1);
                 game.incVersion();
                 return game.save(callback);
             }
@@ -611,62 +613,57 @@ var MovesModel = {
                 console.log(err.stack);
                 return callback(err);
             }
-            if (game)
-                return callback( null, 
-                    game.getHexes(id, function(err, hexes) {
-                        console.log("i got hexes");
-                        for (var hex in hexes) {
-                            if (hex.location.x === location.x && hex.location.y === location.y) {
-                                console.log("found the location");
-                                return callback(null, true);
-                            }
-                        }
-                        switch (location.x) {
-                            case -3:
-                                if (location.y >=1 && location.y <=3 && location.direction === "NE")
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;
-                            case 3:
-                                if (location.y >=-2 && location.y <=0 && location.direction === "NW")
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;
-                            case -1:
-                            case -2:
-                                if (location.y === 3 && (location.direction === "NE" || location.direction === "N"))
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;
-                            case 1:
-                                if (location.y == 2 && (location.direction === "NW" || location.direction === "N"))
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;   
-                            case 2:
-                                if (location.y == 1 && (location.direction === "NW" || location.direction === "N"))
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;
-                            case 0:
-                                if (location.y === 3)
-                                    return callback(null, true);
-                                else
-                                    return callback(null, false);
-                                break;
-                            default:
-                                return callback(null, false);
-                                break;
-                        }
-                    })
-                );
+            if (game) {
+                var hexes = game.getHexes(id);
+                var matchingHexes = hexes.filter(function(hex, index) {
+                    return (hex.location.x === location.x && hex.location.y === location.y);                 
+                })
+                if (matchingHexes.length > 0) 
+                    return callback(null, true);
+                switch (location.x) {
+                    case -3:
+                        if (location.y >=1 && location.y <=3 && location.direction === "NE")
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;
+                    case 3:
+                        if (location.y >=-2 && location.y <=0 && location.direction === "NW")
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;
+                    case -1:
+                    case -2:
+                        if (location.y === 3 && (location.direction === "NE" || location.direction === "N"))
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;
+                    case 1:
+                        if (location.y == 2 && (location.direction === "NW" || location.direction === "N"))
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;   
+                    case 2:
+                        if (location.y == 1 && (location.direction === "NW" || location.direction === "N"))
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;
+                    case 0:
+                        if (location.y === 3)
+                            return callback(null, true);
+                        else
+                            return callback(null, false);
+                        break;
+                    default:
+                        return callback(null, false);
+                        break;
+                }
+            }
         });
-
     },
 
     getAdjacentEdges: function (id, location, callback) {
@@ -692,18 +689,18 @@ var MovesModel = {
                 break;
         }
         var finalEdges = [];
-        for (var i = 0 ; i < adjEdges.length; i++) {
+        adjEdges.forEach(function(edge, index) {
             verifyEdge(id, adjEdges[i], function(err, result) {
                 if (err)
                     return callback(err, null);
                 else
                     if (result) {
                         finalEdges.push(edge);
-                        if (i == djEdges.length+1)
+                        if (i == djEdges.length-1)
                             return callback(null, finalEdges);
                     }
-            });
-        }
+            });        
+        });
         
     },
 

@@ -564,7 +564,6 @@ var MovesController = {
                 return callback(null);
             });
         },
-        /*
         function(callback) {
             helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
                 if (err) {
@@ -575,7 +574,6 @@ var MovesController = {
                 return callback(null);
             });
         },
-        */
         function(callback) {
             MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
                 if (err) {
@@ -592,7 +590,6 @@ var MovesController = {
         return res.status(200).json(result.pop());
     });
     /*
-          remove resources and place back in bank
           run longest road algorithm
     */
   },
@@ -605,18 +602,63 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildSettlement: function(req, res, next) {
+
+    console.log("Building a settlement",req.game);
+
+
+    async.series([
+      /*
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildSettlement(req.game, req.body.playerIndex, req.body.vertexLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                console.log("settlement built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
     /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        verify player
         verify availablity of resources and settlement pieces
         verify settlement location
-        if above is true
-          add settlement to map
-          increment player victory points by 1
-          give player resources to bank
-
     */
   },
   /**
@@ -628,6 +670,59 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildCity: function(req, res, next) {
+    console.log("Building a city",req.game);
+
+
+    async.series([
+      /*
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] < 1 && resources["wood"] < 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildCity(req.game, req.body.playerIndex, req.body.vertexLocation, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                console.log("city built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
     /*
       Things to do:
       1. pull model from request body.
@@ -635,11 +730,7 @@ var MovesController = {
         verify player
         verify availablity of resources and city pieces
         verify city location
-        if above is true
-          add city to map and remove settlement from map
-          increase player settlement count by 1
-          increment player victory points by 1
-          give player resources to bank
+
     */
   },
   /**
