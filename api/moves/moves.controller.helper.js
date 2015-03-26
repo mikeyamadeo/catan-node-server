@@ -213,6 +213,15 @@ module.exports = {
         }
 
         return false;
+    },
+    countResources : function(resources) {
+        var total = 0;
+        _.forOwn(resources, function(value, key) {
+            if (!isNaN(value)) {
+                total += value;
+            }
+        });        
+        return total;
     }
 
 };

@@ -4,6 +4,7 @@
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
 var model = require('./moves.model');
+var gameModel = require('../game/game.model');
 var helper = require('./moves.controller.helper');
 var async = require('async');
 
@@ -727,6 +728,118 @@ var MovesController = {
           set game state to playing
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var discardedCards = body.discardedCards;
+    async.waterfall([
+        function(callback) {
+            model.getStatus(gameId, function(err, status) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (status === 'Discarding') {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Game is not in discard phase"));
+                }
+            });
+        },
+        function(callback) {
+            model.getPlayedDevCard(gameId, index, function(err, played) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (played) {
+                    return callback(new Error("This player has already discarded"));
+                } else {
+                    return callback(null);    
+                }
+            });
+        },
+        function(callback) {
+            model.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    var totalDiscard = helper.countResources(discardedCards);
+                    var totalHand = helper.countResources(resources);
+                    console.log(totalHand, totalDiscard);
+                    if (Math.floor(totalHand / 2) === totalDiscard) {
+                        return callback(null, resources);
+                    } else if (totalHand < 8) {
+                        return callback(new Error("This players does not have more " +
+                            "than 7 cards"));
+                    } else {
+                        return callback(new Error("You are not discarding the " + 
+                            "correct number of resources"));
+                    } 
+                }
+            });
+        },
+        function(hand, callback) {
+            _.forOwn(discardedCards, function(value, key) {
+                if (value > hand[key]) {
+                    return callback(new Error("This player has insufficient " +
+                        "resources to perform this discard"));
+                }
+            });
+            return callback(null);
+        },
+        function(callback) {
+            model.getPlayers(gameId, function(err, players) {
+                if (err) {
+                    return callback(err);
+                } else if (!players) {
+                    return callback(new Error("Players do not exist"));
+                } else {
+                    var found = players.filter(function(player) {
+                        if (player.index != index && player.playedDevCard == false
+                            && helper.countResources(player.resources) > 7) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                    if (found && found.length > 0) {
+                        console.log(found);
+                        return callback(null, 'Discarding');
+                    } else {
+                        return callback(null, 'Robbing');
+                    }
+                }
+            });
+        },
+        function(status, callback) {
+            var discard = {
+                brick : discardedCards.brick * -1,
+                ore : discardedCards.ore * -1,
+                sheep : discardedCards.sheep * -1,
+                wheat : discardedCards.wheat * -1,
+                wood : discardedCards.wood * -1
+            };
+            model.discardCards(gameId, index, discard, status, 
+                function(err, game) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    if (game) {
+                        return callback(null, game);
+                    } else {
+                        return callback(new Error("Game does not exist"));
+                    }
+            });
+        }],
+        function(err, result) {
+            if (err) {
+                res.status(400).send(err.message);
+            } else {
+                res.status(200).json(result);
+            }
+        });
   },
 
 };
