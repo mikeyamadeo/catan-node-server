@@ -66,6 +66,32 @@ var Port = new Schema({
     ratio : Number
 }, { _id : false }); 
 
+    Port.methods.normalize = function() {
+        
+        switch(this.location.direction) {
+            case 'NW':
+            case 'NE':
+            case 'N':
+                break;
+            case 'SW':
+                this.location.direction = 'NE';
+                this.location.x = this.location.x - 1;
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SE':
+                this.location.direction = 'NW';
+                this.location.x = this.location.x + 1;
+                break;
+            case 'S':
+                this.location.direction = 'N';
+                this.location.y = this.location.y + 1;
+                break;
+            default:
+                break;
+        }
+        return this;
+    }
+
 var Road = new Schema({
     owner : Number,
     location : {
@@ -75,6 +101,32 @@ var Road = new Schema({
     }
 }, { _id : false });
 
+    Road.methods.normalize = function() {
+        
+        switch(this.location.direction) {
+            case 'NW':
+            case 'NE':
+            case 'N':
+                break;
+            case 'SW':
+                this.location.direction = 'NE';
+                this.location.x = this.location.x - 1;
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SE':
+                this.location.direction = 'NW';
+                this.location.x = this.location.x + 1;
+                break;
+            case 'S':
+                this.location.direction = 'N';
+                this.location.y = this.location.y + 1;
+                break;
+            default:
+                break;
+        }
+        return this;
+    }
+
 var VertexObject = new Schema({
     owner : Number,
     location : {
@@ -83,6 +135,34 @@ var VertexObject = new Schema({
         direction : String
     }
 }, { _id : false });
+
+    VertexObject.methods.normalize = function() {
+        switch(this.location.direction) {
+            case 'NW':
+            case 'NE':
+                break;
+            case 'W':
+                this.location.direction = 'NE';
+                this.location.x = this.location.x - 1;
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SW':
+                this.location.direction = 'NW';
+                this.location.y = this.location.y + 1;
+                break;
+            case 'SE':
+                this.location.direction = 'NE';
+                this.location.y = this.location.y + 1;
+                break;
+            case 'E':
+                this.location.direction = 'NW';
+                this.location.x = this.location.x + 1;
+                break;
+            default:
+                break;
+        }
+        return this;
+    }
 
 var Map = {
     hexes : [Hex],
@@ -123,6 +203,10 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.getPlayers = function() {
+    return this.players;
+};
+
 GameSchema.methods.getDeck = function() {
     return this.game.deck;
 };
@@ -152,6 +236,17 @@ GameSchema.methods.getResources = function(index) {
 
 GameSchema.methods.getHexes = function(index) {
     return this.game.map.hexes;
+};
+
+GameSchema.methods.getHexesByChit = function(chit) {
+    var hexes = this.game.map.hexes;
+    var resourceHexes = [];
+    for (var i = 0; i < hexes.length; i++) {
+        if(hexes[i].number === chit) {
+            resourceHexes.push(hexes[i]);
+        }
+    }
+    return resourceHexes;
 };
 
 GameSchema.methods.getStatus = function(index) {

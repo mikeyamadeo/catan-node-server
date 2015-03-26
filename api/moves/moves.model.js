@@ -116,6 +116,7 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     buyDevCard : function(id, player, devCard, callback) {
+        console.log(arguments);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
@@ -218,19 +219,24 @@ var MovesModel = {
     *   etc...])
     * @param {function} callback - callback
     */
-    monopoly : function(id, player, resources, callback) {
+    monopoly : function(id, player, players, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                resources.map(function(tuple, index, array) {
-                    var resourceMap = tuple.resourceMap;
+                // return callback(null, players)
+                players.map(function(tuple, index, array) {
+
+                    var resourceMap = tuple.resources;
                     _.forOwn(resourceMap, function(value, key) {
-                        game.modifyResource(tuple.player, key, value, false);
+
+                        game.modifyResource(tuple.id, key, value, false);
                     });
                 });
-                game.setPlayedDevCard(player, true);
+
+                game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'monopoly', -1, false);
                 game.incVersion();
+
                 return game.save(callback);
             }
             return callback(null, null);
@@ -410,16 +416,18 @@ var MovesModel = {
     * @param {number} player - index of player
     * @param {object} resources - resources to add for each player 
     * (e.g. { brick : -1, ore : -1, sheep : -2, wheat : -5, wood : 0 })
+    * @param {string} status - new game status
     * @param {function} callback - callback
     */
-    discardCards : function(id, player, discarded, callback) {
+    discardCards : function(id, player, discarded, status, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
                 _.forOwn(discarded, function(value, key) {
                     game.modifyResource(player, key, value, true);
                 });
-                game.setDiscarded(player, true);
+                game.updateStatus(status);
+                game.setDiscarded([player], true);
                 game.incVersion();
                 return game.save(callback);
             }
@@ -774,6 +782,42 @@ var MovesModel = {
             }
             if (game) {
                 return callback(null, game.getStatus(id));
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getPlayers : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.getPlayers());
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getTradeOffer : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.game.tradeOffer);
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    getStatus : function(id, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                return callback(null, game.game.status);
             } else {
                 return callback(null, null);
             }

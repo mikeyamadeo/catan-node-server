@@ -4,6 +4,7 @@
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
 var model = require('./moves.model');
+var gameModel = require('../game/game.model');
 var helper = require('./moves.controller.helper');
 var async = require('async');
 
@@ -232,23 +233,36 @@ var MovesController = {
    * @param {function} next - next command
    */
   buyDevCard: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check to make sure player index is the same as current player index
-        check to make sure there are dev cards available for purchase
-        check to make sure user has correct resources
-        if true for all of the above
-          while (card is not chosen)
-            get random dev card type
-              if dev card type total is greater than zero
-                set card chosen flag to true
-                subtract one dev card from bank
-                add one dev card to current player
-              else
-                mark dev card type as being checked
-    */
+    var gameId = req.game;
+    var playerId = req.body.playerIndex;
+
+    GameModel.getGame(gameId, function(err, game) {
+      var deck = game.deck;
+      var cardTypes = ['yearOfPlenty', 'soldier', 'roadBuilding', 'monument', 'monopoly'];
+      var random = 0;
+
+      var cardsInDeck = cardTypes.every(function(type) {
+        return deck[type] > 0;
+      });
+
+      if (!cardsInDeck) {
+        return res.json("no dev cards left to purchase");
+      }
+
+      //create an array weighted by number of each type
+      var allCards = [];
+      cardTypes.forEach(function(type) {
+        allCards = allCards.concat(gameHelpers.fillArrayWithValue(deck[type], type))
+      })
+
+      //get random value based on array length
+      var random = Math.floor(Math.random() * allCards.length);
+      MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
+        return res.status(200).json({result: result});
+      });
+
+    });
+
   },
   /**
    * @desc receives a request to play a year of plenty card and
@@ -494,16 +508,45 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monopoly: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check to make sure player index is current player
-        check to make sure that the card was not bought that turn, and hasn't already been played
-        if above is true
-          loop through players and reduce resources of resource type to zero
-          increment current player's resource by same number
-    */
+
+    var gameId = req.game;
+    var resourceType = req.body.resource;
+    var playerId = req.body.playerIndex;
+
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.players;
+      var player = gameHelpers.getPlayerFromPlayers(players, playerId);
+      var amount = 0;
+
+      if (player.oldDevCards[resourceType] > 0 && !player.playedDevCard) {
+        
+        //loop through players and reduce resources of resource type to zero
+        players.forEach(function(user) {
+          if (user.id !== playerId) {
+            amount += user.resources[resourceTpe];
+            user.resources[resourceType] = 0;
+          }
+        });
+         
+        //increment current player's resource
+        player.resources[resourceType] += amount;
+
+        MovesModel.monopoly(gameId, playerId, players, function(err, result) {
+          if (err) {
+            return res.status(400).send(err.message);
+          } else if (!result) {
+            return res.status(500).send("Server Error");
+          } else {
+            return res.status(200).json(result);
+          }
+        });
+
+      } else {
+        return res.status(400).json("player either needs to wait a turn or already has playerd a dev card");
+      }
+
+    });
+
   },
   /**
    * @desc gets a request to play a monument card, validates
@@ -514,19 +557,15 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monument: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check that player is current player
-        if we decide to take the easy route:
-          increment player's victory points
-        else
-          if player's victory points + total number of monument cards >= 10
-            increment player's victory points
-            set winner index to current player index
-            change game state?
-    */
+    MovesModel.monument(req.game, req.body.playerIndex, function(err, result) {
+      if (err) {
+        return res.status(400).send(err.message);
+      } else if (!result) {
+        return res.status(500).send("Server Error");
+      } else {
+        return res.status(200).json(result);
+      }
+    });
   },
   /**
    * @desc gets a request to build a road, validates
@@ -751,6 +790,79 @@ var MovesController = {
         if above is valid, set as trade offer
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var offer = body.offer;
+    var receiver = body.receiver;
+    async.series([
+        function(callback) {
+            if (index == receiver) {
+                return callback(new Error("You cannot trade with yourself"));
+            } else {
+                return callback(null);
+            }
+        },
+        function(callback) {
+          var noResource = true;
+            model.getResources(gameId, index, function(err, resource) {
+                if (err) {
+                    return callback(err);
+                } else if (!resource) {
+                    return callback(new Error("Resources do not exist"));
+                } else if (offer.brick <=0 && offer.ore <=0 && offer.sheep <=0 &&
+                    offer.wheat <=0 && offer.wood <=0) {
+                    return callback(new Error("No resources allocated to receive"));
+                } else {
+                    if (offer.brick < 0) {
+                      noResource = false;
+                      if (!(resource.brick >= Math.abs(offer.brick)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (offer.ore < 0) {
+                      noResource = false;
+                      if (!(resource.ore >= Math.abs(offer.ore)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.sheep < 0) {
+                      noResource = false;
+                      if (!(resource.sheep >= Math.abs(offer.sheep)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wheat < 0) {
+                      noResource = false;
+                      if (!(resource.wheat >= Math.abs(offer.wheat)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wood < 0) {
+                      noResource = false;
+                      if (!(resource.wood >= Math.abs(offer.wood)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (noResource) {
+                        return callback(new Error("You didn't allocate any resources to send"));
+                    }
+                    noResource = true;
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            model.offerTrade(gameId, index, offer, receiver, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+        return res.status(200).json(result.pop());
+    });
   },
   /**
    * @desc gets a request to accept a trade, validates
@@ -771,6 +883,7 @@ var MovesController = {
           transfer cards
           set trade offer to null
     */
+    
   },
   /**
    * @desc gets a request to offer a maritime trade, validates
@@ -792,6 +905,40 @@ var MovesController = {
         if above is true
           transfer resources
     */
+
+    // var body = req.body;
+    // var gameId = req.game;
+    // var index = body.playerIndex;
+    // var input = body.inputResource;
+    // var output = body.outputResource;
+    // async.series([
+    //   function(callback) {
+    //     model.getOwnedPorts(gameId, index,  function(err, ports) {
+    //       if (err) {
+    //         return callback(err);
+    //       } else if (!ports) {
+    //         return callback(new Error("Ports don't exist"));
+    //       } else if (ports.)
+    //     });
+    //   },
+
+    //     function(callback) {
+    //         model.maritimeTrade(gameId, index, input, output, function(err, game) {
+    //             if (err) {
+    //                 return callback(err);
+    //             } else if (!game) {
+    //                 return callback(new Error("Game does not exist"));
+    //             }
+    //             return callback(null, game);
+    //         });
+    //     }
+    // ], function(err, result) {
+    //     if (err) {
+    //         return res.status(400).send(err.message);
+    //     }
+    //     return res.status(200).json(result.pop());
+    // });
+
   },
   /**
    * @desc gets a request to discard cards, validates
@@ -817,6 +964,118 @@ var MovesController = {
           set game state to playing
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var discardedCards = body.discardedCards;
+    async.waterfall([
+        function(callback) {
+            model.getStatus(gameId, function(err, status) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (status === 'Discarding') {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Game is not in discard phase"));
+                }
+            });
+        },
+        function(callback) {
+            model.getPlayedDevCard(gameId, index, function(err, played) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (played) {
+                    return callback(new Error("This player has already discarded"));
+                } else {
+                    return callback(null);    
+                }
+            });
+        },
+        function(callback) {
+            model.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    var totalDiscard = helper.countResources(discardedCards);
+                    var totalHand = helper.countResources(resources);
+                    console.log(totalHand, totalDiscard);
+                    if (Math.floor(totalHand / 2) === totalDiscard) {
+                        return callback(null, resources);
+                    } else if (totalHand < 8) {
+                        return callback(new Error("This players does not have more " +
+                            "than 7 cards"));
+                    } else {
+                        return callback(new Error("You are not discarding the " + 
+                            "correct number of resources"));
+                    } 
+                }
+            });
+        },
+        function(hand, callback) {
+            _.forOwn(discardedCards, function(value, key) {
+                if (value > hand[key]) {
+                    return callback(new Error("This player has insufficient " +
+                        "resources to perform this discard"));
+                }
+            });
+            return callback(null);
+        },
+        function(callback) {
+            model.getPlayers(gameId, function(err, players) {
+                if (err) {
+                    return callback(err);
+                } else if (!players) {
+                    return callback(new Error("Players do not exist"));
+                } else {
+                    var found = players.filter(function(player) {
+                        if (player.index != index && player.playedDevCard == false
+                            && helper.countResources(player.resources) > 7) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                    if (found && found.length > 0) {
+                        console.log(found);
+                        return callback(null, 'Discarding');
+                    } else {
+                        return callback(null, 'Robbing');
+                    }
+                }
+            });
+        },
+        function(status, callback) {
+            var discard = {
+                brick : discardedCards.brick * -1,
+                ore : discardedCards.ore * -1,
+                sheep : discardedCards.sheep * -1,
+                wheat : discardedCards.wheat * -1,
+                wood : discardedCards.wood * -1
+            };
+            model.discardCards(gameId, index, discard, status, 
+                function(err, game) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    if (game) {
+                        return callback(null, game);
+                    } else {
+                        return callback(new Error("Game does not exist"));
+                    }
+            });
+        }],
+        function(err, result) {
+            if (err) {
+                res.status(400).send(err.message);
+            } else {
+                res.status(200).json(result);
+            }
+        });
   },
 
 };

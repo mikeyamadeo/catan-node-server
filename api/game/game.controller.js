@@ -21,6 +21,7 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
+
   model: function(req, res, next) {
     var gameId = req.game;
     GameModel.getModel(gameId, function(err, model) {
