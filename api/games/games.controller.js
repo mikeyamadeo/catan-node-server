@@ -46,6 +46,7 @@ var GamesController = {
                 color: game.players[i].color,
                 ID: game.players[i].id
               });
+                console.log(gamePlayers[i]);
             };
             
             while(gamePlayers.length < 4) {

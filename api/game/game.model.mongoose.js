@@ -492,6 +492,10 @@ GameSchema.methods.addChat = function(message, source) {
     this.game.chat.lines.push(newMessage);
 };
 
+GameSchema.methods.removeTradeOffer = function() {
+    this.game.tradeOffer = null;
+};
+
 var connection = mongoose.createConnection("mongodb://localhost/catan");
 
 autoIncrement.initialize(connection);
