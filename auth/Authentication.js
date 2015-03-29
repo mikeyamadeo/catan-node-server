@@ -1,13 +1,13 @@
 var userModel = require('./../api/user/user.model.js');
 var gamesModel = require('./../api/games/games.model.js');
+var cookes = require('cookies');
 
 module.exports = {
     validateUser : function(req, res, next) {
-        var cookies = req.cookies;
-        if (cookies['catan.user']) {
-            var username = cookies['catan.user'].name;
-            var password = cookies['catan.user'].password;
-            var id = cookies['catan.user'].playerID;
+        if (cookies.get('catan.user')) {
+            var username = cookies.get('catan.user').name;
+            var password = cookies.get('catan.user').password;
+            var id = cookies.get('catan.user').playerID;
             userModel.validateUser(username, password, function(error, success){
                 if (success == false) {
                     return res.status(403).send('Unauthorized');
@@ -26,11 +26,11 @@ module.exports = {
 
     validateGame : function(req, res, next) {
         var cookies = req.cookies;
-        if (cookies['catan.user'] && cookies['catan.game']) {
-            var username = cookies['catan.user'].name;
-            var password = cookies['catan.user'].password;
-            var id = cookies['catan.user'].playerID;
-            var gameId = cookies['catan.game'];
+        if (cookies.get('catan.user') && cookies.get('catan.game')) {
+            var username = cookies.get('catan.user').name;
+            var password = cookies.get('catan.user').password;
+            var id = cookies.get('catan.user').playerID;
+            var gameId = cookies.get('catan.game');
             gamesModel.isPlayerInGame(gameId, username, function(err, valid) {
                 if (err || !valid) {
                     return res.status(403).send('Unauthorized');
