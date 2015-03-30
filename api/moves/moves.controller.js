@@ -72,10 +72,11 @@ var MovesController = {
 
       if (numberRolled == 7) {
         MovesModel.rollNumber(gameId, "discarding", players, function(err, game) {
-          res.json({game: game});
+          return res.status(200).json({game: game});
         });
       }
       else {
+
         //hexes that have the chit number that was rolled
         var hotHexes = map.hexes.filter(function(hex, i) {
           return hex.number == numberRolled;
@@ -84,6 +85,7 @@ var MovesController = {
         //add to resources if so.
         GameModel.getCities(req.game, function(err, cities) {
           //for each hex that the has the number chit rolled
+
           hotHexes.forEach(function(hex) {
             // cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
             cities.forEach(function(city) {
@@ -106,6 +108,7 @@ var MovesController = {
 
           //do it all over again with settlements
           GameModel.getSettlements(req.game, function(err, settlements) {
+
             hotHexes.forEach(function(hex) {
               settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
               settlements.forEach(function(settlement) {
@@ -121,12 +124,11 @@ var MovesController = {
                   gameHelpers.addToPlayersResources(hex.resource, amount, resources);
                 }
               });
+            });
 
-              MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
+            MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
                 return res.status(200).json({game: game});
               });
-
-            });
           });//end of get settlements
         });
       }
