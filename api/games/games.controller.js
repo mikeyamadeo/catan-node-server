@@ -3,7 +3,7 @@
 var _ = require('lodash'),
     gameModel = require('../game/game.model'),
     gamesModel = require('./games.model'),
-    cookies = require('cookies'),
+    Cookies = require('cookies'),
     helper = require('./games.controller.helper');
 /**
  * Example of getting access to required models:
@@ -127,6 +127,7 @@ var GamesController = {
   join: function(req, res, next) {
     var user = req.user;
     var body = req.body;
+    var cookies = new Cookies(req, res);
     gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
