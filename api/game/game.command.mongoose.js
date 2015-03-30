@@ -135,10 +135,8 @@ CommandsSchema.methods.getInitialState = function() {
 CommandsSchema.methods.getCommands = function() {
     var commands = [];
     for (var i = 0; i < this.commands.length; i++) {
-        commands = {
-            type: this.commands[i].type, 
-            command: JSON.parse(this.commands[i].command)
-        };
+        var command = JSON.parse(this.commands[i].command);
+        commands.push(command);
     };
     return commands;
 }
@@ -150,6 +148,11 @@ CommandsSchema.methods.addCommand = function(command) {
     }
     console.log("Command after", newCommand);
     this.commands.push(newCommand);
+
+}
+
+CommandsSchema.methods.reset = function() {
+    this.commands = [];
 
 }
 
