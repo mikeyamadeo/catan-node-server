@@ -8,7 +8,7 @@ var randomizeArray = function(array) {
 
 var createMap = function(randomTiles, randomChits, randomPorts) {
     var hexes = [];
-    var chits = [6, 12, 11, 10, 5, 9, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
+    var chits = [9, 12, 11, 10, 5, 6, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
     var tiles = [   "wheat", "sheep", "wood", 
                     "sheep", "brick", "ore",
                     "brick", "wheat", "wood", "wheat",

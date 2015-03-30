@@ -371,11 +371,12 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.removeTradeOffer()            
+                game.removeTradeOffer();           
                 if (acceptance) {
                     resources.map(function(tuple, index, array) {
                         var resourceMap = tuple.resourceMap;
                         _.forOwn(resourceMap, function(value, key) {
+                           // console.log(value, key);
                             game.modifyResource(tuple.player, key, value, false);
                         });
                     });
