@@ -170,8 +170,8 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.addStructure(player, first, 'road');
-                game.addStructure(player, second, 'road');
+                game.addStructure(player, first, 'roads');
+                game.addStructure(player, second, 'roads');
                 game.incVersion();
                 game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'roadBuilding', -1, false);

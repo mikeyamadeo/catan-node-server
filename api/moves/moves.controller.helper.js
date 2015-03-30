@@ -14,7 +14,7 @@ module.exports = {
         return _.omit(game._doc, '_id');
     },
 
-    verifyRoadsAvailable : function (gameId, playerId, callback) {
+    verifyRoadsAvailable : function (gameId, playerId, amount, callback) {
 
         movesModel.getOwnedRoads(gameId, playerId, function (err, roads) {
             if (err) {
@@ -22,7 +22,7 @@ module.exports = {
                 return callback(err, true);
             }
             console.log("player has " + roads.length);
-            if (roads.length >= 15) {
+            if (roads.length > 15-amount) {
                 return callback(null, false);
             }
             else {
@@ -118,6 +118,60 @@ module.exports = {
             }
         });        
         return total;
+    },
+
+    normalizeEdge : function(edge) {
+        
+        switch(edge.direction) {
+            case 'NW':
+            case 'NE':
+            case 'N':
+                break;
+            case 'SW':
+                edge.direction = 'NE';
+                edge.x = edge.x - 1;
+                edge.y = edge.y + 1;
+                break;
+            case 'SE':
+                edge.direction = 'NW';
+                edge.x = edge.x + 1;
+                break;
+            case 'S':
+                edge.direction = 'N';
+                edge.y = edge.y + 1;
+                break;
+            default:
+                break;
+        }
+        return edge;
+    },
+
+    normalizeVertex : function(vertex) {
+        switch(vertex.direction) {
+            case 'NW':
+            case 'NE':
+                break;
+            case 'W':
+                vertex.direction = 'NE';
+                vertex.x = vertex.x - 1;
+                vertex.y = tvertex.y + 1;
+                break;
+            case 'SW':
+                vertex.direction = 'NW';
+                vertex.y = vertex.y + 1;
+                break;
+            case 'SE':
+                vertex.direction = 'NE';
+                vertex.y = vertex.y + 1;
+                break;
+            case 'E':
+                vertex.direction = 'NW';
+                vertex.x = vertex.x + 1;
+                break;
+            default:
+                break;
+        }
+        return vertex;
     }
 
 };

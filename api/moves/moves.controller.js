@@ -410,6 +410,82 @@ var MovesController = {
    * @param {function} next - next command
    */
   roadBuilding: function(req, res, next) {
+      var body = req.body;
+      var index = body.playerIndex;
+      var first = body.spot1;
+      var second = body.spot2;
+      var gameId = req.game;
+      async.waterfall([
+          function(callback) {
+            
+              model.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+                  if (err) {
+                      return callback(err);
+                  }
+                  if (!cardList) {
+                      return callback(new Error("Dev cards do not exist"));
+                  } else if (cardList.roadBuilding > 0) {
+                      return callback(null);
+                  } else {
+                      return callback(new Error("Insufficient cards"));
+                  }
+              });
+          },
+          function(callback) {
+              model.getPlayedDevCard(gameId, index, function(err, played) {
+                  if (err) {
+                      return callback(err);
+                  }
+                  if (played) {
+                      return callback(new Error("You have already played a dev card " + 
+                          "this turn"));
+                  } else {
+                      return callback(null);
+                  }
+              });
+          },
+          function(callback) {
+              helper.verifyRoadsAvailable(req.game, req.body.playerIndex, 2, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+          },
+          function(callback) {
+              helper.verifyRoadLocation(req.game, req.body.playerIndex, first, second, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+          },
+          function(callback) {
+              model.roadBuilding(gameId, index, first, second,
+                  function(err, game) { 
+                    if (err) {
+                        return callback(err);
+                    }
+                    if (!game) {
+                        return callback(new Error("Game does not exist"));
+                    } else {
+                        return callback(null, game);
+                    }
+              });
+          }],
+          function(err, result) {
+              if (err) {
+                  return res.status(400).send(err.message);
+              } else if (!result) {
+                  return res.status(500).send("Server Error");
+              } else {
+                  return res.status(200).json(result);
+              }
+          });
     /*
       Things to do:
       1. pull model from request body.
@@ -629,11 +705,11 @@ var MovesController = {
   buildRoad: function(req, res, next) {
 
     console.log("Building a road",req.game);
-
+    req.body.roadLocation = helper.normalizeEdge(req.body.roadLocation);
 
     async.series([
         function(callback) {
-            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, 1, function (err, roadsAvail) {
                 if (err) {
                       return callback(err); 
                 } else if (!roadsAvail) {
@@ -693,6 +769,8 @@ var MovesController = {
   buildSettlement: function(req, res, next) {
 
     console.log("Building a settlement",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
 
 
     async.series([
@@ -760,6 +838,8 @@ var MovesController = {
    */
   buildCity: function(req, res, next) {
     console.log("Building a city",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
 
 
     async.series([

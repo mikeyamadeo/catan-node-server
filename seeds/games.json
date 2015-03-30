@@ -1,34 +1,28 @@
 [
 {
-    "_id" : 13,
+    "_id" : 12,
     "title" : "Gonzo",
     "game" : {
-        "log" : {
-            "lines" : [ ]
-        },
-        "chat" : {
-            "lines" : [ ]
-        },
-        "bank" : {
-            "brick" : 25,
-            "ore" : 25,
-            "sheep" : 25,
-            "wheat" : 25,
-            "wood" : 25
-        },
         "version" : 0,
         "winner" : -1,
         "turnTracker" : {
-            "status" : "Discarding",
+            "currentTurn" : 0,
+            "status" : "First Round",
             "longestRoad" : -1,
-            "largestArmy" : -1,
-            "currentTurn" : 0
+            "largestArmy" : -1
         },
         "map" : {
+            "radius" : 3,
+            "robber" : {
+                "x" : 0,
+                "y" : -2
+            },
+            "cities" : [ ],
+            "settlements" : [ ],
+            "roads" : [ ],
             "ports" : [
                 {
-                    "ratio" : 2,
-                    "resource" : "sheep",
+                    "ratio" : 3,
                     "location" : {
                         "x" : -3,
                         "y" : 0
@@ -43,32 +37,26 @@
                     }
                 },
                 {
-                    "ratio" : 3,
+                    "ratio" : 2,
+                    "resource" : "brick",
                     "location" : {
                         "x" : -2,
                         "y" : 3
                     }
                 },
                 {
-                    "ratio" : 3,
+                    "ratio" : 2,
+                    "resource" : "wheat",
                     "location" : {
                         "x" : -1,
                         "y" : -2
                     }
                 },
                 {
-                    "ratio" : 2,
-                    "resource" : "brick",
-                    "location" : {
-                        "x" : -1,
-                        "y" : 3
-                    }
-                },
-                {
                     "ratio" : 3,
                     "location" : {
                         "x" : 0,
-                        "y" : -3
+                        "y" : 3
                     }
                 },
                 {
@@ -80,11 +68,10 @@
                     }
                 },
                 {
-                    "ratio" : 2,
-                    "resource" : "wheat",
+                    "ratio" : 3,
                     "location" : {
-                        "x" : 1,
-                        "y" : 2
+                        "x" : 2,
+                        "y" : 1
                     }
                 },
                 {
@@ -93,39 +80,39 @@
                         "x" : 3,
                         "y" : -3
                     }
+                },
+                {
+                    "ratio" : 2,
+                    "resource" : "sheep",
+                    "location" : {
+                        "x" : 3,
+                        "y" : -1
+                    }
                 }
             ],
             "hexes" : [
                 {
-                    "resource" : "wood",
-                    "number" : 10,
+                    "resource" : "ore",
+                    "number" : 5,
                     "location" : {
-                        "y" : 0,
-                        "x" : -2
+                        "x" : -2,
+                        "y" : 0
                     }
                 },
                 {
+                    "resource" : "wheat",
+                    "number" : 2,
                     "location" : {
                         "x" : -2,
                         "y" : 1
-                    },
-                    "resource" : "sheep",
-                    "number" : 12
-                },
-                {
-                    "number" : 10,
-                    "location" : {
-                        "x" : -2,
-                        "y" : 2
-                    },
-                    "resource" : "wood"
+                    }
                 },
                 {
                     "resource" : "wood",
-                    "number" : 3,
+                    "number" : 6,
                     "location" : {
-                        "x" : -1,
-                        "y" : -1
+                        "x" : -2,
+                        "y" : 2
                     }
                 },
                 {
@@ -133,24 +120,32 @@
                     "number" : 8,
                     "location" : {
                         "x" : -1,
+                        "y" : -1
+                    }
+                },
+                {
+                    "resource" : "sheep",
+                    "number" : 10,
+                    "location" : {
+                        "x" : -1,
                         "y" : 0
                     }
                 },
                 {
-                    "resource" : "wheat",
-                    "number" : 11,
+                    "resource" : "sheep",
+                    "number" : 9,
                     "location" : {
-                        "y" : 1,
-                        "x" : -1
+                        "x" : -1,
+                        "y" : 1
                     }
                 },
                 {
+                    "resource" : "ore",
+                    "number" : 3,
                     "location" : {
                         "x" : -1,
                         "y" : 2
-                    },
-                    "resource" : "wheat",
-                    "number" : 9
+                    }
                 },
                 {
                     "location" : {
@@ -160,22 +155,22 @@
                 },
                 {
                     "resource" : "wood",
-                    "number" : 2,
+                    "number" : 3,
                     "location" : {
                         "x" : 0,
                         "y" : -1
                     }
                 },
                 {
-                    "resource" : "ore",
-                    "number" : 6,
+                    "resource" : "wheat",
+                    "number" : 11,
                     "location" : {
                         "x" : 0,
                         "y" : 0
                     }
                 },
                 {
-                    "resource" : "ore",
+                    "resource" : "wood",
                     "number" : 4,
                     "location" : {
                         "x" : 0,
@@ -183,8 +178,8 @@
                     }
                 },
                 {
-                    "resource" : "brick",
-                    "number" : 3,
+                    "resource" : "wheat",
+                    "number" : 8,
                     "location" : {
                         "x" : 0,
                         "y" : 2
@@ -192,110 +187,86 @@
                 },
                 {
                     "resource" : "brick",
-                    "number" : 11,
+                    "number" : 4,
                     "location" : {
                         "x" : 1,
                         "y" : -2
                     }
                 },
                 {
-                    "resource" : "wheat",
-                    "number" : 6,
-                    "location" : {
-                        "x" : 1,
-                        "y" : -1
-                    }
-                },
-                {
+                    "resource" : "ore",
                     "number" : 9,
                     "location" : {
                         "x" : 1,
-                        "y" : 0
-                    },
-                    "resource" : "sheep"
+                        "y" : -1
+                    }
                 },
                 {
+                    "resource" : "brick",
+                    "number" : 5,
                     "location" : {
                         "x" : 1,
-                        "y" : 1
-                    },
-                    "resource" : "ore",
-                    "number" : 5
+                        "y" : 0
+                    }
                 },
                 {
                     "resource" : "sheep",
-                    "number" : 5,
+                    "number" : 10,
+                    "location" : {
+                        "x" : 1,
+                        "y" : 1
+                    }
+                },
+                {
+                    "resource" : "wood",
+                    "number" : 11,
                     "location" : {
                         "x" : 2,
                         "y" : -2
                     }
                 },
                 {
-                    "number" : 4,
+                    "resource" : "sheep",
+                    "number" : 12,
                     "location" : {
                         "x" : 2,
                         "y" : -1
-                    },
-                    "resource" : "sheep"
+                    }
                 },
                 {
                     "resource" : "wheat",
-                    "number" : 8,
+                    "number" : 6,
                     "location" : {
                         "x" : 2,
                         "y" : 0
                     }
                 }
-            ],
-            "radius" : 3,
-            "robber" : {
-                "x" : 0,
-                "y" : -2
-            },
-            "cities" : [ ],
-            "settlements" : [ ],
-            "roads" : [ ]
+            ]
+        },
+        "log" : {
+            "lines" : [ ]
+        },
+        "chat" : {
+            "lines" : [ ]
+        },
+        "deck" : {
+            "monopoly" : 2,
+            "monument" : 5,
+            "roadBuilding" : 2,
+            "soldier" : 14,
+            "yearOfPlenty" : 2
+        },
+        "bank" : {
+            "brick" : 24,
+            "ore" : 24,
+            "sheep" : 24,
+            "wheat" : 24,
+            "wood" : 24
         }
     },
-    "players" : [
-        {
-            "cities" : 4,
-            "index" : 0,
-            "soldiers" : 0,
-            "resources" : {
-                "brick" : 9,
-                "ore" : 0,
-                "sheep" : 0,
-                "wheat" : 0,
-                "wood" : 0
-            },
-            "discarded" : false,
-            "oldDevCards" : {
-                "soldier" : 0,
-                "yearOfPlenty" : 1,
-                "monopoly" : 0,
-                "monument" : 0,
-                "roadBuilding" : 0
-            },
-            "newDevCards" : {
-                "monument" : 0,
-                "roadBuilding" : 0,
-                "soldier" : 0,
-                "yearOfPlenty" : 0,
-                "monopoly" : 0
-            },
-            "id" : 0,
-            "roads" : 15,
-            "settlements" : 5,
-            "color" : "brown",
-            "monuments" : 0,
-            "name" : "Peter",
-            "playedDevCard" : false,
-            "victoryPoints" : 0
-        }
-    ],
-    "__v" : 2
-    }
+    "players" : [],
+    "__v" : 4
+}
 ]
         
                 
