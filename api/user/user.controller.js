@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('./user.model'),
+    Cookies = require('cookies'),
     auth = require('../../auth'),
     _ = require('lodash');
 
@@ -32,12 +33,13 @@ var UserController = {
         model.validateUser(body.username, body.password, function(err, user) {
             if (err) return callback(err);
             if (user) {
-                res.clearCookie();
-                res.cookie("catan.user", {
+                var cookies = new Cookies(req, res);
+                var encodedCookie = encodeURI(JSON.stringify({
                     name : user.username,
                     password : user.password,
                     playerID : user._id
-                });
+                }));
+                cookies.set('catan.user', encodedCookie);
                 return res.send("Success");
             } else {
                 return res.send("login failed");
@@ -81,7 +83,9 @@ var UserController = {
                     password : user.password,
                     id : user._id
                 };
-                res.cookie('catan.user', cleanUser);
+                var cookies = new Cookies(req, res);
+                var encodedUser = encodeURI(JSON.stringify(cleanUser));
+                cookies.set('catan.user', encodedUser);
                 return res.send("Success");
             } else {
                 return res.status(403).send("Register failed");
