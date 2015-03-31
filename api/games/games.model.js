@@ -42,7 +42,7 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                player.index = game.players.length;
+                player.playerIndex = game.game.players.length;
                 game.addPlayer(player);
                 return game.save(callback);
             }

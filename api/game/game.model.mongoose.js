@@ -31,7 +31,7 @@ var DevCardList = {
 };
 
 var Player = new Schema({
-    id : Number,
+    playerID : Number,
     cities : Number,
     color : String,
     discarded : Boolean,
@@ -39,7 +39,7 @@ var Player = new Schema({
     name : String,
     newDevCards : DevCardList,
     oldDevCards : DevCardList,
-    index : Number,
+    playerIndex : Number,
     playedDevCard : Boolean,
     resources : ResourceList,
     roads : Number,
@@ -189,8 +189,8 @@ var TurnTracker = {
 
 var GameSchema = new Schema({
     title : String,
-    players : [Player],
     game : {
+        players : [Player],
         bank : ResourceList,
         deck : DevCardList,
         chat : MessageList,
@@ -204,7 +204,7 @@ var GameSchema = new Schema({
 });
 
 GameSchema.methods.getPlayers = function() {
-    return this.players;
+    return this.game.players;
 };
 
 GameSchema.methods.getDeck = function() {
@@ -212,14 +212,14 @@ GameSchema.methods.getDeck = function() {
 };
 
 GameSchema.methods.getPlayedDevCard = function(index) {
-    if (index >= 0 && index < this.players.length) {
-        return this.players[index].playedDevCard;
+    if (index >= 0 && index < this.game.players.length) {
+        return this.game.players[index].playedDevCard;
     }
 };
 
 GameSchema.methods.getDevCards = function(index, type) {
-    if (index >= 0 && index < this.players.length) {
-        return this.players[index][type];
+    if (index >= 0 && index < this.game.players.length) {
+        return this.game.players[index][type];
     }
 };
 
@@ -228,8 +228,8 @@ GameSchema.methods.getBank = function() {
 };
 
 GameSchema.methods.getResources = function(index) {
-    if (index >= 0 && index < this.players.length) {
-        return this.players[index].resources;
+    if (index >= 0 && index < this.game.players.length) {
+        return this.game.players[index].resources;
     }
     return null
 };
@@ -313,21 +313,21 @@ GameSchema.methods.currentPlayer = function() {
 };
 
 GameSchema.methods.addPlayer = function(player) {
-    this.players.push(player);
+    this.game.players.push(player);
 };
 
 GameSchema.methods.addVictoryPoints = function(player, amount) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].victoryPoints += amount;
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].victoryPoints += amount;
     }
 };
 
 GameSchema.methods.isGameAvailable = function() {
-    return this.players.length < 4;
+    return this.game.players.length < 4;
 };
 
 GameSchema.methods.isPlayerInGame = function(username) {
-    var found = _.find(this.players, function(player, index, array) {
+    var found = _.find(this.game.players, function(player, index, array) {
         return player.name === username;
     });
     if (found) return true;
@@ -343,8 +343,8 @@ GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
 };
 
 GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].resources[resource] += amount;
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;
             this.game.bank[resource] += reverse;
@@ -353,9 +353,9 @@ GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
 };
 
 GameSchema.methods.modifyVictoryPoint = function(player, amount) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].victoryPoints += amount;
-        if (this.players[player].victoryPoints >= 10) {
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].victoryPoints += amount;
+        if (this.game.players[player].victoryPoints >= 10) {
             this.game.winner = player;
         }
     }
@@ -371,8 +371,8 @@ GameSchema.methods.updateStatus = function(status) {
 };
 
 GameSchema.methods.modifyOldDevCard = function(player, devCard, amount, exchange) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].oldDevCards[devCard] += amount;
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].oldDevCards[devCard] += amount;
         if (exchange && amount > 0) {
             this.game.deck[devCard] -= amount;
         }
@@ -380,8 +380,8 @@ GameSchema.methods.modifyOldDevCard = function(player, devCard, amount, exchange
 };
 
 GameSchema.methods.modifyNewDevCard = function(player, devCard, amount, exchange) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].newDevCards[devCard] += amount;
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].newDevCards[devCard] += amount;
         if (exchange && amount > 0) {
             this.game.deck[devCard] -= amount;
         }
@@ -389,7 +389,7 @@ GameSchema.methods.modifyNewDevCard = function(player, devCard, amount, exchange
 };
 
 GameSchema.methods.addStructure = function(player, location, type) {
-    if (player >= 0 && player < this.players.length) {
+    if (player >= 0 && player < this.game.players.length) {
         var structures = this.game.map[type];
         var found = _.find(structures, function(structure) {
             return (structure.location.x === location.x &&
@@ -398,28 +398,28 @@ GameSchema.methods.addStructure = function(player, location, type) {
         });
         if (!found) {
             structures.push({ owner : player, location : location });
-            this.players[player][type] -= 1;
+            this.game.players[player][type] -= 1;
         }
     }
 };
 
 GameSchema.methods.removeStructure = function(player, location, type) {
-    if (player >= 0 && player < this.players.length) {
+    if (player >= 0 && player < this.game.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
             return (structure.location.x === location.x &&
                     structure.location.y === location.y &&
                     structure.location.direction === location.direction);
         });
-        this.players[player][type] += 1;
+        this.game.players[player][type] += 1;
     }
 };
 
 GameSchema.methods.setDiscarded = function(players, discarded) {
     var self = this;
     players.map(function(player) {
-        if (player >= 0 && player < self.players.length) {
-            self.players[player].discarded = discarded;
+        if (player >= 0 && player < self.game.players.length) {
+            self.game.players[player].discarded = discarded;
         }
     });
 };
@@ -427,21 +427,21 @@ GameSchema.methods.setDiscarded = function(players, discarded) {
 GameSchema.methods.setPlayedDevCard = function(players, played) {
     var self = this;
     players.map(function(player) {
-        if (player >= 0 && player < self.players.length) {
-            self.players[player].playedDevCard = played;
+        if (player >= 0 && player < self.game.players.length) {
+            self.game.players[player].playedDevCard = played;
         }
     });
 };
 
 GameSchema.methods.addSoldier = function(player, amount) {
-    if (player >= 0 && player < this.players.length) {
-        this.players[player].soldier += amount;                
+    if (player >= 0 && player < this.game.players.length) {
+        this.game.players[player].soldier += amount;                
     }
 };
 
 GameSchema.methods.getResourceCount = function(player, resource) {
-    if (player >= 0 && player < this.players.length) {
-        return this.players[player].resouces[resource];
+    if (player >= 0 && player < this.game.players.length) {
+        return this.game.players[player].resouces[resource];
     }
 };
 
@@ -464,9 +464,9 @@ GameSchema.methods.updateTurn = function(player) {
 };
 
 GameSchema.methods.mergeDevCards = function(player) {
-    if (player >= 0 && player < this.players.length) {
-        var oldDevCards = this.players[player].oldDevCards;
-        var newDevCards = this.players[player].newDevCards;
+    if (player >= 0 && player < this.game.players.length) {
+        var oldDevCards = this.game.players[player].oldDevCards;
+        var newDevCards = this.game.players[player].newDevCards;
         oldDevCards.monument += newDevCards.monument;
         newDevCards.monument = 0;
         oldDevCards.monopoly += newDevCards.monopoly;

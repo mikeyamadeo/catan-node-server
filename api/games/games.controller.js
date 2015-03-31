@@ -41,13 +41,12 @@ var GamesController = {
         if (games) {
           var gameHeaders = games.map(function(game, index, array) {
             var gamePlayers = [];
-            for (var i = 0; i < game.players.length; i++) {
+            for (var i = 0; i < game.game.players.length; i++) {
               gamePlayers.push({
-                name: game.players[i].name,
-                color: game.players[i].color,
-                ID: game.players[i].id
+                name: game.game.players[i].name,
+                color: game.game.players[i].color,
+                ID: game.game.players[i].id
               });
-                console.log(gamePlayers[i]);
             };
             
             while(gamePlayers.length < 4) {
@@ -131,7 +130,8 @@ var GamesController = {
     gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
-            cookies.set('catan.game', body.id);
+            res.cookie('catan.game', body.id);
+//            cookies.set('catan.game', encodedCookie);            
             return res.status(200).send("Success");
         } else {
             gamesModel.isGameAvailable(body.id, function(err, available) {
@@ -143,7 +143,8 @@ var GamesController = {
                         if (err || !game) {
                             return res.status(404).send("Join failed");
                         }
-                        cookies.set('catan.game', body.id);
+                        res.cookie('catan.game', body.id);
+                        //cookies.set('catan.game', body.id);
                         return res.status(200).send("Success");
                     });
                 } else {

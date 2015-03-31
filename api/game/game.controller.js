@@ -28,7 +28,8 @@ var GameController = {
       if (err) {
         return res.status(400).send(err.message);
       }
-      return res.status(200).json(model);
+      console.log(model.game);
+      return res.status(200).json(model.game);
     });
   },
   /**
@@ -46,7 +47,9 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  listAI: function(req, res, next) {},
+  listAI: function(req, res, next) {
+    res.json([]);
+  },
     /**
    * @desc request to reset game state to initial state
    * @method reset
