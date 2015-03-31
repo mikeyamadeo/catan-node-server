@@ -18,6 +18,7 @@ module.exports = {
             if (currPlayer !== req.body.playerIndex) {
                 return res.status(403).send("Not this player's turn");
             }
+            return next();
         });
     },
 
