@@ -131,7 +131,8 @@ var GamesController = {
     gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
-            cookies.set('catan.game', body.id);
+            res.cookie('catan.game', body.id);
+//            cookies.set('catan.game', encodedCookie);            
             return res.status(200).send("Success");
         } else {
             gamesModel.isGameAvailable(body.id, function(err, available) {
@@ -143,7 +144,8 @@ var GamesController = {
                         if (err || !game) {
                             return res.status(404).send("Join failed");
                         }
-                        cookies.set('catan.game', body.id);
+                        res.cookie('catan.game', body.id);
+                        //cookies.set('catan.game', body.id);
                         return res.status(200).send("Success");
                     });
                 } else {

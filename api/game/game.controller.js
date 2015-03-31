@@ -46,7 +46,9 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  listAI: function(req, res, next) {},
+  listAI: function(req, res, next) {
+    res.json([]);
+  },
     /**
    * @desc request to reset game state to initial state
    * @method reset
