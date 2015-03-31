@@ -28,7 +28,6 @@ var GameController = {
       if (err) {
         return res.status(400).send(err.message);
       }
-      console.log(model.game);
       return res.status(200).json(model.game);
     });
   },
