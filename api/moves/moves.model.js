@@ -375,7 +375,6 @@ var MovesModel = {
                 if (acceptance) {
                     resources.map(function(tuple, index, array) {
                         var resourceMap = tuple.resourceMap;
-                        console.log(tuple.player);
                         _.forOwn(resourceMap, function(value, key) {
                            // console.log(value, key);
                             game.modifyResource(tuple.player, key, value, false);

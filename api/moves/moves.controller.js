@@ -1087,7 +1087,6 @@ var MovesController = {
                         player : offer.receiver,
                         resourceMap : offer.offer    
                     }];
-                    console.log(resourceList[0].resourceMap, resourceList[1].resourceMap);
                     return callback(null, acceptance, resourceList);
                 }
             });

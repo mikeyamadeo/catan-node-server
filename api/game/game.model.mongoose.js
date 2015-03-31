@@ -344,7 +344,6 @@ GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
 
 GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
     if (player >= 0 && player < this.game.players.length) {
-        console.log(player, resource, amount);
         this.game.players[player].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;
