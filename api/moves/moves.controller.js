@@ -1012,11 +1012,106 @@ var MovesController = {
       2. call correct execute method
         verify receiving player
         verify receiving player's cards
-        if above is ture and willAccept
+        if above is true and willAccept
           transfer cards
           set trade offer to null
     */
-    
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var acceptance = body.willAccept;
+    async.waterfall([
+        function(callback) {
+            model.getTradeOffer(gameId, function(err, offer) {
+                if (err) {
+                    return callback(err);
+                } else if (acceptance == false) {
+                    return callback(null, false, offer)
+                } else if (!offer) {
+                    return callback(new Error("There is no trade offer"));
+                } else {
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
+        function(acceptance, offer, callback) {
+            model.getResources(gameId, offer.receiver, function(err, resource) {
+                if (err) {
+                    return callback(err);
+                } else if (acceptance == false) {     
+                    return callback(null, false, offer);
+                } else if (!resource) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value < 0) {
+                            if (Math.abs(value) > resource[key]) {
+                                return callback(new Error("You don't have the " + 
+                                    "resources to trade"));
+                            }
+                        }
+                    });
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
+        function(acceptance, offer, callback) {
+            if (!acceptance) {
+                return callback(null, null);
+            }
+            model.getResources(gameId, offer.sender, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value > 0) {
+                            if (value > resources[key]) {
+                                return callback(new Error("Sender doesn't have " +
+                                    "sufficient resources to trade"));
+                            }
+                        }
+                    });
+                    var resourceList = [{
+                        player : offer.sender,
+                        resourceMap : {
+                            brick : offer.offer.brick * -1,
+                            ore : offer.offer.ore * -1,
+                            sheep : offer.offer.sheep * -1,
+                            wheat : offer.offer.wheat * -1,
+                            wood : offer.offer.wood * -1
+                        }
+                    },
+                    {
+                        player : offer.receiver,
+                        resourceMap : offer.offer    
+                    }];
+                    console.log(resourceList[0].resourceMap, resourceList[1].resourceMap);
+                    return callback(null, acceptance, resourceList);
+                }
+            });
+        },
+        function(acceptance, resourceList, callback) {
+            model.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ],
+    function(err, result) {
+            if (err) {
+                return res.status(400).send(err.message);
+            } else if (!result) {
+                return res.status(500).send("Server Error");
+            } else {
+                return res.status(200).json(result);
+            }
+    });
   },
   /**
    * @desc gets a request to offer a maritime trade, validates
