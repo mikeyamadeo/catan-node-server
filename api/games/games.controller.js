@@ -41,13 +41,12 @@ var GamesController = {
         if (games) {
           var gameHeaders = games.map(function(game, index, array) {
             var gamePlayers = [];
-            for (var i = 0; i < game.players.length; i++) {
+            for (var i = 0; i < game.game.players.length; i++) {
               gamePlayers.push({
-                name: game.players[i].name,
-                color: game.players[i].color,
-                ID: game.players[i].id
+                name: game.game.players[i].name,
+                color: game.game.players[i].color,
+                ID: game.game.players[i].id
               });
-                console.log(gamePlayers[i]);
             };
             
             while(gamePlayers.length < 4) {

@@ -64,7 +64,7 @@ var MovesController = {
     var gameId = req.game;
 
     GameModel.getModel(gameId, function(err, model) {
-      var players = model.players;
+      var players = model.game.players;
       var map = model.game.map;
       var bank = model.game.bank;
       var numberRolled = req.body.number;
@@ -191,7 +191,7 @@ var MovesController = {
     var victimId = req.body.victimIndex;
     var location = req.body.location;
     GameModel.getModel(gameId, function(err, model) {
-      var players = model.players;
+      var players = model.game.players;
       MovesModel.getRobber(gameId, function(err, robber) {
         
         if (gameHelpers.locationIsEqual(location, robber)) {
@@ -643,7 +643,7 @@ var MovesController = {
     var playerId = req.body.playerIndex;
 
     GameModel.getModel(gameId, function(err, model) {
-      var players = model.players;
+      var players = model.game.players;
       var player = gameHelpers.getPlayerFromPlayers(players, playerId);
       var amount = 0;
 
@@ -1166,7 +1166,7 @@ var MovesController = {
                     return callback(new Error("Players do not exist"));
                 } else {
                     var found = players.filter(function(player) {
-                        if (player.index != index && player.playedDevCard == false
+                        if (player.playerIndex != index && player.playedDevCard == false
                             && helper.countResources(player.resources) > 7) {
                             return true;
                         } else {

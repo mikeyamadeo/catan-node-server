@@ -64,10 +64,10 @@ var addToPorts = function(loc) {
     var x = portType.pop();
     if (x != null) {
         if (x == 3) {
-            var y = {ratio : x, location : location}
+            var y = {ratio : x, location : location, direction: "NW"}
         } else {
             var z = portResource.pop();
-            var y = {ratio : x, resource : z, location : location}
+            var y = {ratio : x, resource : z, location : location, direction: "NW"}
         }
         ports.push(y);
     }
@@ -208,10 +208,10 @@ module.exports = {
                     lines : []
                 },
                 map : createMap(tiles, chits, ports),
-                tradeOffer : {},
+                tradeOffer : null,
                 turnTracker : {
                     currentTurn : 0,
-                    status : "First Round",
+                    status : "FirstRound",
                     longestRoad : -1,
                     largestArmy : -1
                 },
