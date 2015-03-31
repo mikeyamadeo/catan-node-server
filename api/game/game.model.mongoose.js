@@ -136,33 +136,33 @@ var VertexObject = new Schema({
     }
 }, { _id : false });
 
-    VertexObject.methods.normalize = function() {
-        switch(this.location.direction) {
-            case 'NW':
-            case 'NE':
-                break;
-            case 'W':
-                this.location.direction = 'NE';
-                this.location.x = this.location.x - 1;
-                this.location.y = this.location.y + 1;
-                break;
-            case 'SW':
-                this.location.direction = 'NW';
-                this.location.y = this.location.y + 1;
-                break;
-            case 'SE':
-                this.location.direction = 'NE';
-                this.location.y = this.location.y + 1;
-                break;
-            case 'E':
-                this.location.direction = 'NW';
-                this.location.x = this.location.x + 1;
-                break;
-            default:
-                break;
-        }
-        return this;
+VertexObject.methods.normalize = function() {
+    switch(this.location.direction) {
+        case 'NW':
+        case 'NE':
+            break;
+        case 'W':
+            this.location.direction = 'NE';
+            this.location.x = this.location.x - 1;
+            this.location.y = this.location.y + 1;
+            break;
+        case 'SW':
+            this.location.direction = 'NW';
+            this.location.y = this.location.y + 1;
+            break;
+        case 'SE':
+            this.location.direction = 'NE';
+            this.location.y = this.location.y + 1;
+            break;
+        case 'E':
+            this.location.direction = 'NW';
+            this.location.x = this.location.x + 1;
+            break;
+        default:
+            break;
     }
+    return this;
+}
 
 var Map = {
     hexes : [Hex],
@@ -344,6 +344,7 @@ GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
 
 GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
     if (player >= 0 && player < this.game.players.length) {
+        console.log(player, resource, amount);
         this.game.players[player].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;

@@ -1021,83 +1021,74 @@ var MovesController = {
     var index = body.playerIndex;
     var acceptance = body.willAccept;
     async.waterfall([
-      function(callback) {
-        model.getTradeOffer(gameId, function(err, offer) {
-          if (err) {
-            return callback(err);
-          } else if (acceptance == false) {
-            return callback(null, false, offer)
-          } else if (!offer) {
-            return callback(new Error("There is no trade offer"));
-          } else {
-            return callback(null, acceptance, offer);
-          }
-        });
-      },
+        function(callback) {
+            model.getTradeOffer(gameId, function(err, offer) {
+                if (err) {
+                    return callback(err);
+                } else if (acceptance == false) {
+                    return callback(null, false, offer)
+                } else if (!offer) {
+                    return callback(new Error("There is no trade offer"));
+                } else {
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
         function(acceptance, offer, callback) {
-            model.getResources(gameId, index, function(err, resource) {
-              var sBrick = 0;
-              var sOre = 0;
-              var sSheep = 0;
-              var sWheat = 0;
-              var sWood = 0;
-              var rBrick = 0;
-              var rOre = 0;
-              var rSheep = 0;
-              var rWheat = 0;
-              var rWood = 0;
+            model.getResources(gameId, offer.receiver, function(err, resource) {
                 if (err) {
                     return callback(err);
                 } else if (acceptance == false) {     
-                    return callback(null, false, null);
+                    return callback(null, false, offer);
                 } else if (!resource) {
                     return callback(new Error("Resources do not exist"));
                 } else {
-                    if (offer.offer.brick > 0) {
-                      rBrick = offer.offer.brick;
-                      if (!(offer.offer.brick <= resource.brick))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } else {
-                      sBrick = offer.offer.brick;
-                    }
-                    if (offer.offer.ore > 0) {
-                      rOre = offer.offer.ore;
-                      if (!(offer.offer.ore <= resource.ore))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } else {
-                      sOre = offer.offer.ore;
-                    }
-                    if (offer.offer.sheep > 0) {
-                      rSheep = offer.offer.sheep;
-                      if (!(offer.offer.sheep <= resource.sheep))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } else {
-                      sSheep = offer.offer.sheep;
-                    }
-                    if (offer.offer.wheat > 0) {
-                      rWheat = offer.offer.wheat;
-                      if (!(offer.offer.wheat <= resource.wheat))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } else {
-                      sWheat = offer.offer.wheat;
-                    }
-                    if (offer.offer.wood > 0) {
-                      rWood = offer.offer.wood;
-                      if (!(offer.offer.wood <= resource.wood))
-                        return callback(new Error("You don't have the resources to trade"));
-                    } else {
-                      sWood = offer.offer.wood;
-                    }
-
-                  var resourceList = [{ player : offer.sender, 
-               resourceMap : { brick : sBrick, ore : sOre, 
-                sheep : sSheep, wheat : sWheat, wood : sWood }},
-                { player : offer.receiver, 
-               resourceMap : { brick : rBrick, ore : rOre, 
-                sheep : rSheep, wheat : rWheat, wood : rWood }}];
-                console.log(resourceList);
-
-                  return callback(null, acceptance, resourceList);
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value < 0) {
+                            if (Math.abs(value) > resource[key]) {
+                                return callback(new Error("You don't have the " + 
+                                    "resources to trade"));
+                            }
+                        }
+                    });
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
+        function(acceptance, offer, callback) {
+            if (!acceptance) {
+                return callback(null, null);
+            }
+            model.getResources(gameId, offer.sender, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value > 0) {
+                            if (value > resources[key]) {
+                                return callback(new Error("Sender doesn't have " +
+                                    "sufficient resources to trade"));
+                            }
+                        }
+                    });
+                    var resourceList = [{
+                        player : offer.sender,
+                        resourceMap : {
+                            brick : offer.offer.brick * -1,
+                            ore : offer.offer.ore * -1,
+                            sheep : offer.offer.sheep * -1,
+                            wheat : offer.offer.wheat * -1,
+                            wood : offer.offer.wood * -1
+                        }
+                    },
+                    {
+                        player : offer.receiver,
+                        resourceMap : offer.offer    
+                    }];
+                    console.log(resourceList[0].resourceMap, resourceList[1].resourceMap);
+                    return callback(null, acceptance, resourceList);
                 }
             });
         },

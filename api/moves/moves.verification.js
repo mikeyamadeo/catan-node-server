@@ -28,13 +28,10 @@ module.exports = {
                 console.log(err); 
                 return res.status(500).send();
             }
-            if (!result) {
-                console.log("isGameAvailable returned undefined"); 
-                return res.status(500).send();
-            }
             if (result === true) {
                 return res.status(403).send("This game is not full");
             }
+            return next();
         });
     }
     

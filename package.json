@@ -29,6 +29,7 @@
   "devDependencies": {
     "frisby": "^0.8.5",
     "grunt-jsdoc": "~0.5.8",
-    "jasmine": "^2.2.1"
+    "jasmine": "^2.2.1",
+    "mongo-express": "^0.20.0"
   }
 }
