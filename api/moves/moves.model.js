@@ -105,7 +105,10 @@ var MovesModel = {
                     game.updateStatus("SecondRound");
                     game.updateInitialTurn(4);
                     return game.save(callback);
-                } else if (game.getStatus() === "SecondRound" && player === 0 || game.getStatus() === "Playing") {
+                } else if (game.getStatus() === "SecondRound" && player === 0) {
+                    game.updateStatus("Rolling");
+                } else if (game.getStatus() === "Playing") {
+                    game.updateTurn(player);
                     game.updateStatus("Rolling");
                 } else if (game.getStatus() === "SecondRound") {
                     game.updateInitialTurn(player);
@@ -209,12 +212,12 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                  self.robPlayer(id, hex, player, victim, resource, status, 
-                                function(err, game) {
-                                    game.addSoldier(player, 1);
-                                    game.modifyOldDevCard(player, 'soldier', -1, false); 
-                                    game.setPlayedDevCard([player], true);
-                                    return game.save(callback);
-                                });
+                    function(err, game) {
+                        game.addSoldier(player, 1);
+                        game.modifyOldDevCard(player, 'soldier', -1, false); 
+                        game.setPlayedDevCard([player], true);
+                        return game.save(callback);
+                    });
             } else {
                 return callback(null, null);
             }
