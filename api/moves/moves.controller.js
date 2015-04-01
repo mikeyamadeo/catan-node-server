@@ -401,7 +401,7 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  yearOfPlenty: function(req, res, next) {
+  Year_of_Plenty: function(req, res, next) {
     /*
       Things to do:
       1. pull model from request body.
@@ -488,7 +488,7 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  roadBuilding: function(req, res, next) {
+  Road_Building: function(req, res, next) {
       var body = req.body;
       var index = body.playerIndex;
       var first = body.spot1;
