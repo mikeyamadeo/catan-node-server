@@ -74,7 +74,6 @@ var GamesController = {
    * @param {function} next - next command
    */
   create: function(req, res, next) {
-    console.log("Create");
     /**
      * Authentication:
      * - Requires User Cookie
@@ -91,6 +90,8 @@ var GamesController = {
      * POST CONDITIONS:
      * Creates a new game on server
      */
+
+
     var body = req.body,
         tiles = body.randomTiles,
         chits = body.randomNumbers,
@@ -98,7 +99,27 @@ var GamesController = {
         name = body.name;
     var newGame = helper.createNewGame(tiles, chits, ports, name);
     gamesModel.addGame(newGame, function(err, saved) {
-        if (err) { console.log(err); }
+        if (err) { 
+          console.log(err);
+          return res.status(400).send("Bad request");
+        }
+        if(saved) {
+          console.log(saved)
+          
+          var playerList = saved.players || [];
+          console.log("players: ", playerList)
+          while (playerList.length > 4) {
+            players.push ({});
+          }
+          var response = {
+            id: saved._id,
+            title: saved.title,
+            players: playerList
+          }
+          // save initial game state to command database
+          var gameId = saved._id;
+          gamesModel.initializeGameCommands({id: gameId, initialState: newGame.game, commands:[]});
+        }
         res.json(saved);
     });
   },
