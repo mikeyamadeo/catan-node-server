@@ -68,7 +68,24 @@ var MovesController = {
       var map = model.game.map;
       var bank = model.game.bank;
       var numberRolled = req.body.number;
-
+        var resourceChanges = [
+            {
+                player : 0,
+                resourceMap : {}
+            },
+            {
+                player : 1,
+                resourceMap : {}
+            },
+            {
+                player : 2,
+                resourceMap : {}
+            },
+            {
+                player : 3,
+                resourceMap : {}
+            }
+        ];
 
       if (numberRolled == 7) {
         var discardHuh = false;
@@ -115,7 +132,7 @@ var MovesController = {
                 } else {
                   amount = bank[hex.resource];
                 }
-                gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
               }
             });
 
@@ -136,12 +153,12 @@ var MovesController = {
                   if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
                     amount = 1;
                   }
-                  gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
                 }
               });
             });
 
-            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
+            MovesModel.rollNumber(gameId, "Playing", resourceChanges, function(err, game) {
                 return res.status(200).json(game.game);
               });
           });//end of get settlements
