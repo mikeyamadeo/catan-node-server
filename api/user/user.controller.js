@@ -29,6 +29,7 @@ var UserController = {
      * Logs in a user
      */
     login : function(req, res, next) {
+        console.login("tried to login")
         var body = req.body;
         model.validateUser(body.username, body.password, function(err, user) {
             if (err) return callback(err);

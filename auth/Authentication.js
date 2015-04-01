@@ -4,7 +4,7 @@ var Cookies = require('cookies');
 
 module.exports = {
     validateUser : function(req, res, next) {
-
+console.log("trying to validate a user")
         var cookies = new Cookies(req, res);
         if (cookies.get('catan.user')) {
             var userCookie = JSON.parse(decodeURI(cookies.get('catan.user')));
