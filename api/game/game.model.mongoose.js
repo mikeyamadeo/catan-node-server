@@ -66,31 +66,31 @@ var Port = new Schema({
     ratio : Number
 }, { _id : false }); 
 
-    Port.methods.normalize = function() {
-        
-        switch(this.location.direction) {
-            case 'NW':
-            case 'NE':
-            case 'N':
-                break;
-            case 'SW':
-                this.location.direction = 'NE';
-                this.location.x = this.location.x - 1;
-                this.location.y = this.location.y + 1;
-                break;
-            case 'SE':
-                this.location.direction = 'NW';
-                this.location.x = this.location.x + 1;
-                break;
-            case 'S':
-                this.location.direction = 'N';
-                this.location.y = this.location.y + 1;
-                break;
-            default:
-                break;
-        }
-        return this;
+Port.methods.normalize = function() {
+    
+    switch(this.location.direction) {
+        case 'NW':
+        case 'NE':
+        case 'N':
+            break;
+        case 'SW':
+            this.location.direction = 'NE';
+            this.location.x = this.location.x - 1;
+            this.location.y = this.location.y + 1;
+            break;
+        case 'SE':
+            this.location.direction = 'NW';
+            this.location.x = this.location.x + 1;
+            break;
+        case 'S':
+            this.location.direction = 'N';
+            this.location.y = this.location.y + 1;
+            break;
+        default:
+            break;
     }
+    return this;
+}
 
 var Road = new Schema({
     owner : Number,
