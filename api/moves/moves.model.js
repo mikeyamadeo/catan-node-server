@@ -98,14 +98,21 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 game.mergeDevCards(player);
-                game.updateTurn(player);
                 game.setPlayedDevCard([0, 1, 2, 3], false);
                 game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
-                if (game.getStatus() === "FirstRound" && player === 3)
+                if (game.getStatus() === "FirstRound" && player === 3) {
                     game.updateStatus("SecondRound");
-                else if (game.getStatus() === "SecondRound" && player === 3 || game.getStatus() === "Playing")
+                    game.updateInitialTurn(4);
+                    return game.save(callback);
+                } else if (game.getStatus() === "SecondRound" && player === 0 || game.getStatus() === "Playing") {
                     game.updateStatus("Rolling");
+                } else if (game.getStatus() === "SecondRound") {
+                    game.updateInitialTurn(player);
+                } else {
+                    game.updateTurn(player);
+                }
+                
                 return game.save(callback);
             } else {
                 return callback(null, null);
