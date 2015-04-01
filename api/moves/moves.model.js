@@ -97,6 +97,7 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                console.log("GAME STATUS: " + game.getStatus());
                 game.mergeDevCards(player);
                 game.setPlayedDevCard([0, 1, 2, 3], false);
                 game.setDiscarded([0, 1, 2, 3], false);
