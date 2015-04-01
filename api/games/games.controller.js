@@ -42,11 +42,13 @@ var GamesController = {
           var gameHeaders = games.map(function(game, index, array) {
             var gamePlayers = [];
             for (var i = 0; i < game.game.players.length; i++) {
-              gamePlayers.push({
-                name: game.game.players[i].name,
-                color: game.game.players[i].color,
-                ID: game.game.players[i].id
-              });
+                var header = {
+                    name : game.game.players[i].name,
+                    color : game.game.players[i].color,
+                    id : game.game.players[i].playerID
+                };
+                console.log(header);
+              gamePlayers.push(header);
             };
             
             while(gamePlayers.length < 4) {
@@ -132,6 +134,10 @@ var GamesController = {
         if (inGame) {
             res.cookie('catan.game', body.id);
 //            cookies.set('catan.game', encodedCookie);            
+            gamesModel.updateColor(body.id, user.name, body.color, 
+                function(err, game) {
+                if (err || !game) res.status(500).send("Server Error");
+            });
             return res.status(200).send("Success");
         } else {
             gamesModel.isGameAvailable(body.id, function(err, available) {

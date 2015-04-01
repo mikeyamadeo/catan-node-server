@@ -44,8 +44,9 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 resources.map(function(tuple, index, array) {
-                    var resourceMap = tuple.resources;
+                    var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
+                        console.log("player " + tuple.id + " resource " + key + " amount " + value);
                         game.modifyResource(tuple.id, key, value, true);
                     });
                 });
@@ -101,6 +102,10 @@ var MovesModel = {
                 game.setPlayedDevCard([0, 1, 2, 3], false);
                 game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
+                if (game.getStatus() === "FirstRound" && player === 3)
+                    game.updateStatus("SecondRound");
+                else if (game.getStatus() === "SecondRound" && player === 3 || game.getStatus() === "Playing")
+                    game.updateStatus("Rolling");
                 return game.save(callback);
             } else {
                 return callback(null, null);
@@ -448,7 +453,7 @@ var MovesModel = {
                 return callback(err);
             }
             if (game) {
-                return callback(null, game.currentPlayer);
+                return callback(null, game.currentPlayer());
             } else {
                 return callback(null, -1);
             }

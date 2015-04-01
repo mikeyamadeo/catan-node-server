@@ -39,7 +39,7 @@ var MovesController = {
             next(); 
         }
         console.log(game);
-        res.json(game);
+        res.json(game.game);
     });
     
     /*
@@ -71,8 +71,8 @@ var MovesController = {
 
 
       if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "discarding", players, function(err, game) {
-          return res.status(200).json({game: game});
+        MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
+          return res.status(200).json(game.game);
         });
       }
       else {
@@ -126,8 +126,8 @@ var MovesController = {
               });
             });
 
-            MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
-                return res.status(200).json({game: game});
+            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
+                return res.status(200).json(game.game);
               });
           });//end of get settlements
         });
@@ -195,7 +195,7 @@ var MovesController = {
       MovesModel.getRobber(gameId, function(err, robber) {
         
         if (gameHelpers.locationIsEqual(location, robber)) {
-          return res.status(200).json("robber is already in that location young homie");
+          return res.status(403).json("robber is already in that location young homie");
         } else {
           var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
           var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
@@ -221,7 +221,7 @@ var MovesController = {
               } else if (!result) {
                   return res.status(500).send("Server Error");
               } else {
-                  return res.status(200).json(result);
+                  return res.status(200).json(result.game);
               }
             });
 
@@ -247,12 +247,12 @@ var MovesController = {
    */
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
-    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err) {
+    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err, game) {
         if (err) {
             console.log(err); 
             return next(); 
         }
-        res.json({cheerUp: "young homie. your turn is finished."});
+        res.json(game.game);
     });
 
     /*
@@ -309,7 +309,7 @@ var MovesController = {
         //get random value based on array length
         var random = Math.floor(Math.random() * allCards.length);
         MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
-          return res.status(200).json({result: result});
+          return res.status(200).json(result.game);
         });
       }
 
@@ -400,7 +400,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result.pop());
+        return res.status(200).json(result.pop().game);
     });
   },
   /**
@@ -485,7 +485,7 @@ var MovesController = {
               } else if (!result) {
                   return res.status(500).send("Server Error");
               } else {
-                  return res.status(200).json(result);
+                  return res.status(200).json(result.game);
               }
           });
     /*
@@ -624,7 +624,7 @@ var MovesController = {
             } else if (!result) {
                 return res.status(500).send("Server Error");
             } else {
-                return res.status(200).json(result);
+                return res.status(200).json(result.game);
             }
         });
   },
@@ -666,7 +666,7 @@ var MovesController = {
           } else if (!result) {
             return res.status(500).send("Server Error");
           } else {
-            return res.status(200).json(result);
+            return res.status(200).json(result.game);
           }
         });
 
@@ -692,7 +692,7 @@ var MovesController = {
       } else if (!result) {
         return res.status(500).send("Server Error");
       } else {
-        return res.status(200).json(result);
+        return res.status(200).json(result.game);
       }
     });
   },
@@ -754,7 +754,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result.pop());
+        return res.status(200).json(result.pop().game);
     });
     /*
           run longest road algorithm
@@ -823,7 +823,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result.pop());
+        return res.status(200).json(result.pop().game);
     });
     /*
         verify availablity of resources and settlement pieces
@@ -892,7 +892,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result.pop());
+        return res.status(200).json(result.pop().game);
     });
     /*
       Things to do:
@@ -994,7 +994,7 @@ var MovesController = {
         if (err) {
             return res.status(400).send(err.message);
         }
-        return res.status(200).json(result.pop());
+        return res.status(200).json(result.pop().game);
     });
   },
   /**
@@ -1108,7 +1108,7 @@ var MovesController = {
             } else if (!result) {
                 return res.status(500).send("Server Error");
             } else {
-                return res.status(200).json(result);
+                return res.status(200).json(result.game);
             }
     });
   },
@@ -1133,39 +1133,72 @@ var MovesController = {
           transfer resources
     */
 
-    // var body = req.body;
-    // var gameId = req.game;
-    // var index = body.playerIndex;
-    // var input = body.inputResource;
-    // var output = body.outputResource;
-    // async.series([
-    //   function(callback) {
-    //     model.getOwnedPorts(gameId, index,  function(err, ports) {
-    //       if (err) {
-    //         return callback(err);
-    //       } else if (!ports) {
-    //         return callback(new Error("Ports don't exist"));
-    //       } else if (ports.)
-    //     });
-    //   },
-
-    //     function(callback) {
-    //         model.maritimeTrade(gameId, index, input, output, function(err, game) {
-    //             if (err) {
-    //                 return callback(err);
-    //             } else if (!game) {
-    //                 return callback(new Error("Game does not exist"));
-    //             }
-    //             return callback(null, game);
-    //         });
-    //     }
-    // ], function(err, result) {
-    //     if (err) {
-    //         return res.status(400).send(err.message);
-    //     }
-    //     return res.status(200).json(result.pop());
-    // });
-
+     var body = req.body;
+     var gameId = req.game;
+     var index = body.playerIndex;
+     var input = body.inputResource;
+     var output = body.outputResource;
+    var ratio = body.ratio;  
+    async.waterfall([
+       function(callback) {
+         model.getOwnedPorts(gameId, index,  function(err, ports) {
+            if (err) {
+             return callback(err);
+            } else if (!ports) {
+             return callback(new Error("Ports don't exist"));
+            } else {
+                var validPort = _.find(function(port) {
+                    if ((ratio === 2 && port.resource === output) ||
+                        (ratio === 3 && port.resource == undefined) ||
+                        (ratio === 4)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                if (validPort || ratio === 4) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Invalid Trade"));
+                }     
+            }
+         });
+       },
+        function(callback) {
+            model.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources[input] < ratio) {
+                        return callback(new Error("Insufficient Resources"));
+                    } else {
+                        return callback(null);
+                    }
+                }
+            });
+        },
+        function(callback) {
+            model.maritimeTrade(gameId, index, ratio, input, output, 
+                function(err, game) {
+                if (err) {
+                   return callback(err);
+                } else if (!game) {
+                   return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+     ], function(err, result) {
+            if (err) {
+                return res.status(400).send(err.message);
+            } else if (!result) {
+                return res.status(500).send("Server Error");
+            } else {
+                return res.status(200).json(result);
+            }
+        });
   },
   /**
    * @desc gets a request to discard cards, validates
@@ -1300,7 +1333,7 @@ var MovesController = {
             if (err) {
                 res.status(400).send(err.message);
             } else {
-                res.status(200).json(result);
+                res.status(200).json(result.game);
             }
         });
   },
