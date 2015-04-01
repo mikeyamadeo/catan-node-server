@@ -21,6 +21,19 @@ module.exports = {
 		var n = (n >= 0) ? n : 0;
     var arr = Array.apply(null, Array(n));
     return arr.map(function (x, i) { return value });
+  },
+  addToResourceChanges: function(type, amount, playerId, resourceChangeArray) {
+  	var index = -1;
+  	
+  	resourceChangeArray.some(function(item, i) {
+  		if (item.player === playerId) {
+  			index = i;
+  			return true;
+  		}
+  		return false;
+  	});
+
+  	resourceChangeArray[i].resources[type] += amount;
   }
 
 }

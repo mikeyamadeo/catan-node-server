@@ -68,6 +68,7 @@ var MovesController = {
       var map = model.game.map;
       var bank = model.game.bank;
       var numberRolled = req.body.number;
+      var resourceChanges = [];
 
 
       if (numberRolled == 7) {
@@ -100,7 +101,7 @@ var MovesController = {
                 } else {
                   amount = bank[hex.resource];
                 }
-                gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.id, resourceChanges);
               }
             });
 
@@ -110,7 +111,7 @@ var MovesController = {
           GameModel.getSettlements(req.game, function(err, settlements) {
 
             hotHexes.forEach(function(hex) {
-              settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
+              // settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
               settlements.forEach(function(settlement) {
                 if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
                   var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
@@ -121,12 +122,12 @@ var MovesController = {
                   if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
                     amount = 1;
                   }
-                  gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                  gameHelpers.addToResourceChanges(hex.resource, amount, player.id, resourceChanges);
                 }
               });
             });
-
-            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
+console.log(resourceChanges)
+            MovesModel.rollNumber(gameId, "Playing", resourceChanges, function(err, game) {
                 return res.status(200).json(game.game);
               });
           });//end of get settlements

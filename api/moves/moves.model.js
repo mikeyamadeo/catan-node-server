@@ -46,8 +46,8 @@ var MovesModel = {
                 resources.map(function(tuple, index, array) {
                     var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
-                        console.log("player " + tuple.id + " resource " + key + " amount " + value);
-                        game.modifyResource(tuple.id, key, value, true);
+                        console.log("player " + tuple.player + " resource " + key + " amount " + value);
+                        game.modifyResource(tuple.player, key, value, true);
                     });
                 });
                 game.updateStatus(status);
