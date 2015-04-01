@@ -56,11 +56,11 @@ var GamesModel = {
     * @param {number} index - specifies player
     * @param {function} callback - callback(err, game)
     */
-    updateColor : function(id, index, color, callback) {
+    updateColor : function(id, name, color, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.updateColor(index, color);
+                game.updateColor(name, color);
                 return game.save(callback);
                 return callback(null, game);
             } else {
