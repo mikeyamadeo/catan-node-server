@@ -84,9 +84,9 @@ module.exports = {
 			        		console.log(state);
 				            if (state.indexOf("Round") > -1) {
 				            	console.log("init round, num of connecting roads is " + matchingRoads.length);
-				            	if (matchingRoads.length > 0)
-				                	return callback(new Error("During initial round the road cannot be connected to another road")); 
-				                else 
+				            	//if (matchingRoads.length > 0)
+				                	//return callback(new Error("During initial round the road cannot be connected to another road")); 
+				                //else 
 				                	return callback(null);
 				            }
 				            else {

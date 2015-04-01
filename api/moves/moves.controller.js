@@ -69,9 +69,11 @@ var MovesController = {
       var bank = model.game.bank;
       var numberRolled = req.body.number;
 
-
+//console.log("number rolled",numberRolled, players);
       if (numberRolled == 7) {
         MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
+//console.log("after 7 rolled",game.game, players);
+
           return res.status(200).json(game.game);
         });
       }
@@ -81,6 +83,8 @@ var MovesController = {
         var hotHexes = map.hexes.filter(function(hex, i) {
           return hex.number == numberRolled;
         });
+//console.log("hotHexes",hotHexes);
+
         //use cities to determine if player has property on hothexes
         //add to resources if so.
         GameModel.getCities(req.game, function(err, cities) {
@@ -125,7 +129,7 @@ var MovesController = {
                 }
               });
             });
-
+//console.log("before DB", players);
             MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
                 return res.status(200).json(game.game);
               });
