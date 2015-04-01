@@ -59,16 +59,118 @@ var MovesController = {
     var gameId = req.game;
     var body = req.body;
 
-    MovesModel.rollNumber(gameId, body, function(err, game) {
-      if(err && !req.command) {
-        return res.status(400).send("Invalid request");
-      }
-      if(game) {
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.game.players;
+      var map = model.game.map;
+      var bank = model.game.bank;
+      var numberRolled = req.body.number;
+        var resourceChanges = [
+            {
+                player : 0,
+                resourceMap : {}
+            },
+            {
+                player : 1,
+                resourceMap : {}
+            },
+            {
+                player : 2,
+                resourceMap : {}
+            },
+            {
+                player : 3,
+                resourceMap : {}
+            }
+        ];
 
-        if(!req.command) {
-          command.addCommand(gameId, body);
-          return res.status(200).send(game.game);
+      if (numberRolled == 7) {
+        var discardHuh = false;
+        for (var i = 0; i < 4; i++) {
+            var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+            var resourceCount = gameHelpers.countResources(tempPlayer.resources);
+            if (resourceCount > 7) {
+                discardHuh = true;
+                break;
+            }
         }
+        if (discardHuh) {
+            MovesModel.rollNumber(gameId, "Discarding", [], function(err, game) {
+              if (!req.command) {
+                command.addCommand(gameId, body);
+                return res.status(200).json(game.game);
+              }
+
+            });
+        } else {
+            MovesModel.rollNumber(gameId, "Robbing", [], function(err, game) {
+              if(!req.command) {
+                command.addCommand(gameId, body);
+                return res.status(200).json(game.game);
+              }
+            });
+        }
+      }
+      else {
+
+        //hexes that have the chit number that was rolled
+        var hotHexes = map.hexes.filter(function(hex, i) {
+          return hex.number == numberRolled;
+        });
+//console.log("hotHexes",hotHexes);
+
+        //use cities to determine if player has property on hothexes
+        //add to resources if so.
+        GameModel.getCities(req.game, function(err, cities) {
+          //for each hex that the has the number chit rolled
+
+          hotHexes.forEach(function(hex) {
+            // cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
+            cities.forEach(function(city) {
+              if (gameHelpers.locationIsEqual(hex.location, city.location)) {
+                var player = gameHelpers.getPlayerFromPlayers(players, city.id);
+                var resources = player.resources;
+                var amount = 0;
+
+                //only add resources if they are available
+                if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
+                  amount = 2;
+                } else {
+                  amount = bank[hex.resource];
+                }
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
+              }
+            });
+
+          });
+
+          //do it all over again with settlements
+          GameModel.getSettlements(req.game, function(err, settlements) {
+
+            hotHexes.forEach(function(hex) {
+              settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
+              settlements.forEach(function(settlement) {
+                if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
+                  var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
+                  var resources = player.resources;
+                  var amount = 0;
+
+                  //only add resources if they are available
+                  if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
+                    amount = 1;
+                  }
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
+                }
+              });
+            });
+
+            MovesModel.rollNumber(gameId, "Playing", resourceChanges, function(err, game) {
+                if(!req.command) {
+                  command.addCommand(gameId, body);
+                  return res.status(200).json(game.game);
+                }
+              });
+          });//end of get settlements
+        });
       }
     })
     /*
