@@ -79,7 +79,6 @@ var GamesModel = {
     isPlayerInGame : function(id, username, callback) {
         console.log(arguments);
         model.findById(id, function(err, game) {
-            console.log('find model', err, game)
             if (err) return callback(err);
             if (game) {
                 return callback(null, game.isPlayerInGame(username));
@@ -140,7 +139,6 @@ var GamesModel = {
     },
 
     initializeGameCommands: function(initGame, callback) {
-        console.log("Init game: ", initGame)
 
         command.create(initGame); 
     },

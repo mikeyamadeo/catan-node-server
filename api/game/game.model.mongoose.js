@@ -503,7 +503,6 @@ GameSchema.methods.removeTradeOffer = function() {
 };
 
 var connection = mongoose.createConnection("mongodb://localhost/catan");
-console.log("Initializing game model database")
 
 autoIncrement.initialize(connection);
 

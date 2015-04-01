@@ -147,7 +147,6 @@ CommandsSchema.methods.addCommand = function(command) {
         type:command.type, 
         command: JSON.stringify(command.command)
     }
-    console.log("Command after", newCommand);
     this.commands.push(newCommand);
 
 }
@@ -159,7 +158,6 @@ CommandsSchema.methods.reset = function() {
 }
 
 var connection = mongoose.createConnection("mongodb://localhost/catan");
-console.log("Initializing command database")
 
 autoIncrement.initialize(connection);
 

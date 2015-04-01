@@ -74,7 +74,6 @@ var GamesController = {
    * @param {function} next - next command
    */
   create: function(req, res, next) {
-    console.log("Create");
     /**
      * Authentication:
      * - Requires User Cookie

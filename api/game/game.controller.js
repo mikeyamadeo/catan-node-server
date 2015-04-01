@@ -50,7 +50,6 @@ var GameController = {
             return res.status(500).send(err);
         }
         if (state) {
-          console.log(state)
           var commands = state.getCommands(); 
           return res.status(200).send(commands);           }
     });
@@ -117,7 +116,6 @@ var GameController = {
         if (state) {
           // add command and run using controller
           for (var i in body) {
-            console.log(body[i])
             state.addCommand(body[i]);
             var req = {
               command: true,

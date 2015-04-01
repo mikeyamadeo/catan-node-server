@@ -37,8 +37,6 @@ UserSchema.statics.addNewUser = function(username, password, callback) {
 
 var connection = mongoose.createConnection("mongodb://localhost/catan");
 
-console.log("Initializing user database")
-
 autoIncrement.initialize(connection);
 UserSchema.plugin(autoIncrement.plugin, 'User');
 
