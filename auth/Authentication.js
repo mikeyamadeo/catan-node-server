@@ -45,6 +45,7 @@ module.exports = {
                     id : id
                 };
                 req.game = gameId;
+                console.log("going next " + req.url);
                 return next();
             });
         } else {

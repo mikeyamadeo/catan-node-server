@@ -23,7 +23,7 @@ module.exports = {
     },
 
     validateGameFull : function (req, res, next) {
-
+        console.log("verifying game full");
         gamesModel.isGameAvailable(req.game, function (err, result) {
             if (err) {
                 console.log(err); 
