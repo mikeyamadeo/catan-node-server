@@ -113,6 +113,8 @@ var MovesController = {
         var hotHexes = map.hexes.filter(function(hex, i) {
           return hex.number == numberRolled;
         });
+//console.log("hotHexes",hotHexes);
+
         //use cities to determine if player has property on hothexes
         //add to resources if so.
         GameModel.getCities(req.game, function(err, cities) {
