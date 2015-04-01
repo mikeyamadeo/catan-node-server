@@ -116,7 +116,12 @@ var addToPorts = function(loc) {
     }
 
     var roads = [],
-        settlements = [],
+        settlements = [
+        {
+            owner: 1,
+            location: {x:0, y:0, direction: 'N'}
+        }
+        ],
         cities = [];
 
     return {
@@ -169,11 +174,11 @@ module.exports = {
             playerIndex : -1,
             playedDevCard : false,
             resources : {
-                brick : 0,
-                ore : 0,
-                sheep : 0,
-                wheat : 0,
-                wood : 0
+                brick : 3,
+                ore : 3,
+                sheep : 3,
+                wheat : 3,
+                wood : 3
             },
             roads : 15,
             settlements : 5,
