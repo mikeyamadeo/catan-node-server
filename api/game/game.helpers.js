@@ -21,6 +21,7 @@ module.exports = {
 		var n = (n >= 0) ? n : 0;
     var arr = Array.apply(null, Array(n));
     return arr.map(function (x, i) { return value });
+
   },
   addToResourceChanges: function(type, amount, playerId, resourceChangeArray) {
   	var index = -1;
@@ -34,6 +35,17 @@ module.exports = {
   	});
 
   	resourceChangeArray[i].resources[type] += amount;
-  }
 
+  },
+
+  countResources : function(resources) {
+    var total = 0;
+    _.forOwn(resources, function(value, key) {
+        if (!isNaN(value)) {
+            total += value;
+        }
+    });
+    return total;
+  }
 }
+
