@@ -146,7 +146,7 @@ module.exports = {
      */
     createNewPlayer : function(id, name, color) {
         return {
-            id : id, 
+            playerID : id, 
             cities : 4,
             color : color,
             discarded : false,
@@ -166,7 +166,7 @@ module.exports = {
                 soldier : 0,
                 yearOfPlenty : 0
             },
-            index : -1,
+            playerIndex : -1,
             playedDevCard : false,
             resources : {
                 brick : 0,
