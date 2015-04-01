@@ -68,12 +68,44 @@ var MovesController = {
       var map = model.game.map;
       var bank = model.game.bank;
       var numberRolled = req.body.number;
-
+        var resourceChanges = [
+            {
+                player : 0,
+                resourceMap : {}
+            },
+            {
+                player : 1,
+                resourceMap : {}
+            },
+            {
+                player : 2,
+                resourceMap : {}
+            },
+            {
+                player : 3,
+                resourceMap : {}
+            }
+        ];
 
       if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
-          return res.status(200).json(game.game);
-        });
+        var discardHuh = false;
+        for (var i = 0; i < 4; i++) {
+            var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+            var resourceCount = gameHelpers.countResources(tempPlayer.resources);
+            if (resourceCount > 7) {
+                discardHuh = true;
+                break;
+            }
+        }
+        if (discardHuh) {
+            MovesModel.rollNumber(gameId, "Discarding", [], function(err, game) {
+                return res.status(200).json(game.game);
+            });
+        } else {
+            MovesModel.rollNumber(gameId, "Robbing", [], function(err, game) {
+                return res.status(200).json(game.game);
+            });
+        }
       }
       else {
 
@@ -81,6 +113,8 @@ var MovesController = {
         var hotHexes = map.hexes.filter(function(hex, i) {
           return hex.number == numberRolled;
         });
+//console.log("hotHexes",hotHexes);
+
         //use cities to determine if player has property on hothexes
         //add to resources if so.
         GameModel.getCities(req.game, function(err, cities) {
@@ -100,7 +134,7 @@ var MovesController = {
                 } else {
                   amount = bank[hex.resource];
                 }
-                gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
               }
             });
 
@@ -121,12 +155,12 @@ var MovesController = {
                   if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
                     amount = 1;
                   }
-                  gameHelpers.addToPlayersResources(hex.resource, amount, resources);
+                gameHelpers.addToResourceChanges(hex.resource, amount, player.playerIndex, resourceChanges);
                 }
               });
             });
 
-            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
+            MovesModel.rollNumber(gameId, "Playing", resourceChanges, function(err, game) {
                 return res.status(200).json(game.game);
               });
           });//end of get settlements

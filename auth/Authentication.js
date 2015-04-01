@@ -45,7 +45,7 @@ module.exports = {
                     id : id
                 };
                 req.game = gameId;
-                console.log("going next " + req.url);
+                console.log("going next " + req.url + req.user.name);
                 return next();
             });
         } else {
