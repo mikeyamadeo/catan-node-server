@@ -4,7 +4,7 @@
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
 var MovesModel = require('./moves.model');
-var gameModel = require('../game/game.model');
+var GameModel = require('../game/game.model');
 var helper = require('./moves.controller.helper');
 var async = require('async');
 
