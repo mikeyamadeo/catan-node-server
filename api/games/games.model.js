@@ -50,6 +50,25 @@ var GamesModel = {
         });
     },
     /**
+    * @desc modifies the player's color
+    * @method updateColor
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, game)
+    */
+    updateColor : function(id, index, color, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.updateColor(index, color);
+                return game.save(callback);
+                return callback(null, game);
+            } else {
+                return callback(null, null);
+            }
+        });
+    },
+    /**
     * @desc determines if the given player is in the specified game
     * @method isPlayerInGame
     * @param {number} id - specifies game

@@ -66,31 +66,31 @@ var Port = new Schema({
     ratio : Number
 }, { _id : false }); 
 
-    Port.methods.normalize = function() {
-        
-        switch(this.location.direction) {
-            case 'NW':
-            case 'NE':
-            case 'N':
-                break;
-            case 'SW':
-                this.location.direction = 'NE';
-                this.location.x = this.location.x - 1;
-                this.location.y = this.location.y + 1;
-                break;
-            case 'SE':
-                this.location.direction = 'NW';
-                this.location.x = this.location.x + 1;
-                break;
-            case 'S':
-                this.location.direction = 'N';
-                this.location.y = this.location.y + 1;
-                break;
-            default:
-                break;
-        }
-        return this;
+Port.methods.normalize = function() {
+    
+    switch(this.location.direction) {
+        case 'NW':
+        case 'NE':
+        case 'N':
+            break;
+        case 'SW':
+            this.location.direction = 'NE';
+            this.location.x = this.location.x - 1;
+            this.location.y = this.location.y + 1;
+            break;
+        case 'SE':
+            this.location.direction = 'NW';
+            this.location.x = this.location.x + 1;
+            break;
+        case 'S':
+            this.location.direction = 'N';
+            this.location.y = this.location.y + 1;
+            break;
+        default:
+            break;
     }
+    return this;
+}
 
 var Road = new Schema({
     owner : Number,
@@ -203,6 +203,12 @@ var GameSchema = new Schema({
     }
 });
 
+GameSchema.methods.updateColor = function(index, color) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].color = color;
+    }
+};
+
 GameSchema.methods.getPlayers = function() {
     return this.game.players;
 };
@@ -273,7 +279,7 @@ GameSchema.methods.getOwnedPorts = function(index) {
     var cities = this.getOwnedStructures(index, 'cities');
     var ports = this.game.map.ports;
     return ports.filter(function(port) {
-        var foundSettlemnt = _.find(settlements, function(settlement) {
+        var foundSettlement = _.find(settlements, function(settlement) {
             if (settlement.location.x === port.location.x &&
                 settlement.location.y === port.location.y) {
                 return true;

@@ -1133,39 +1133,72 @@ var MovesController = {
           transfer resources
     */
 
-    // var body = req.body;
-    // var gameId = req.game;
-    // var index = body.playerIndex;
-    // var input = body.inputResource;
-    // var output = body.outputResource;
-    // async.series([
-    //   function(callback) {
-    //     model.getOwnedPorts(gameId, index,  function(err, ports) {
-    //       if (err) {
-    //         return callback(err);
-    //       } else if (!ports) {
-    //         return callback(new Error("Ports don't exist"));
-    //       } else if (ports.)
-    //     });
-    //   },
-
-    //     function(callback) {
-    //         model.maritimeTrade(gameId, index, input, output, function(err, game) {
-    //             if (err) {
-    //                 return callback(err);
-    //             } else if (!game) {
-    //                 return callback(new Error("Game does not exist"));
-    //             }
-    //             return callback(null, game);
-    //         });
-    //     }
-    // ], function(err, result) {
-    //     if (err) {
-    //         return res.status(400).send(err.message);
-    //     }
-    //     return res.status(200).json(result.pop());
-    // });
-
+     var body = req.body;
+     var gameId = req.game;
+     var index = body.playerIndex;
+     var input = body.inputResource;
+     var output = body.outputResource;
+    var ratio = body.ratio;  
+    async.waterfall([
+       function(callback) {
+         model.getOwnedPorts(gameId, index,  function(err, ports) {
+            if (err) {
+             return callback(err);
+            } else if (!ports) {
+             return callback(new Error("Ports don't exist"));
+            } else {
+                var validPort = _.find(function(port) {
+                    if ((ratio === 2 && port.resource === output) ||
+                        (ratio === 3 && port.resource == undefined) ||
+                        (ratio === 4)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                if (validPort || ratio === 4) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Invalid Trade"));
+                }     
+            }
+         });
+       },
+        function(callback) {
+            model.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources[input] < ratio) {
+                        return callback(new Error("Insufficient Resources"));
+                    } else {
+                        return callback(null);
+                    }
+                }
+            });
+        },
+        function(callback) {
+            model.maritimeTrade(gameId, index, ratio, input, output, 
+                function(err, game) {
+                if (err) {
+                   return callback(err);
+                } else if (!game) {
+                   return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+     ], function(err, result) {
+            if (err) {
+                return res.status(400).send(err.message);
+            } else if (!result) {
+                return res.status(500).send("Server Error");
+            } else {
+                return res.status(200).json(result);
+            }
+        });
   },
   /**
    * @desc gets a request to discard cards, validates
