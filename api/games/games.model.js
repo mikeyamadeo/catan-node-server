@@ -60,7 +60,8 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.game.players[index].color = color;
+                game.updateColor(index, color);
+                return game.save(callback);
                 return callback(null, game);
             } else {
                 return callback(null, null);
