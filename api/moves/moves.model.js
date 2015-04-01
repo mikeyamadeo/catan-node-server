@@ -101,6 +101,10 @@ var MovesModel = {
                 game.setPlayedDevCard([0, 1, 2, 3], false);
                 game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
+                if (game.getStatus() === "FirstRound" && player === 3)
+                    game.updateStatus("SecondRound");
+                else if (game.getStatus() === "SecondRound" && player === 3)
+                    game.updateStatus("Playing");
                 return game.save(callback);
             } else {
                 return callback(null, null);
