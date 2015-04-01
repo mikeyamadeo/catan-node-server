@@ -71,11 +71,24 @@ var MovesController = {
 
 //console.log("number rolled",numberRolled, players);
       if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
-//console.log("after 7 rolled",game.game, players);
-
-          return res.status(200).json(game.game);
-        });
+        var discardHuh = false;
+        for (var i = 0; i < 4; i++) {
+            var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+            var resourceCount = gameHelpers.countResources(tempPlayer.resources);
+            if (resourceCount > 7) {
+                discardHuh = true;
+                break;
+            }
+        }
+        if (discardHuh) {
+            MovesModel.rollNumber(gameId, "Discarding", [], function(err, game) {
+                return res.status(200).json(game.game);
+            });
+        } else {
+            MovesModel.rollNumber(gameId, "Robbing", [], function(err, game) {
+                return res.status(200).json(game.game);
+            });
+        }
       }
       else {
 

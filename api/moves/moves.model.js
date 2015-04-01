@@ -43,7 +43,7 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                resources.map(function(tuple, index, array) {
+                resources.map(function(tuple) {
                     var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
                         console.log("player " + tuple.id + " resource " + key + " amount " + value);
