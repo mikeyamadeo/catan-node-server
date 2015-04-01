@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var command = require('../game/game.command.mongoose');
 var fs = require('fs'),
     config = require('../../config');
 
@@ -135,7 +136,13 @@ var GamesModel = {
             }
             return callback(null, false);
         });   
-    }
+    },
+
+    initializeGameCommands: function(initGame, callback) {
+        console.log("Init game: ", initGame)
+
+        command.create(initGame); 
+    },
 }
 
 module.exports = GamesModel; 

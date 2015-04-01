@@ -153,10 +153,12 @@ CommandsSchema.methods.addCommand = function(command) {
 
 CommandsSchema.methods.reset = function() {
     this.commands = [];
+    this.save();
 
 }
 
 var connection = mongoose.createConnection("mongodb://localhost/catan");
+console.log("Initializing command database")
 
 autoIncrement.initialize(connection);
 

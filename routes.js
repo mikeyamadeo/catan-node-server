@@ -10,8 +10,10 @@ module.exports = function(app) {
   ///////////////////////////
   // Authentication Routes //
   ///////////////////////////
-  app.use('/games', auth.validateUser);
+  app.use('/games/join', auth.validateUser);
+  app.use('/moves', auth.validateUser);
   app.use('/moves', auth.validateGame);
+  app.use('/game', auth.validateUser);
   app.use('/game', auth.validateGame);
 
   //app.use('/moves', movesVerifier.validateGameFull);

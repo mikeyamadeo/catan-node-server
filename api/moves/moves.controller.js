@@ -3,19 +3,14 @@
 
 var _ = require('lodash');
 var gameHelpers = require('../game/game.helpers');
-var model = require('./moves.model');
+var MovesModel = require('./moves.model');
 var gameModel = require('../game/game.model');
 var helper = require('./moves.controller.helper');
 var async = require('async');
 
-// moves model
-var model = require('./moves.model');
-var helper = require('./moves.controller.helper');
-// game model
-var gameModel = require('../game/game.model');
-var gameHelpers = require('../game/game.helpers');
 // command model
 var command = require('./moves.command');
+console.log('required commands')
 
 var MovesController = {
   /** CREATE **/
@@ -33,20 +28,21 @@ var MovesController = {
       1. pull model from request body.
       2. call correct execute method
         - add chat object to the chat object array
-    */
-    var gameId = req.game;
-    var body = req.body;
-
-    model.addChat(gameId, body, function(err, game) {
-      if(err && !req.command) {
-        return res.status(500).send(err);
-      }
-      if(game) {
+    */    
+    console.log("Are we here -- controller");
+    var data = req.body;
+    var gameId = 0;
+    var playerId = data.playerIndex;
+    var message = data.content;
+    MovesModel.addChat(gameId, playerId, message, function(err, game) {
+        if (err) {
+            console.log(err); 
+            next(); 
+        }
         if(!req.command) {
-          command.addCommand(gameId, body);
+          command.addCommand(gameId, data);
           return res.status(200).send(game.game); // make sure this is same as game model
         }
-      }
     });
     
   },
@@ -63,7 +59,7 @@ var MovesController = {
     var gameId = req.game;
     var body = req.body;
 
-    model.rollNumber(gameId, body, function(err, game) {
+    MovesModel.rollNumber(gameId, body, function(err, game) {
       if(err && !req.command) {
         return res.status(400).send("Invalid request");
       }
@@ -192,7 +188,8 @@ var MovesController = {
    */
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
-    model.finishTurn(req.game, req.body.playerIndex, function(err) {
+    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err, game) {
+      console.log("finish turn game", game)
         if (err && !req.command) {
             return res.status(500).send(err)
         }
@@ -321,7 +318,7 @@ var MovesController = {
     var second = body.resource2;
     async.series([
         function(callback) {
-            model.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
                 if (err) {
                     return callback(err);
                 } else if (playedDevCard) {
@@ -331,7 +328,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getBank(gameId, function(err, bank) {
+            MovesModel.getBank(gameId, function(err, bank) {
                 if (err) {
                     return callback(err);
                 } else if (!bank) {
@@ -347,7 +344,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
+            MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
                 if (err) {
                     return callback(err);
                 } else if (!devCards) {
@@ -361,7 +358,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.yearOfPlenty(gameId, index, first, second, function(err, game) {
+            MovesModel.yearOfPlenty(gameId, index, first, second, function(err, game) {
                 if (err) {
                     return callback(err);
                 } else if (!game) {
@@ -398,7 +395,7 @@ var MovesController = {
       async.waterfall([
           function(callback) {
             
-              model.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+              MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
                   if (err) {
                       return callback(err);
                   }
@@ -412,7 +409,7 @@ var MovesController = {
               });
           },
           function(callback) {
-              model.getPlayedDevCard(gameId, index, function(err, played) {
+              MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
                   if (err) {
                       return callback(err);
                   }
@@ -445,7 +442,7 @@ var MovesController = {
             });
           },
           function(callback) {
-              model.roadBuilding(gameId, index, first, second,
+              MovesModel.roadBuilding(gameId, index, first, second,
                   function(err, game) { 
                     if (err) {
                         return callback(err);
@@ -513,7 +510,7 @@ var MovesController = {
     var gameId = req.game;
     async.waterfall([
         function(callback) {
-            model.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+            MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
                 if (err) {
                     return callback(err);
                 }
@@ -527,7 +524,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getPlayedDevCard(gameId, index, function(err, played) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
                 if (err) {
                     return callback(err);
                 }
@@ -547,7 +544,7 @@ var MovesController = {
             }
         },
         function(callback) {
-            model.getRobber(gameId, function(err, robber) {
+            MovesModel.getRobber(gameId, function(err, robber) {
                 if (err) {
                     return callback(err);
                 }
@@ -562,7 +559,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getResources(gameId, victim, function(err, resources) {
+            MovesModel.getResources(gameId, victim, function(err, resources) {
                 if (err) {
                     return callback(err);
                 } else if (!resources) {
@@ -587,7 +584,7 @@ var MovesController = {
         },
         function(resource, callback) {
             console.log(gameId);
-            model.soldier(gameId, location, index, victim, resource, 'Playing',
+            MovesModel.soldier(gameId, location, index, victim, resource, 'Playing',
                 function(err, game) { 
                 if (err) {
                     return callback(err);
@@ -737,7 +734,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
                 if (err) {
                       return callback(err); 
                 }
@@ -944,7 +941,7 @@ var MovesController = {
         },
         function(callback) {
           var noResource = true;
-            model.getResources(gameId, index, function(err, resource) {
+            MovesModel.getResources(gameId, index, function(err, resource) {
                 if (err) {
                     return callback(err);
                 } else if (!resource) {
@@ -987,7 +984,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.offerTrade(gameId, index, offer, receiver, function(err, game) {
+            MovesModel.offerTrade(gameId, index, offer, receiver, function(err, game) {
                 if (err) {
                     return callback(err);
                 } else if (!game) {
@@ -1032,7 +1029,7 @@ var MovesController = {
     var acceptance = body.willAccept;
     async.waterfall([
         function(callback) {
-            model.getTradeOffer(gameId, function(err, offer) {
+            MovesModel.getTradeOffer(gameId, function(err, offer) {
                 if (err) {
                     return callback(err);
                 } else if (acceptance == false) {
@@ -1045,7 +1042,7 @@ var MovesController = {
             });
         },
         function(acceptance, offer, callback) {
-            model.getResources(gameId, offer.receiver, function(err, resource) {
+            MovesModel.getResources(gameId, offer.receiver, function(err, resource) {
                 if (err) {
                     return callback(err);
                 } else if (acceptance == false) {     
@@ -1069,7 +1066,7 @@ var MovesController = {
             if (!acceptance) {
                 return callback(null, null);
             }
-            model.getResources(gameId, offer.sender, function(err, resources) {
+            MovesModel.getResources(gameId, offer.sender, function(err, resources) {
                 if (err) {
                     return callback(err);
                 } else if (!resources) {
@@ -1102,7 +1099,7 @@ var MovesController = {
             });
         },
         function(acceptance, resourceList, callback) {
-            model.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
+            MovesModel.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
                 if (err) {
                     return callback(err);
                 } else if (!game) {
@@ -1154,7 +1151,7 @@ var MovesController = {
     var ratio = body.ratio;  
     async.waterfall([
        function(callback) {
-         model.getOwnedPorts(gameId, index,  function(err, ports) {
+         MovesModel.getOwnedPorts(gameId, index,  function(err, ports) {
             if (err) {
              return callback(err);
             } else if (!ports) {
@@ -1178,7 +1175,7 @@ var MovesController = {
          });
        },
         function(callback) {
-            model.getResources(gameId, index, function(err, resources) {
+            MovesModel.getResources(gameId, index, function(err, resources) {
                 if (err) {
                     return callback(err);
                 } else if (!resources) {
@@ -1193,7 +1190,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.maritimeTrade(gameId, index, ratio, input, output, 
+            MovesModel.maritimeTrade(gameId, index, ratio, input, output, 
                 function(err, game) {
                 if (err) {
                    return callback(err);
@@ -1246,7 +1243,7 @@ var MovesController = {
     var discardedCards = body.discardedCards;
     async.waterfall([
         function(callback) {
-            model.getStatus(gameId, function(err, status) {
+            MovesModel.getStatus(gameId, function(err, status) {
                 if (err) {
                     console.log(err.stack);
                     return callback(err);
@@ -1258,7 +1255,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getPlayedDevCard(gameId, index, function(err, played) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
                 if (err) {
                     console.log(err.stack);
                     return callback(err);
@@ -1270,7 +1267,7 @@ var MovesController = {
             });
         },
         function(callback) {
-            model.getResources(gameId, index, function(err, resources) {
+            MovesModel.getResources(gameId, index, function(err, resources) {
                 if (err) {
                     console.log(err.stack);
                     return callback(err);
@@ -1302,7 +1299,7 @@ var MovesController = {
             return callback(null);
         },
         function(callback) {
-            model.getPlayers(gameId, function(err, players) {
+            MovesModel.getPlayers(gameId, function(err, players) {
                 if (err) {
                     return callback(err);
                 } else if (!players) {
@@ -1333,7 +1330,7 @@ var MovesController = {
                 wheat : discardedCards.wheat * -1,
                 wood : discardedCards.wood * -1
             };
-            model.discardCards(gameId, index, discard, status, 
+            MovesModel.discardCards(gameId, index, discard, status, 
                 function(err, game) {
                     if (err) {
                         return callback(err);

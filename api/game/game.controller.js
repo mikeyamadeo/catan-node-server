@@ -2,7 +2,8 @@
 
 var _ = require('lodash'),
     GameModel = require('./game.model'),
-    moveCtrl = require('../moves/moves.controller');
+    moveCtrl = require('../moves/moves.controller'),
+    command = require('./game.command.mongoose');
 
 /**
  * Example of getting access to required models:
@@ -49,6 +50,7 @@ var GameController = {
             return res.status(500).send(err);
         }
         if (state) {
+          console.log(state)
           var commands = state.getCommands(); 
           return res.status(200).send(commands);           }
     });
@@ -86,8 +88,9 @@ var GameController = {
             }
             if(game) {
               game.game = state.getInitialState();
+              game.save();
               state.reset();
-              return res.status(200).json(game);
+              return res.status(200).json(game.game);
             }
           });
         }
