@@ -55,6 +55,8 @@ var UserModel = {
             if (user) {
                 if (user.comparePasswords(password)) {
                     return callback(null, user);
+                } else {
+                    return callback(null, null);
                 }
             } else {
                 return callback(null, null);

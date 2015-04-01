@@ -402,6 +402,7 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     maritimeTrade : function(id, player, ratio, input, output, callback) {
+        console.log(arguments);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
@@ -452,7 +453,7 @@ var MovesModel = {
                 return callback(err);
             }
             if (game) {
-                return callback(null, game.currentPlayer);
+                return callback(null, game.currentPlayer());
             } else {
                 return callback(null, -1);
             }

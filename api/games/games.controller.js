@@ -132,6 +132,10 @@ var GamesController = {
         if (inGame) {
             res.cookie('catan.game', body.id);
 //            cookies.set('catan.game', encodedCookie);            
+            gamesModel.updateColor(body.id, user.name, body.color, 
+                function(err, game) {
+                if (err || !game) res.status(500).send("Server Error");
+            });
             return res.status(200).send("Success");
         } else {
             gamesModel.isGameAvailable(body.id, function(err, available) {
