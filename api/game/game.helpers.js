@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 module.exports = {
 	locationIsEqual: function(loc1, loc2) {
 		return (loc1.x === loc2.x && loc1.y === loc2.y);

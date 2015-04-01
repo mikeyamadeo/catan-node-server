@@ -185,6 +185,7 @@ var MovesController = {
    * @param {function} next - next command
    */
   robPlayer: function(req, res, next) {
+    console.log("in robbing");
     /*
       Things to do:
       1. pull model from request body.
@@ -238,12 +239,13 @@ var MovesController = {
               } else if (!result) {
                   return res.status(500).send("Server Error");
               } else {
+                  console.log("after robbing " + result.game);
                   return res.status(200).json(result.game);
               }
             });
 
           } else {
-            return res.status(400).json("this young homie is poor. no resources to rob. soz");
+            return res.status(200).json("this young homie is poor. no resources to rob. soz");
           }
 
         }
