@@ -71,7 +71,7 @@ var MovesController = {
 
 
       if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "discarding", players, function(err, game) {
+        MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
           return res.status(200).json(game.game);
         });
       }
@@ -126,7 +126,7 @@ var MovesController = {
               });
             });
 
-            MovesModel.rollNumber(gameId, "playing", players, function(err, game) {
+            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
                 return res.status(200).json(game.game);
               });
           });//end of get settlements

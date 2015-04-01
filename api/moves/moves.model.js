@@ -44,8 +44,9 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                 resources.map(function(tuple, index, array) {
-                    var resourceMap = tuple.resources;
+                    var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
+                        console.log("player " + tuple.id + " resource " + key + " amount " + value);
                         game.modifyResource(tuple.id, key, value, true);
                     });
                 });
@@ -103,8 +104,8 @@ var MovesModel = {
                 game.incVersion();
                 if (game.getStatus() === "FirstRound" && player === 3)
                     game.updateStatus("SecondRound");
-                else if (game.getStatus() === "SecondRound" && player === 3)
-                    game.updateStatus("Playing");
+                else if (game.getStatus() === "SecondRound" && player === 3 || game.getStatus() === "Playing")
+                    game.updateStatus("Rolling");
                 return game.save(callback);
             } else {
                 return callback(null, null);
@@ -402,7 +403,6 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     maritimeTrade : function(id, player, ratio, input, output, callback) {
-        console.log(arguments);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
