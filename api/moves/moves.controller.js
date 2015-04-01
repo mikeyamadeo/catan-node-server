@@ -28,23 +28,6 @@ var MovesController = {
    * @param {function} next - next command
    */
   sendChat: function(req, res, next) {
-<<<<<<< HEAD
-=======
-    console.log("Are we here -- controller");
-    var data = req.body;
-    var gameId = 0;
-    var playerId = data.playerIndex;
-    var message = data.content;
-    MovesModel.addChat(gameId, playerId, message, function(err, game) {
-        if (err) {
-            console.log(err); 
-            next(); 
-        }
-        console.log(game);
-        res.json(game.game);
-    });
-    
->>>>>>> master
     /*
       Things to do:
       1. pull model from request body.
@@ -61,7 +44,7 @@ var MovesController = {
       if(game) {
         if(!req.command) {
           command.addCommand(gameId, body);
-          return res.status(200).send(game); // make sure this is same as game model
+          return res.status(200).send(game.game); // make sure this is same as game model
         }
       }
     });
@@ -80,7 +63,6 @@ var MovesController = {
     var gameId = req.game;
     var body = req.body;
 
-<<<<<<< HEAD
     model.rollNumber(gameId, body, function(err, game) {
       if(err && !req.command) {
         return res.status(400).send("Invalid request");
@@ -89,78 +71,8 @@ var MovesController = {
 
         if(!req.command) {
           command.addCommand(gameId, body);
-          return res.status(200).send(game);
+          return res.status(200).send(game.game);
         }
-=======
-    GameModel.getModel(gameId, function(err, model) {
-      var players = model.game.players;
-      var map = model.game.map;
-      var bank = model.game.bank;
-      var numberRolled = req.body.number;
-
-
-      if (numberRolled == 7) {
-        MovesModel.rollNumber(gameId, "Discarding", players, function(err, game) {
-          return res.status(200).json(game.game);
-        });
-      }
-      else {
-
-        //hexes that have the chit number that was rolled
-        var hotHexes = map.hexes.filter(function(hex, i) {
-          return hex.number == numberRolled;
-        });
-        //use cities to determine if player has property on hothexes
-        //add to resources if so.
-        GameModel.getCities(req.game, function(err, cities) {
-          //for each hex that the has the number chit rolled
-
-          hotHexes.forEach(function(hex) {
-            // cities = cities.length !== 0 ? cities : [{ owner: 0, location:{ y: -1,x: -1} }];
-            cities.forEach(function(city) {
-              if (gameHelpers.locationIsEqual(hex.location, city.location)) {
-                var player = gameHelpers.getPlayerFromPlayers(players, city.id);
-                var resources = player.resources;
-                var amount = 0;
-
-                //only add resources if they are available
-                if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
-                  amount = 2;
-                } else {
-                  amount = bank[hex.resource];
-                }
-                gameHelpers.addToPlayersResources(hex.resource, amount, resources);
-              }
-            });
-
-          });
-
-          //do it all over again with settlements
-          GameModel.getSettlements(req.game, function(err, settlements) {
-
-            hotHexes.forEach(function(hex) {
-              settlements = settlements.length !== 0 ? settlements : [{ owner: 0, location:{ y: -1,x: -1} }];
-              settlements.forEach(function(settlement) {
-                if (gameHelpers.locationIsEqual(hex.location, settlement.location)) {
-                  var player = gameHelpers.getPlayerFromPlayers(players, settlement.id);
-                  var resources = player.resources;
-                  var amount = 0;
-
-                  //only add resources if they are available
-                  if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
-                    amount = 1;
-                  }
-                  gameHelpers.addToPlayersResources(hex.resource, amount, resources);
-                }
-              });
-            });
-
-            MovesModel.rollNumber(gameId, "Playing", players, function(err, game) {
-                return res.status(200).json(game.game);
-              });
-          });//end of get settlements
-        });
->>>>>>> master
       }
     })
     /*
@@ -222,13 +134,8 @@ var MovesController = {
       var players = model.game.players;
       MovesModel.getRobber(gameId, function(err, robber) {
         
-<<<<<<< HEAD
         if (gameHelpers.locationIsEqual(location, robber) && !req.command) {
-          return res.status(200).json("robber is already in that location young homie");
-=======
-        if (gameHelpers.locationIsEqual(location, robber)) {
           return res.status(403).json("robber is already in that location young homie");
->>>>>>> master
         } else {
           var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
           var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
@@ -254,14 +161,10 @@ var MovesController = {
               } else if (!result && !req.command) {
                   return res.status(500).send("Server Error");
               } else {
-<<<<<<< HEAD
                 if(!req.command) {
                   command.addCommand(req.game, req.body); 
-                  return res.status(200).json(result);
-                }
-=======
                   return res.status(200).json(result.game);
->>>>>>> master
+                }
               }
             });
 
@@ -289,25 +192,14 @@ var MovesController = {
    */
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
-<<<<<<< HEAD
     model.finishTurn(req.game, req.body.playerIndex, function(err) {
         if (err && !req.command) {
-          return res.status(500).send(err)
-            console.log(err); 
-            return next(); 
+            return res.status(500).send(err)
         }
         if(!req.command) {
-          command.addCommand(req.game, req.body); 
-          res.json({cheerUp: "young homie. your turn is finished."});
+          command.addCommand(req.game, req.body);
+          res.json(game.game);
         }
-=======
-    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err, game) {
-        if (err) {
-            console.log(err); 
-            return next(); 
-        }
-        res.json(game.game);
->>>>>>> master
     });
 
     /*
@@ -389,14 +281,10 @@ var MovesController = {
         //get random value based on array length
         var random = Math.floor(Math.random() * allCards.length);
         MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
-<<<<<<< HEAD
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json({result: result});
-        }
-=======
           return res.status(200).json(result.game);
->>>>>>> master
+        }
         });
       }
 
@@ -486,15 +374,11 @@ var MovesController = {
         if (err && !req.command) {
             return res.status(400).send(err.message);
         }
-<<<<<<< HEAD
 
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.pop());
+          return res.status(200).json(result.pop().game);
         }
-=======
-        return res.status(200).json(result.pop().game);
->>>>>>> master
     });
   },
   /**
@@ -721,15 +605,11 @@ var MovesController = {
             } else if (!result && !req.command) {
                 return res.status(500).send("Server Error");
             } else {
-<<<<<<< HEAD
 
               if(!req.command) {
                 command.addCommand(req.game, req.body); 
-                return res.status(200).json(result);
-              }
-=======
                 return res.status(200).json(result.game);
->>>>>>> master
+              }
             }
         });
   },
@@ -771,15 +651,11 @@ var MovesController = {
           } else if (!result && !req.command) {
             return res.status(500).send("Server Error");
           } else {
-<<<<<<< HEAD
 
             if(!req.command) {
               command.addCommand(req.game, req.body); 
-              return res.status(200).json(result);
+              return res.status(200).json(result.game);
             }
-=======
-            return res.status(200).json(result.game);
->>>>>>> master
           }
         });
 
@@ -808,14 +684,10 @@ var MovesController = {
       } else if (!result && !req.command) {
         return res.status(500).send("Server Error");
       } else {
-<<<<<<< HEAD
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result);
+          return res.status(200).json(result.game);
         }
-=======
-        return res.status(200).json(result.game);
->>>>>>> master
       }
     });
   },
@@ -877,15 +749,11 @@ var MovesController = {
         if (err && !req.command) {
             return res.status(400).send(err.message);
         }
-<<<<<<< HEAD
 
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.pop());
+          return res.status(200).json(result.pop().game);
         }
-=======
-        return res.status(200).json(result.pop().game);
->>>>>>> master
     });
     /*
           run longest road algorithm
@@ -954,15 +822,11 @@ var MovesController = {
         if (err && !req.command) {
             return res.status(400).send(err.message);
         }
-<<<<<<< HEAD
 
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.pop());
+          return res.status(200).json(result.pop().game);
         }
-=======
-        return res.status(200).json(result.pop().game);
->>>>>>> master
     });
     /*
         verify availablity of resources and settlement pieces
@@ -1031,14 +895,10 @@ var MovesController = {
         if (err && !req.command) {
             return res.status(400).send(err.message);
         }
-<<<<<<< HEAD
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.pop());
+          return res.status(200).json(result.pop().game);
         }
-=======
-        return res.status(200).json(result.pop().game);
->>>>>>> master
     });
     /*
       Things to do:
@@ -1140,15 +1000,11 @@ var MovesController = {
         if (err && !req.command) {
             return res.status(400).send(err.message);
         }
-<<<<<<< HEAD
 
         if(!req.command) {
           command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.pop());
+          return res.status(200).json(result.pop().game);
         }
-=======
-        return res.status(200).json(result.pop().game);
->>>>>>> master
     });
   },
   /**
@@ -1257,12 +1113,15 @@ var MovesController = {
         }
     ],
     function(err, result) {
-            if (err) {
+            if (err && !req.command) {
                 return res.status(400).send(err.message);
-            } else if (!result) {
+            } else if (!result && !req.command) {
                 return res.status(500).send("Server Error");
             } else {
+              if(!req.command) {
+                command.addCommand(req.game, req.body); 
                 return res.status(200).json(result.game);
+              }
             }
     });
   },
@@ -1345,12 +1204,15 @@ var MovesController = {
             });
         }
      ], function(err, result) {
-            if (err) {
+            if (err && !req.command) {
                 return res.status(400).send(err.message);
-            } else if (!result) {
+            } else if (!result && !req.command) {
                 return res.status(500).send("Server Error");
             } else {
-                return res.status(200).json(result);
+                if (!req.command) {
+                  command.addCommand(req.game, req.body); 
+                  return res.status(200).json(result);
+                }
             }
         });
   },
@@ -1487,15 +1349,11 @@ var MovesController = {
             if (err && !req.command) {
                 res.status(400).send(err.message);
             } else {
-<<<<<<< HEAD
               
               if(!req.command) {
                 command.addCommand(req.game, req.body); 
-                res.status(200).json(result);
-              }
-=======
                 res.status(200).json(result.game);
->>>>>>> master
+              }
             }
         });
   },

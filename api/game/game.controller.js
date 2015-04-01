@@ -61,11 +61,7 @@ var GameController = {
    * @param {function} next - next command
    */
   listAI: function(req, res, next) {
-<<<<<<< HEAD
       return res.status(200).json(['LARGEST_ARMY']);
-=======
-    res.json([]);
->>>>>>> master
   },
     /**
    * @desc request to reset game state to initial state
@@ -140,7 +136,9 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  addAI: function(req, res, next) {},
+  addAI: function(req, res, next) {
+    return res.status(200).json("No AI Available")
+  },
 };
 
 module.exports = GameController;
