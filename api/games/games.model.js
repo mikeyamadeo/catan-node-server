@@ -42,11 +42,30 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                player.index = game.players.length;
+                player.playerIndex = game.game.players.length;
                 game.addPlayer(player);
                 return game.save(callback);
             }
             return callback(null, null);
+        });
+    },
+    /**
+    * @desc modifies the player's color
+    * @method updateColor
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, game)
+    */
+    updateColor : function(id, index, color, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.updateColor(index, color);
+                return game.save(callback);
+                return callback(null, game);
+            } else {
+                return callback(null, null);
+            }
         });
     },
     /**
@@ -111,9 +130,8 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                if (game.isGameAvailable()) {
-                    return callback(null, true);
-                }
+                console.log(game.isGameAvailable());
+                return callback(null, game.isGameAvailable());
             }
             return callback(null, false);
         });   

@@ -29,7 +29,7 @@ var GameController = {
       if (err) {
         return res.status(400).send(err.message);
       }
-      return res.status(200).json(model);
+      return res.status(200).json(model.game);
     });
   },
   /**
@@ -61,7 +61,11 @@ var GameController = {
    * @param {function} next - next command
    */
   listAI: function(req, res, next) {
+<<<<<<< HEAD
       return res.status(200).json(['LARGEST_ARMY']);
+=======
+    res.json([]);
+>>>>>>> master
   },
     /**
    * @desc request to reset game state to initial state

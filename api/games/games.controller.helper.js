@@ -8,7 +8,7 @@ var randomizeArray = function(array) {
 
 var createMap = function(randomTiles, randomChits, randomPorts) {
     var hexes = [];
-    var chits = [6, 12, 11, 10, 5, 9, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
+    var chits = [9, 12, 11, 10, 5, 6, 4, 8, 4, 11, 3, 3, 9, 10, 8, 6, 2, 5];
     var tiles = [   "wheat", "sheep", "wood", 
                     "sheep", "brick", "ore",
                     "brick", "wheat", "wood", "wheat",
@@ -64,10 +64,10 @@ var addToPorts = function(loc) {
     var x = portType.pop();
     if (x != null) {
         if (x == 3) {
-            var y = {ratio : x, location : location}
+            var y = {ratio : x, location : location, direction: "NW"}
         } else {
             var z = portResource.pop();
-            var y = {ratio : x, resource : z, location : location}
+            var y = {ratio : x, resource : z, location : location, direction: "NW"}
         }
         ports.push(y);
     }
@@ -146,7 +146,7 @@ module.exports = {
      */
     createNewPlayer : function(id, name, color) {
         return {
-            id : id, 
+            playerID : id, 
             cities : 4,
             color : color,
             discarded : false,
@@ -166,7 +166,7 @@ module.exports = {
                 soldier : 0,
                 yearOfPlenty : 0
             },
-            index : -1,
+            playerIndex : -1,
             playedDevCard : false,
             resources : {
                 brick : 0,
@@ -208,10 +208,10 @@ module.exports = {
                     lines : []
                 },
                 map : createMap(tiles, chits, ports),
-                tradeOffer : {},
+                tradeOffer : null,
                 turnTracker : {
                     currentTurn : 0,
-                    status : "First Round",
+                    status : "FirstRound",
                     longestRoad : -1,
                     largestArmy : -1
                 },

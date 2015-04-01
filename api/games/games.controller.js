@@ -41,13 +41,14 @@ var GamesController = {
         if (games) {
           var gameHeaders = games.map(function(game, index, array) {
             var gamePlayers = [];
-            for (var i = 0; i < game.players.length; i++) {
-              gamePlayers.push({
-                name: game.players[i].name,
-                color: game.players[i].color,
-                ID: game.players[i].id
-              });
-                console.log(gamePlayers[i]);
+            for (var i = 0; i < game.game.players.length; i++) {
+                var header = {
+                    name : game.game.players[i].name,
+                    color : game.game.players[i].color,
+                    id : game.game.players[i].playerID
+                };
+                console.log(header);
+              gamePlayers.push(header);
             };
             
             while(gamePlayers.length < 4) {
@@ -131,7 +132,12 @@ var GamesController = {
     gamesModel.isPlayerInGame(body.id, user.name, function(err, inGame) {
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
-            cookies.set('catan.game', body.id);
+            res.cookie('catan.game', body.id);
+//            cookies.set('catan.game', encodedCookie);            
+            gamesModel.updateColor(body.id, user.name, body.color, 
+                function(err, game) {
+                if (err || !game) res.status(500).send("Server Error");
+            });
             return res.status(200).send("Success");
         } else {
             gamesModel.isGameAvailable(body.id, function(err, available) {
@@ -143,7 +149,8 @@ var GamesController = {
                         if (err || !game) {
                             return res.status(404).send("Join failed");
                         }
-                        cookies.set('catan.game', body.id);
+                        res.cookie('catan.game', body.id);
+                        //cookies.set('catan.game', body.id);
                         return res.status(200).send("Success");
                     });
                 } else {
