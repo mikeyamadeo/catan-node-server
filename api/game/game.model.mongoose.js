@@ -273,7 +273,7 @@ GameSchema.methods.getOwnedPorts = function(index) {
     var cities = this.getOwnedStructures(index, 'cities');
     var ports = this.game.map.ports;
     return ports.filter(function(port) {
-        var foundSettlemnt = _.find(settlements, function(settlement) {
+        var foundSettlement = _.find(settlements, function(settlement) {
             if (settlement.location.x === port.location.x &&
                 settlement.location.y === port.location.y) {
                 return true;
