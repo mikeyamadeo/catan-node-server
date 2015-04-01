@@ -87,7 +87,9 @@ var GameController = {
               return res.status(400).send(err.message);
             }
             if(game) {
+              var playerList = game.game.players;
               game.game = state.getInitialState();
+              game.game.players = playerList;
               game.save();
               state.reset();
               return res.status(200).json(game.game);
@@ -115,19 +117,21 @@ var GameController = {
         if (state) {
           // add command and run using controller
           for (var i in body) {
+            console.log(body[i])
             state.addCommand(body[i]);
             var req = {
               command: true,
+              game: gameId,
               body: body[i]
             };
             moveCtrl[body[i].type](req);
+            command.addCommand(body[i]);
           }
-
           GameModel.getModel(gameId, function(err, model) {
             if (err) {
               return res.status(400).send(err.message);
             }
-            return res.status(200).json(model);
+            return res.status(200).json(model.game);
           });
         }
     });

@@ -31,7 +31,7 @@ var DevCardList = {
 };
 
 var Player = new Schema({
-    id : Number,
+    playerID : Number,
     cities : Number,
     color : String,
     discarded : Boolean,
@@ -39,7 +39,7 @@ var Player = new Schema({
     name : String,
     newDevCards : DevCardList,
     oldDevCards : DevCardList,
-    index : Number,
+    playerIndex : Number,
     playedDevCard : Boolean,
     resources : ResourceList,
     roads : Number,
@@ -116,6 +116,7 @@ var CommandsSchema = new Schema({
     id : Number,
     initialState : {
         bank : ResourceList,
+        deck : DevCardList,
         chat : MessageList,
         log : MessageList,
         map : Map,
