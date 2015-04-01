@@ -97,15 +97,26 @@ var MovesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
+                console.log("GAME STATUS: " + game.getStatus());
                 game.mergeDevCards(player);
-                game.updateTurn(player);
                 game.setPlayedDevCard([0, 1, 2, 3], false);
                 game.setDiscarded([0, 1, 2, 3], false);
                 game.incVersion();
-                if (game.getStatus() === "FirstRound" && player === 3)
+                if (game.getStatus() === "FirstRound" && player === 3) {
                     game.updateStatus("SecondRound");
-                else if (game.getStatus() === "SecondRound" && player === 3 || game.getStatus() === "Playing")
+                    game.updateInitialTurn(4);
+                    return game.save(callback);
+                } else if (game.getStatus() === "SecondRound" && player === 0) {
                     game.updateStatus("Rolling");
+                } else if (game.getStatus() === "Playing") {
+                    game.updateTurn(player);
+                    game.updateStatus("Rolling");
+                } else if (game.getStatus() === "SecondRound") {
+                    game.updateInitialTurn(player);
+                } else {
+                    game.updateTurn(player);
+                }
+                
                 return game.save(callback);
             } else {
                 return callback(null, null);
@@ -202,12 +213,12 @@ var MovesModel = {
             if (err) return callback(err);
             if (game) {
                  self.robPlayer(id, hex, player, victim, resource, status, 
-                                function(err, game) {
-                                    game.addSoldier(player, 1);
-                                    game.modifyOldDevCard(player, 'soldier', -1, false); 
-                                    game.setPlayedDevCard([player], true);
-                                    return game.save(callback);
-                                });
+                    function(err, game) {
+                        game.addSoldier(player, 1);
+                        game.modifyOldDevCard(player, 'soldier', -1, false); 
+                        game.setPlayedDevCard([player], true);
+                        return game.save(callback);
+                    });
             } else {
                 return callback(null, null);
             }

@@ -469,6 +469,26 @@ GameSchema.methods.updateTurn = function(player) {
     }
 };
 
+GameSchema.methods.updateInitialTurn = function(player) {
+    var newTurn = -1;
+    switch (player) {
+        case 0 : newTurn = 0;
+                 break;
+        case 1 : newTurn = 0;
+                 break;
+        case 2 : newTurn = 1;
+                 break;
+        case 3 : newTurn = 2;
+                 break;
+        case 4 : newTurn = 3;
+                 break;
+        default : break;
+    }
+    if (newTurn != -1) {
+        this.game.turnTracker.currentTurn = newTurn;
+    }
+};
+
 GameSchema.methods.mergeDevCards = function(player) {
     if (player >= 0 && player < this.game.players.length) {
         var oldDevCards = this.game.players[player].oldDevCards;
