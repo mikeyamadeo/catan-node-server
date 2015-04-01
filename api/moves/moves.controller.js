@@ -604,7 +604,7 @@ var MovesController = {
         function(err, result) {
             if (err && !req.command) {
                 return res.status(400).send(err.message);
-            } else if (!result && @req.command) {
+            } else if (!result && !req.command) {
                 return res.status(500).send("Server Error");
             } else {
 

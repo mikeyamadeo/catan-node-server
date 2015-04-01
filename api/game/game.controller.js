@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
-    GameModel = require('./game.model');
+    GameModel = require('./game.model'),
     moveCtrl = require('../moves/moves.controller');
 
 /**
