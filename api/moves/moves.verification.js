@@ -1,6 +1,6 @@
-var movesModel = require('./moves.model.js');
-var gamesModel = require('./../games/games.model.js');
-var gameModel = require('./../game/game.model.js');
+var movesModel = require('./moves.model');
+var gamesModel = require('./../games/games.model');
+var gameModel = require('./../game/game.model');
 
 module.exports = {
 

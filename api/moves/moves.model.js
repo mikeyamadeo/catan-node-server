@@ -4,7 +4,35 @@ var model = require('../game/game.model.mongoose');
 var _ = require('lodash');
 var async = require('async');
 
-var MovesModel = {
+var normalizeVertex = function(vertex) {
+    switch(vertex.direction) {
+        case 'NW':
+        case 'NE':
+            break;
+        case 'W':
+            vertex.direction = 'NE';
+            vertex.x = vertex.x - 1;
+            vertex.y = vertex.y + 1;
+            break;
+        case 'SW':
+            vertex.direction = 'NW';
+            vertex.y = vertex.y + 1;
+            break;
+        case 'SE':
+            vertex.direction = 'NE';
+            vertex.y = vertex.y + 1;
+            break;
+        case 'E':
+            vertex.direction = 'NW';
+            vertex.x = vertex.x + 1;
+            break;
+        default:
+            break;
+    }
+    return vertex;
+};
+
+module.exports = {
     /**
     * @desc adds chat to a game
     * @method addChat
@@ -31,6 +59,21 @@ var MovesModel = {
             return callback(null, null);
         });
     },
+
+    addLog: function (id, message, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err);
+                return callback(err);
+            }
+            if (game) {
+                game.addToLog(message, index);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
+
     /**
     * @desc modifies a games latest rolled number
     * @method rollNumber
@@ -43,14 +86,15 @@ var MovesModel = {
     * @param {function} callback - callback
     */
     rollNumber : function(id, status, resources, callback) {
+        console.log(resources);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
                 resources.map(function(tuple) {
                     var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
-                        console.log("player " + tuple.id + " resource " + key + " amount " + value);
-                        game.modifyResource(tuple.id, key, value, true);
+                        console.log("player " + tuple.player + " resource " + key + " amount " + value);
+                        game.modifyResource(tuple.player, key, value, true);
                     });
                 });
                 game.updateStatus(status);
@@ -618,7 +662,7 @@ var MovesModel = {
     * @desc retrieves whether or not a player has played a dev card this turn
     * @method getPlayedDevCard
     * @param {number} id - specifies game
-    * @param {number] index - specifies player
+    * @param {number} index - specifies player
     * @param {function} callback - callback(err, playedCard)
     */
     getPlayedDevCard : function(id, index, callback) {
@@ -842,7 +886,64 @@ var MovesModel = {
                 return callback(null, null);
             }
         });
+    },
+    /**
+    * @desc - retrieves structures and filter by player index,
+            hex location, game, and structure type
+    * @method - getStructures
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player (-1 if filtering not desired)
+    * @param {string} type - specifies structure type ("settlements" or "cities")
+    * @param {object} location - hex location { x : Number, y : Number }
+    * @param {function} callback - callback(err, structures)
+    */
+    getStructures : function(id, index, type, location, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (!game) {
+                return callback(null, null);
+            } else {
+                var structures = game.game.map[type];
+                if (index != -1) {
+                    structures = structures.filter(function(structure) {
+                        if (structure.owner == index) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });      
+                }
+                if (location) {
+                    var directions = ["NW", "NE", "W", "E", "SW", "SE"];
+                    var vertexLocations = directions.map(function(direction) {
+                        return {
+                            x : location.x,
+                            y : location.y,
+                            direction : direction
+                        };
+                    });   
+                    console.log(vertexLocations);
+                    vertexLocations = vertexLocations.map(function(vertexLocation) {
+                        return normalizeVertex(vertexLocation);
+                    });
+                    console.log(vertexLocations);
+                    structures = structures.filter(function(structure) {
+                        var surrounds = false;
+                        vertexLocations.forEach(function(vertex) {
+                            if (vertex.x === structure.location.x &&
+                                vertex.y === structure.location.y &&
+                                vertex.direction === structure.location.direction) {
+                                surrounds = true;
+                            }
+                        });
+                        return surrounds;
+                    });
+                }
+                return callback(null, structures);
+            }
+        });
     }
-}
+};
 
-module.exports = MovesModel;  

@@ -257,6 +257,15 @@ GameSchema.methods.getHexesByChit = function(chit) {
     return resourceHexes;
 };
 
+GameSchema.methods.addToLog = function(message, index) {
+    var players = this.game.players;
+    var logMessage = players[index].name + message;
+    this.game.log.lines.push({
+          message:logMessage,
+          source:players[index].name
+    });
+};
+
 GameSchema.methods.getStatus = function(index) {
     return this.game.turnTracker.status;
 };
