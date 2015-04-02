@@ -128,7 +128,7 @@ var MovesController = {
         },
         function(players, map, bank, hotHexes, callback) {
             hotHexes.forEach(function(hex) {
-                model.getStructures(gameId, -1, "settlements", hex.location,
+                MovesModel.getStructures(gameId, -1, "settlements", hex.location,
                     function(err, settlements) {
                     settlements.forEach(function(settlement) {
                         var amount = 0;

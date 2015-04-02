@@ -3,9 +3,36 @@
 var model = require('../game/game.model.mongoose');
 var _ = require('lodash');
 var async = require('async');
-var movesHelper = require('./moves.controller.helper');
 
-var MovesModel = {
+var normalizeVertex = function(vertex) {
+    switch(vertex.direction) {
+        case 'NW':
+        case 'NE':
+            break;
+        case 'W':
+            vertex.direction = 'NE';
+            vertex.x = vertex.x - 1;
+            vertex.y = vertex.y + 1;
+            break;
+        case 'SW':
+            vertex.direction = 'NW';
+            vertex.y = vertex.y + 1;
+            break;
+        case 'SE':
+            vertex.direction = 'NE';
+            vertex.y = vertex.y + 1;
+            break;
+        case 'E':
+            vertex.direction = 'NW';
+            vertex.x = vertex.x + 1;
+            break;
+        default:
+            break;
+    }
+    return vertex;
+};
+
+module.exports = {
     /**
     * @desc adds chat to a game
     * @method addChat
@@ -617,7 +644,7 @@ var MovesModel = {
     * @desc retrieves whether or not a player has played a dev card this turn
     * @method getPlayedDevCard
     * @param {number} id - specifies game
-    * @param {number] index - specifies player
+    * @param {number} index - specifies player
     * @param {function} callback - callback(err, playedCard)
     */
     getPlayedDevCard : function(id, index, callback) {
@@ -881,7 +908,7 @@ var MovesModel = {
                     });   
                     console.log(vertexLocations);
                     vertexLocations = vertexLocations.map(function(vertexLocation) {
-                        return movesHelper.normalizeVertex(vertexLocation);
+                        return normalizeVertex(vertexLocation);
                     });
                     console.log(vertexLocations);
                     structures = structures.filter(function(structure) {
@@ -900,8 +927,5 @@ var MovesModel = {
             }
         });
     }
-}
+};
 
-console.log(MovesModel);
-
-module.exports = MovesModel;  

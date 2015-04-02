@@ -7,8 +7,8 @@ var gameModel = require('./../game/game.model');
 var helpers = require('./../../common/common.helper');
 var  async = require('async');
 
-console.log("Starting:", movesModel, "\n", gamesModel, "\n", gameModel, "\n", helpers);
-
+console.log("Moves Model: ", movesModel);
+console.log("Require: ", require('./moves.model'));
 module.exports = {
 
     gameToModel : function(game) {
@@ -17,8 +17,6 @@ module.exports = {
     },
 
     verifyRoadsAvailable : function (gameId, playerId, amount, callback) {
-        console.log(movesModel);
-        console.log(movesModel.getOwnedRoads);
         movesModel.getOwnedRoads(gameId, playerId, function (err, roads) {
             if (err) {
                 console.log(err.stack); 
