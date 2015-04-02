@@ -66,7 +66,7 @@ var MovesController = {
       var numberRolled = req.body.number;
       var currPlayerIndex = players[model.game.turnTracker.currentTurn]
 
-      var logMessage = players[currPlayerIndex].name + " rolled a "  + numberRolled;
+      var logMessage = " rolled a "  + numberRolled;
         var resourceChanges = [
             {
                 player : 0,
@@ -108,11 +108,8 @@ var MovesController = {
             MovesModel.rollNumber(gameId, "Robbing", [], function(err, game) {
               if(!req.command) {
                 command.addCommand(gameId, body);
-                model.game.log.push({
-                  message:logMessage,
-                  source:players[currPlayerIndex].name
-                });
-                model.save();
+                game.addToLog(logMessage, req.body.playerIndex);
+                game.save();
                 return res.status(200).json(game.game);
               }
             });
@@ -173,11 +170,8 @@ var MovesController = {
 
             MovesModel.rollNumber(gameId, "Playing", resourceChanges, function(err, game) {
                 if(!req.command) {
-                  model.game.log.push({
-                    message:logMessage,
-                    source:players[currPlayerIndex].name
-                  });
-                  model.save();
+                  game.addToLog(logMessage, req.body.playerIndex);
+                  game.save();
                   command.addCommand(gameId, body);
                   return res.status(200).json(game.game);
                 }
@@ -274,13 +268,7 @@ var MovesController = {
                   return res.status(500).send("Server Error");
               } else {
                 if(!req.command) {
-                  var players = result.game.players;
-                  var currPlayerIndex = result.game.turnTracker.currentTurn;
-                  var logMessage = players[currPlayerIndex].name + " moved the robber";
-                  result.game.log.push({
-                    message:logMessage,
-                    source:players[currPlayerIndex].name
-                  });
+                  result.addToLog(" moved the robber", req.body.playerIndex);
                   result.save();
                   command.addCommand(req.game, req.body); 
                   return res.status(200).json(result.game);
@@ -318,13 +306,7 @@ var MovesController = {
             return res.status(500).send(err)
         }
         if(!req.command) {
-          var players = game.game.players;
-          var currPlayerIndex = game.game.turnTracker.currentTurn;
-          var logMessage = players[currPlayerIndex].name + " finished their turn";
-          game.game.log.push({
-            message:logMessage,
-            source:players[currPlayerIndex].name
-          });
+          game.addToLog(" finished their turn", req.body.playerIndex);
           game.save();
           command.addCommand(req.game, req.body);
           res.json(game.game);
@@ -411,13 +393,7 @@ var MovesController = {
         var random = Math.floor(Math.random() * allCards.length);
         MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
         if(!req.command) {
-          var players = game.game.players;
-          var currPlayerIndex = game.game.turnTracker.currentTurn;
-          var logMessage = players[currPlayerIndex].name + " bought a dev card";
-          game.game.log.push({
-            message:logMessage,
-            source:players[currPlayerIndex].name
-          });
+          game.addToLog(" bought a dev card", req.body.playerIndex);
           game.save();
           command.addCommand(req.game, req.body); 
           return res.status(200).json(result.game);
@@ -878,14 +854,12 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
-
+                /*
                 var players = game.game.players;
                 var currPlayerIndex = game.game.turnTracker.currentTurn;
                 var logMessage = players[currPlayerIndex].name + " built a road";
-                game.game.log.push({
-                  message:logMessage,
-                  source:players[currPlayerIndex].name
-                });
+                */
+                game.addToLog(" built a road", req.body.playerIndex);
                 game.save();
                 console.log("road built");
                 return callback(null, game);
@@ -960,14 +934,7 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
-
-                var players = game.game.players;
-                var currPlayerIndex = game.game.turnTracker.currentTurn;
-                var logMessage = players[currPlayerIndex].name + " built a settlement";
-                game.game.log.push({
-                  message:logMessage,
-                  source:players[currPlayerIndex].name
-                });
+                game.addToLog(" built a settlement", req.body.playerIndex);
                 game.save();
                 console.log("settlement built");
                 return callback(null, game);
@@ -1042,14 +1009,7 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
-
-                var players = game.game.players;
-                var currPlayerIndex = game.game.turnTracker.currentTurn;
-                var logMessage = players[currPlayerIndex].name + " built a city";
-                game.game.log.push({
-                  message:logMessage,
-                  source:players[currPlayerIndex].name
-                });
+                game.addToLog(" built a city", req.body.playerIndex);
                 game.save();
                 console.log("city built");
                 return callback(null, game);
