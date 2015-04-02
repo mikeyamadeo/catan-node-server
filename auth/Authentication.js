@@ -4,6 +4,7 @@ var Cookies = require('cookies');
 
 module.exports = {
     validateUser : function(req, res, next) {
+        console.log("validate user")
 
         var cookies = new Cookies(req, res);
         if (cookies.get('catan.user')) {
@@ -28,6 +29,8 @@ module.exports = {
     },
 
     validateGame : function(req, res, next) {
+
+        console.log("validate game")
         var cookies = req.cookies;
         if (cookies.get('catan.user') && cookies.get('catan.game')) {
             var userCookie = JSON.parse(decodeURI(cookies.get('catan.user')));
@@ -45,7 +48,6 @@ module.exports = {
                     id : id
                 };
                 req.game = gameId;
-                console.log("going next " + req.url + req.user.name);
                 return next();
             });
         } else {

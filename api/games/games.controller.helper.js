@@ -172,7 +172,6 @@ module.exports = {
         };
     },
     createNewGame : function(tiles, chits, ports, name) {
-        console.log(arguments);
         return {
             title : name,
             players : [],
