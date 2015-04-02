@@ -191,6 +191,7 @@ var MovesController = {
    * @param {function} next - next command
    */
   robPlayer: function(req, res, next) {
+    console.log("in robbing");
     /*
       Things to do:
       1. pull model from request body.
@@ -245,6 +246,8 @@ var MovesController = {
                   return res.status(500).send("Server Error");
               } else {
                 if(!req.command) {
+                  result.addToLog(" moved the robber", req.body.playerIndex);
+                  result.save();
                   command.addCommand(req.game, req.body); 
                   return res.status(200).json(result.game);
                 }
@@ -253,7 +256,7 @@ var MovesController = {
 
           } else {
             if(!req.command) {
-              return res.status(400).json("this young homie is poor. no resources to rob. soz");
+              return res.status(200).json("this young homie is poor. no resources to rob. soz");
             }
           }
 
@@ -281,6 +284,8 @@ var MovesController = {
             return res.status(500).send(err)
         }
         if(!req.command) {
+          game.addToLog(" finished their turn", req.body.playerIndex);
+          game.save();
           command.addCommand(req.game, req.body);
           res.json(game.game);
         }
@@ -366,6 +371,8 @@ var MovesController = {
         var random = Math.floor(Math.random() * allCards.length);
         MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
         if(!req.command) {
+          game.addToLog(" bought a dev card", req.body.playerIndex);
+          game.save();
           command.addCommand(req.game, req.body); 
           return res.status(200).json(result.game);
         }
@@ -826,6 +833,13 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
+                /*
+                var players = game.game.players;
+                var currPlayerIndex = game.game.turnTracker.currentTurn;
+                var logMessage = players[currPlayerIndex].name + " built a road";
+                */
+                game.addToLog(" built a road", req.body.playerIndex);
+                game.save();
                 console.log("road built");
                 return callback(null, game);
             });
@@ -899,6 +913,8 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
+                game.addToLog(" built a settlement", req.body.playerIndex);
+                game.save();
                 console.log("settlement built");
                 return callback(null, game);
             });
@@ -972,6 +988,8 @@ var MovesController = {
                 if (err) {
                       return callback(err); 
                 }
+                game.addToLog(" built a city", req.body.playerIndex);
+                game.save();
                 console.log("city built");
                 return callback(null, game);
             });

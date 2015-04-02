@@ -38,7 +38,6 @@ module.exports = {
             var password = userCookie.password;
             var id = userCookie.playerID;
             var gameId = cookies.get('catan.game');
-            console.log("Authorize", gameId, username)
             gamesModel.isPlayerInGame(gameId, username, function(err, valid) {
                 if (err || !valid) {
                     return res.status(403).send('Unauthorized');
@@ -49,7 +48,6 @@ module.exports = {
                     id : id
                 };
                 req.game = gameId;
-                console.log("going next " + req.url + req.user.name);
                 return next();
             });
         } else {
