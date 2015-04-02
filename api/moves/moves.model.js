@@ -28,6 +28,21 @@ var MovesModel = {
             return callback(null, null);
         });
     },
+
+    addLog: function (id, message, index, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err);
+                return callback(err);
+            }
+            if (game) {
+                game.addToLog(message, index);
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
+
     /**
     * @desc modifies a games latest rolled number
     * @method rollNumber
