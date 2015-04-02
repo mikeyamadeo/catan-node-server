@@ -854,6 +854,19 @@ var MovesModel = {
                 return callback(null, null);
             }
         });
+    },
+
+    updateStatus : function(id, status, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                game.updateStatus(status)
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
     }
 }
 
