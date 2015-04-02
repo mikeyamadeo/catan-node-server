@@ -19,12 +19,8 @@ var createMap = function(randomTiles, randomChits, randomPorts) {
     var portResource = ["sheep", "ore",
                         "wheat", "brick", "wood"
                         ];
-    var portType = [ null, 2, null, 3, 3, 
-                     null, null, 2, 3, 
-                     null, null, 2, 2,
-                     null, null,  2,
-                     null, 3
-            ];
+    var portType = [ 2, 3, 3, 2, 3, 2, 2, 2, 3];
+    var direction = ["NW", "SW", "NW", "S", "N", "S", "NE", "NE", "SE"];
 
     if (randomChits) {
         chits = randomizeArray(chits);
@@ -64,10 +60,12 @@ var addToPorts = function(loc) {
     var x = portType.pop();
     if (x != null) {
         if (x == 3) {
-            var y = {ratio : x, location : location, direction: "NW"}
+            var d = direction.pop();
+            var y = {ratio : x, location : location, direction : d}
         } else {
+            var d = direction.pop();
             var z = portResource.pop();
-            var y = {ratio : x, resource : z, location : location, direction: "NW"}
+            var y = {ratio : x, resource : z, location : location, direction : d}
         }
         ports.push(y);
     }
@@ -82,33 +80,25 @@ var addToPorts = function(loc) {
                 y : j - count
             };
 
-            if (location.x == -3) {
-               addToPorts(location);
-            } else if (location.x == -2 && location.y == -1) {
-               addToPorts(location);
-            } else if (location.x == -2 && location.y == 3) {
+            if (location.x == 3 && location.y == -1) {
                 addToPorts(location);
-            } else if (location.x == -1 && location.y == -2) {
-                addToPorts(location);
-            } else if (location.x == -1 && location.y == 3) {
+            } else if (location.x == 3 && location.y == -3) {
                addToPorts(location);
-            } else if (location.x == 0 && location.y == -3) {
-                addToPorts(location);
-            } else if (location.x == 0 && location.y == 3) {
-               addToPorts(location);
-            } else if (location.x == 1 && location.y == -3) {
-               addToPorts(location);
-            } else if (location.x == 1 && location.y == 2) {
-               addToPorts(location);
-            } else if (location.x == 2 && location.y == -3) {
-                addToPorts(location);
             } else if (location.x == 2 && location.y == 1) {
                 addToPorts(location);
-            } else if (location.x == 3) {
-                addToPorts(location);
-            } else {
-
-            }
+            }  else if (location.x == 1 && location.y == -3) {
+               addToPorts(location);
+            } else if (location.x == 0 && location.y == 3) {
+               addToPorts(location);
+            } else if (location.x == -1 && location.y == -2) {
+               addToPorts(location);
+            } else if (location.x == -2 && location.y == 3) {
+               addToPorts(location);
+            } else if (location.x == -3 && location.y == 0) {
+               addToPorts(location);
+            } else if (location.x == -3 && location.y == 2) {
+               addToPorts(location);
+            } else {}
         }
         if (count != 3) {
             count++
@@ -182,7 +172,6 @@ module.exports = {
         };
     },
     createNewGame : function(tiles, chits, ports, name) {
-        console.log(arguments);
         return {
             title : name,
             players : [],

@@ -203,9 +203,11 @@ var GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.updateColor = function(index, color) {
-    if (index >= 0 && index < this.game.players.length) {
-        this.game.players[index].color = color;
+GameSchema.methods.updateColor = function(name, color) {
+    for (var i = 0; i < this.game.players.length; i++) {
+        if (this.game.players[i].name == name) {
+            this.game.players[i].color = color;
+        }
     }
 };
 
@@ -461,6 +463,26 @@ GameSchema.methods.updateTurn = function(player) {
         case 2 : newTurn = 3;
                  break;
         case 3 : newTurn = 0;
+                 break;
+        default : break;
+    }
+    if (newTurn != -1) {
+        this.game.turnTracker.currentTurn = newTurn;
+    }
+};
+
+GameSchema.methods.updateInitialTurn = function(player) {
+    var newTurn = -1;
+    switch (player) {
+        case 0 : newTurn = 0;
+                 break;
+        case 1 : newTurn = 0;
+                 break;
+        case 2 : newTurn = 1;
+                 break;
+        case 3 : newTurn = 2;
+                 break;
+        case 4 : newTurn = 3;
                  break;
         default : break;
     }

@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var command = require('../game/game.command.mongoose');
 var fs = require('fs'),
     config = require('../../config');
 
@@ -56,11 +57,11 @@ var GamesModel = {
     * @param {number} index - specifies player
     * @param {function} callback - callback(err, game)
     */
-    updateColor : function(id, index, color, callback) {
+    updateColor : function(id, name, color, callback) {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                game.updateColor(index, color);
+                game.updateColor(name, color);
                 return game.save(callback);
                 return callback(null, game);
             } else {
@@ -135,7 +136,12 @@ var GamesModel = {
             }
             return callback(null, false);
         });   
-    }
+    },
+
+    initializeGameCommands: function(initGame, callback) {
+
+        command.create(initGame); 
+    },
 }
 
 module.exports = GamesModel; 

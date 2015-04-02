@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('./game.model.mongoose');
+var command = require('./game.command.mongoose');
 
 var GameModel = {
     /**
