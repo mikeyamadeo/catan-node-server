@@ -1,11 +1,13 @@
 'use strict'
 
 var _ = require('lodash');
-var movesModel = require('./moves.model.js');
-var gamesModel = require('./../games/games.model.js');
-var gameModel = require('./../game/game.model.js');
-var helpers = require('./../../common/common.helper.js');
+var movesModel = require('./moves.model');
+var gamesModel = require('./../games/games.model');
+var gameModel = require('./../game/game.model');
+var helpers = require('./../../common/common.helper');
 var  async = require('async');
+
+console.log("Starting:", movesModel, "\n", gamesModel, "\n", gameModel, "\n", helpers);
 
 module.exports = {
 
@@ -15,10 +17,11 @@ module.exports = {
     },
 
     verifyRoadsAvailable : function (gameId, playerId, amount, callback) {
-
+        console.log(movesModel);
+        console.log(movesModel.getOwnedRoads);
         movesModel.getOwnedRoads(gameId, playerId, function (err, roads) {
             if (err) {
-                console.log(err); 
+                console.log(err.stack); 
                 return callback(err, true);
             }
             console.log("player has " + roads.length);
@@ -154,7 +157,7 @@ module.exports = {
             case 'W':
                 vertex.direction = 'NE';
                 vertex.x = vertex.x - 1;
-                vertex.y = tvertex.y + 1;
+                vertex.y = vertex.y + 1;
                 break;
             case 'SW':
                 vertex.direction = 'NW';

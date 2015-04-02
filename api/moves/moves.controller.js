@@ -65,12 +65,24 @@ var MovesController = {
     var numberRolled = req.body.number;
     var status = "Playing";
     var resourceChanges = [];
+    for (var i = 0; i < 4; i++) {
+        resourceChanges.push({
+            player : i,
+            resourceMap : {
+                brick : 0,
+                ore : 0,
+                sheep : 0,
+                wheat : 0,
+                wood : 0
+            }
+        });
+    }
     async.waterfall([
         function(callback) {
             GameModel.getModel(gameId, function(err, model) {
                 var players = model.game.players;
                 var map = model.game.map;
-                var bank = model.game.gank;
+                var bank = model.game.bank;
                 if (numberRolled == 7) {
                     var discardHuh = false;
                     for (var i = 0; i < 4; i++) {
@@ -100,47 +112,36 @@ var MovesController = {
             });
             //Use cities to determine if player has property on hothexes
             //add to resources if so.
-            GameModel.getCities(gameId, function(err, cities) {
-                //for each hex that has the number chit rolled      
-                hotHexes.forEach(function(hex) {
-                    cities = cities.length !== 0 ? cities : [];
+            /*
+            hotHexes.forEach(function(hex) {
+                model.getStructures(gameId, -1, "cities", hex.location, 
+                    function(err, cities) {
                     cities.forEach(function(city) {
-                        if (gameHelpers.locationIsEqual(hex.location, city.location)) {
-                            var player = gameHelpers.getPlayerFromPlayers(players, 
-                                city.owner);
-                            var playerResources = player.resources;
-                            var amount = 0;
-                            //Only add resources if they are available
-                            if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
-                                amount = 2;
-                            } else {
-                                amount = bank[hex.resource];
-                            }
-                            gameHelpers.addToResourceChanges(hex.resource, amount,
-                                player.playerIndex, resourceChanges);
+                        var amount = 0;
+                        if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
+                            amount = 2;
+                        } else {
+                            amount = bank[hex.resource];
                         }
+                        gameHelpers.addToResourceChanges(hex.resource, amount, 
+                            city.owner, resourceChanges);
                     });
                 });
             });
+            */
             return callback(null, players, map, bank, hotHexes);
         },
-        function(players, map, bank, hotHexes) {
-            GameModel.getSettlements(gameId, function(err, settlements) {
-                hotHexes.forEach(function(hex) {
-                    settlements = settlements.length !== 0 ? settlements : [];
-                    settlement.forEach(function(settlement) {
-                        if (gameHelpers.locationIsEqual(hex.location,
-                            settlement.location)) {
-                            var player = gameHelpers.getPlayerFromPlayers(players,
-                                settlement.owner);
-                            var resources = player.resources;
-                            var amount = 0;
-                            if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
-                                amount = 1;
-                            }
-                            gameHelpers.addToResourceChanges(hex.resource, amount,
-                                player.playerIndex, resourceChanges);
+        function(players, map, bank, hotHexes, callback) {
+            hotHexes.forEach(function(hex) {
+                model.getStructures(gameId, -1, "settlements", hex.location,
+                    function(err, settlements) {
+                    settlements.forEach(function(settlement) {
+                        var amount = 0;
+                        if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
+                            amount = 1;
                         }
+                        gameHelpers.addToResourceChanges(hex.resource, amount,
+                            settlement.owner, resourceChanges);
                     });
                 });
             });
@@ -740,6 +741,7 @@ var MovesController = {
         function(callback) {
             helper.verifyRoadsAvailable(req.game, req.body.playerIndex, 1, function (err, roadsAvail) {
                 if (err) {
+                    console.log(err.stack);
                       return callback(err); 
                 } else if (!roadsAvail) {
                     return callback(new Error("Player doesn't have any roads left"));
@@ -779,6 +781,7 @@ var MovesController = {
         }
     ], function(err, result) {
         if (err) {
+            console.log(err.stack);
             return res.status(400).send(err.message);
         }
         return res.status(200).json(result.pop().game);
