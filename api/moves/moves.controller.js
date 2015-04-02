@@ -29,9 +29,8 @@ var MovesController = {
       2. call correct execute method
         - add chat object to the chat object array
     */    
-    console.log("Are we here -- controller");
     var data = req.body;
-    var gameId = 0;
+    var gameId = req.game;
     var playerId = data.playerIndex;
     var message = data.content;
     MovesModel.addChat(gameId, playerId, message, function(err, game) {
