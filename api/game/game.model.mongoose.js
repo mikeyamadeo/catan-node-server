@@ -518,6 +518,8 @@ GameSchema.methods.addChat = function(message, source) {
         source : source
     };
     this.game.chat.lines.push(newMessage);
+    console.log("I SHOULD HAVE ADDED");
+    console.log(this.game.chat.lines);
 };
 
 GameSchema.methods.removeTradeOffer = function() {

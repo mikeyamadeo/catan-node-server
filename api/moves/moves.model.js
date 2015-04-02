@@ -15,12 +15,15 @@ var MovesModel = {
     */
     addChat : function(id, player, message, callback) {
         console.log("Are we here");
+            console.log("IDDDDDDDDDDDDDD: " + id);
         model.findById(id, function(err, game) {
             if (err) {
                 console.log(err);
                 return callback(err);
             }
+                console.log("what what");
             if (game) {
+                console.log("what what2222");
                 game.addChat(message, player);
                 game.incVersion();
                 return game.save(callback);

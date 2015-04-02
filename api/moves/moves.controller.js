@@ -31,7 +31,8 @@ var MovesController = {
     */    
     console.log("Are we here -- controller");
     var data = req.body;
-    var gameId = 0;
+    var gameId = req.game;
+    console.log("GAMEIDDDDDDDDDD: " + gameId);
     var playerId = data.playerIndex;
     var message = data.content;
     MovesModel.addChat(gameId, playerId, message, function(err, game) {
@@ -39,7 +40,9 @@ var MovesController = {
             console.log(err); 
             next(); 
         }
+        console.log("DO I EVER?");
         if(!req.command) {
+        console.log("DO I EVER?????????");
           command.addCommand(gameId, data);
           return res.status(200).send(game.game); // make sure this is same as game model
         }
