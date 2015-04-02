@@ -203,9 +203,11 @@ var GameSchema = new Schema({
     }
 });
 
-GameSchema.methods.updateColor = function(index, color) {
-    if (index >= 0 && index < this.game.players.length) {
-        this.game.players[index].color = color;
+GameSchema.methods.updateColor = function(name, color) {
+    for (var i = 0; i < this.game.players.length; i++) {
+        if (this.game.players[i].name == name) {
+            this.game.players[i].color = color;
+        }
     }
 };
 
