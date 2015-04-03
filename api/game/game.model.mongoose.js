@@ -521,10 +521,12 @@ GameSchema.methods.incVersion = function() {
     this.game.version += 1;
 };
 
-GameSchema.methods.addChat = function(message, source) {
+GameSchema.methods.addChat = function(message, index) {
+    var players = this.game.players;
+    var player = players[index].name;
     var newMessage = {
         message : message,
-        source : source
+        source : player
     };
     this.game.chat.lines.push(newMessage);
 };
