@@ -210,7 +210,7 @@ var MovesController = {
         change state to 'playing'
     */
     var gameId = req.game;
-    var playerId = req.body.playerIndex;
+    var playerIndex = req.body.playerIndex;
     var victimId = req.body.victimIndex;
     var location = req.body.location;
     GameModel.getModel(gameId, function(err, model) {
@@ -222,11 +222,14 @@ var MovesController = {
         } else {
           var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
           var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
+          console.log("victim " + victim);
           var vResources = victim.resources;
 
           var victimHasResources = resourceTypes.every(function(type) {
             return vResources[type] > 0;
           });
+
+          console.log("victim resources " + victimHasResources);
 
           if (victimHasResources) {
             var allResources = [];
@@ -238,7 +241,7 @@ var MovesController = {
 
             var random = Math.floor(Math.random() * allResources.length);
 
-            MovesModel.robPlayer(gameId, location, playerId, victimId, allResources[random], "playing", function(err, result) {
+            MovesModel.robPlayer(gameId, location, playerIndex, victimId, allResources[random], "Playing", function(err, result) {
               if (err && !req.command) {
                 return res.status(400).send(err.message);
               } else if (!result && !req.command) {
@@ -254,14 +257,24 @@ var MovesController = {
             });
 
           } else {
-            if(!req.command) {
-              return res.status(200).json("this young homie is poor. no resources to rob. soz");
+              MovesModel.updateStatus(gameId, "Playing", function(err, result) {
+                if (err && !req.command) {
+                  return res.status(400).send(err.message);
+                } else if (!result && !req.command) {
+                    return res.status(500).send("Server Error");
+                } else {
+                    if(!req.command) {
+                        result.addToLog(" moved the robber", req.body.playerIndex);
+                        result.save();
+                        command.addCommand(req.game, req.body); 
+                        console.log("after robbing " + result.game);
+                        return res.status(200).json(result.game);
+                    }
+                }
+              });
             }
           }
-
-        }
-
-      })
+        });
     });
   },
 
