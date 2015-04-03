@@ -241,7 +241,7 @@ var MovesController = {
 
             var random = Math.floor(Math.random() * allResources.length);
 
-            MovesModel.robPlayer(gameId, location, playerId, victimId, allResources[random], "Playing", function(err, result) {
+            MovesModel.robPlayer(gameId, location, playerIndex, victimId, allResources[random], "Playing", function(err, result) {
               if (err && !req.command) {
                 return res.status(400).send(err.message);
               } else if (!result && !req.command) {
