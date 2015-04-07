@@ -166,6 +166,7 @@ var GamesController = {
                 if (available) {
                     var newPlayer = helper.createNewPlayer(user.id, user.name, 
                                     body.color);
+                    console.log("new player id is " + user);
                     gamesModel.addPlayer(body.id, newPlayer, function(err, game) {
                         if (err || !game) {
                             return res.status(404).send("Join failed");

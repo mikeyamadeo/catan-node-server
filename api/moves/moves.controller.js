@@ -382,12 +382,12 @@ var MovesController = {
         //get random value based on array length
         var random = Math.floor(Math.random() * allCards.length);
         MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
-        if(!req.command) {
-          game.addToLog(" bought a dev card", req.body.playerIndex);
-          game.save();
-          command.addCommand(req.game, req.body); 
-          return res.status(200).json(result.game);
-        }
+          if(!req.command) {
+            result.addToLog(" bought a dev card", req.body.playerIndex);
+            result.save();
+            command.addCommand(req.game, req.body); 
+            return res.status(200).json(result.game);
+          }
         });
       }
 
@@ -1466,7 +1466,7 @@ var MovesController = {
             } else {
               
               if(!req.command) {
-                command.addCommand(req.game, req.body); 
+                command.addCommand(req.game, req.body);
                 res.status(200).json(result.game);
               }
             }
