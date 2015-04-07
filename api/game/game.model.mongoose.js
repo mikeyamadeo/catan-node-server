@@ -345,14 +345,25 @@ GameSchema.methods.addToLog = function(message, index) {
 * @method getStatus
 * @class Game
 */
-GameSchema.methods.getStatus = function() {
+GameSchema.methods.getStatus = function( {
     return this.game.turnTracker.status;
 };
 
+/**
+* @desc Retrieves the robber from the game
+* @method getRobber
+* @class Game
+*/
 GameSchema.methods.getRobber = function() {
     return this.game.map.robber;
 };
 
+/**
+* @desc Retrieves the roads owned by specified player from game map
+* @method getOwnedRoads
+* @param {number} index - specifies player
+* @class Game
+*/
 GameSchema.methods.getOwnedRoads = function(index) {
     var roads = this.game.map.roads;
     return roads.filter(function(road) {
@@ -364,6 +375,12 @@ GameSchema.methods.getOwnedRoads = function(index) {
     });
 };
 
+/**
+* @desc Retrieves the ports owned by specified player from game map
+* @method getOwnedPorts
+* @param {number} index - specifis player
+* @class Game
+*/
 GameSchema.methods.getOwnedPorts = function(index) {
     var settlements = this.getOwnedStructures(index, 'settlements');
     var cities = this.getOwnedStructures(index, 'cities');
@@ -393,6 +410,13 @@ GameSchema.methods.getOwnedPorts = function(index) {
     });
 };
 
+/**
+* @desc Retrieves the structures owned by specified player
+* @method getOwnedStructures
+* @param {number} index - specifies player
+* @param {string} structure - ['settlements'/'cities']
+* @class Game
+*/
 GameSchema.methods.getOwnedStructures = function(index, structure) {
     var structures = this.game.map[structure];
     return structures.filter(function(struct, index, array) {
@@ -404,24 +428,53 @@ GameSchema.methods.getOwnedStructures = function(index, structure) {
     });
 };
 
+/**
+* @desc Retrieves the index of the current player
+* @method currentPlayer
+* @class Game
+*/
 GameSchema.methods.currentPlayer = function() {
     return this.game.turnTracker.currentTurn;
 };
 
+/**
+* @desc Adds a player to game
+* @method addPlayer
+* @param {Object} player - player object
+* @class Game
+*/
 GameSchema.methods.addPlayer = function(player) {
     this.game.players.push(player);
 };
 
-GameSchema.methods.addVictoryPoints = function(player, amount) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].victoryPoints += amount;
+/**
+* @desc Adds victory points to specified player
+* @method addVictoryPoints
+* @param {number} index - specifies player
+* @param {number} amount - amount to increase victory points by...
+* @class Game
+*/
+GameSchema.methods.addVictoryPoints = function(index, amount) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].victoryPoints += amount;
     }
 };
 
+/**
+* @desc Determines whether a game has 4 players
+* @method isGameAvailable
+* @class Game
+*/
 GameSchema.methods.isGameAvailable = function() {
     return this.game.players.length < 4;
 };
 
+/**
+* @desc Determines whether the specified player is in game
+* @method isPlayerInGame
+* @param {string} username - specifies player
+* @class Game
+*/
 GameSchema.methods.isPlayerInGame = function(username) {
     var found = _.find(this.game.players, function(player, index, array) {
         return player.name === username;
@@ -430,17 +483,35 @@ GameSchema.methods.isPlayerInGame = function(username) {
     return false;
 };
 
-GameSchema.methods.addTradeOffer = function(player, receiver, offer) {
+/**
+* @desc Adds a trade offer to the game
+* @method addTradeOffer
+* @param {number} sender - specifies sender
+* @param {number} receiver - specifies receiver
+* @param {object} offer - trade offer object (SEE JSON API)
+* @class Game
+*/
+GameSchema.methods.addTradeOffer = function(sender, receiver, offer) {
     this.game.tradeOffer = { 
-        sender : player,
+        sender : sender,
         receiver : receiver,
         offer : offer
     };
 };
 
-GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].resources[resource] += amount;
+/**
+* @desc Modifies the resource count of specified player by amount. Optionally
+* tranfers resources to/from bank
+* @method modifyResource
+* @param {number} index - specifies player
+* @param {string} resource - specifies resource type to modify
+* @param {number} amount - amount to modify resources by
+* @param {boolean} bank - optional flag to transfer resources to/from bank
+* @class Game
+*/
+GameSchema.methods.modifyResource = function(index, resource, amount, bank) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].resources[resource] += amount;
         if (bank) {
             var reverse = -1 * amount;
             this.game.bank[resource] += reverse;
@@ -448,44 +519,91 @@ GameSchema.methods.modifyResource = function(player, resource, amount, bank) {
     }
 };
 
-GameSchema.methods.modifyVictoryPoint = function(player, amount) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].victoryPoints += amount;
-        if (this.game.players[player].victoryPoints >= 10) {
-            this.game.winner = player;
+/**
+* @desc Modifies the victory points of specified player
+* @method modifyVictoryPoint
+* @param {number} index - specifies player
+* @param {number} amount - amount to modify victory points by...
+* @class Game
+*/
+GameSchema.methods.modifyVictoryPoint = function(index, amount) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].victoryPoints += amount;
+        if (this.game.players[index].victoryPoints >= 10) {
+            this.game.winner = index;
         }
     }
 };
 
+/**
+* @desc Moves the robber to the specified location
+* @method updateRobber
+* @param {object} hex - hex location object (SEE JSON API)
+* @class Game
+*/
 GameSchema.methods.updateRobber = function(hex) {
     this.game.map.robber.x = hex.x;
     this.game.map.robber.y = hex.y;
 };
 
+/**
+* @desc Updates the status of the game
+* @method updateStatus
+* @param {string} status - New game status ['Rolling', 'Playing', etc...]
+* @class Game
+*/
 GameSchema.methods.updateStatus = function(status) {
     this.game.turnTracker.status = status;
 };
 
-GameSchema.methods.modifyOldDevCard = function(player, devCard, amount, exchange) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].oldDevCards[devCard] += amount;
+/**
+* @desc Modifies the specified dev card in the old dev card player of 
+* specified player. Optionally transfers dev card to the bank
+* @method modifyOldDevCard
+* @param {number} index - specifies player
+* @param {string} devCard - specifies dev card ['monopoly', 'monument', etc...]
+* @param {number} amount - amount to modify specified dev card
+* @param {boolean} exchange - optional flag to exhange dev card with bank
+* @class Game
+*/
+GameSchema.methods.modifyOldDevCard = function(index, devCard, amount, exchange) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].oldDevCards[devCard] += amount;
         if (exchange && amount > 0) {
             this.game.deck[devCard] -= amount;
         }
     }
 };
 
-GameSchema.methods.modifyNewDevCard = function(player, devCard, amount, exchange) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].newDevCards[devCard] += amount;
+/**
+* @desc Modifies the specified dev card in the new dev card player of 
+* specified player. Optionally transfers dev card to the bank
+* @method modifyNewDevCard
+* @param {number} index - specifies player
+* @param {string} devCard - specifies dev card ['monopoly', 'monument', etc...]
+* @param {number} amount - amount to modify specified dev card
+* @param {boolean} exchange - optional flag to exhange dev card with bank
+* @class Game
+*/
+GameSchema.methods.modifyNewDevCard = function(index, devCard, amount, exchange) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].newDevCards[devCard] += amount;
         if (exchange && amount > 0) {
             this.game.deck[devCard] -= amount;
         }
     }
 };
 
-GameSchema.methods.addStructure = function(player, location, type) {
-    if (player >= 0 && player < this.game.players.length) {
+/**
+* @desc Adds a structure to the game map
+* @method addStructure
+* @param {number} index - specifes player
+* @param {object} location - VertexObject (SEE JSON API)
+* @param {string} type - specifies structure type ['settlements'/'cities']
+* @class Game
+*/ 
+GameSchema.methods.addStructure = function(index, location, type) {
+    if (index >= 0 && index < this.game.players.length) {
         var structures = this.game.map[type];
         var found = _.find(structures, function(structure) {
             return (structure.location.x === location.x &&
@@ -493,24 +611,39 @@ GameSchema.methods.addStructure = function(player, location, type) {
                     structure.location.direction === location.direction);
         });
         if (!found) {
-            structures.push({ owner : player, location : location });
-            this.game.players[player][type] -= 1;
+            structures.push({ owner : index, location : location });
+            this.game.players[index][type] -= 1;
         }
     }
 };
 
-GameSchema.methods.removeStructure = function(player, location, type) {
-    if (player >= 0 && player < this.game.players.length) {
+/**
+* @desc Removes a structure from the map
+* @method removeStructure
+* @param {number} index - specifes player
+* @param {object} location - VertexObject (SEE JSON API)
+* @param {string} type - specifies structure type ['settlements'/'cities']
+* @class Game
+*/ 
+GameSchema.methods.removeStructure = function(index, location, type) {
+    if (index >= 0 && index < this.game.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
             return (structure.location.x === location.x &&
                     structure.location.y === location.y &&
                     structure.location.direction === location.direction);
         });
-        this.game.players[player][type] += 1;
+        this.game.players[index][type] += 1;
     }
 };
 
+/**
+* @desc Sets the discarded flag on specified players
+* @metod setDiscarded
+* @param {array} players - array of indices that specify players
+* @param {boolean} discarded - new value of discarded
+* @class Game
+*/
 GameSchema.methods.setDiscarded = function(players, discarded) {
     var self = this;
     players.map(function(player) {
@@ -520,6 +653,13 @@ GameSchema.methods.setDiscarded = function(players, discarded) {
     });
 };
 
+/**
+* @desc Sets the playedDevCard flag on specified players
+* @metod setPlayedDevCard
+* @param {array} players - array of indices that specify players
+* @param {boolean} discarded - new value of playedDevCard
+* @class Game
+*/
 GameSchema.methods.setPlayedDevCard = function(players, played) {
     var self = this;
     players.map(function(player) {
@@ -529,21 +669,41 @@ GameSchema.methods.setPlayedDevCard = function(players, played) {
     });
 };
 
-GameSchema.methods.addSoldier = function(player, amount) {
-    if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].soldier += amount;                
+/**
+* @desc Adds amount to the soldier count of specified player
+* @method addSoldier
+* @param {number} index - specifies player
+* @param {number} amount - amount to add to player soldier count
+* @class Game
+*/
+GameSchema.methods.addSoldier = function(index, amount) {
+    if (index >= 0 && index < this.game.players.length) {
+        this.game.players[index].soldier += amount;                
     }
 };
 
-GameSchema.methods.getResourceCount = function(player, resource) {
-    if (player >= 0 && player < this.game.players.length) {
-        return this.game.players[player].resouces[resource];
+/**
+* @desc Retrieves the # of resource type of specified player
+* @method getResourceCount
+* @param {number} index - specifies player
+* @param {string} resource - resource type
+* @class Game
+*/
+GameSchema.methods.getResourceCount = function(index, resource) {
+    if (index >= 0 && index < this.game.players.length) {
+        return this.game.players[index].resouces[resource];
     }
 };
 
-GameSchema.methods.updateTurn = function(player) {
+/**
+* @desc Updates the current turn of the game
+* @method updateTurn
+* @param {number} index - specifies previous player
+* @class Game
+*/
+GameSchema.methods.updateTurn = function(index) {
     var newTurn = -1;
-    switch (player) {
+    switch (index) {
         case 0 : newTurn = 1;
                  break;
         case 1 : newTurn = 2;
@@ -579,10 +739,16 @@ GameSchema.methods.updateInitialTurn = function(player) {
     }
 };
 
-GameSchema.methods.mergeDevCards = function(player) {
-    if (player >= 0 && player < this.game.players.length) {
-        var oldDevCards = this.game.players[player].oldDevCards;
-        var newDevCards = this.game.players[player].newDevCards;
+/**
+* @desc Transfer new dev cards to new card pile
+* @method mergeDevCards
+* @param {number} index - specifies player
+* @class Game
+*/
+GameSchema.methods.mergeDevCards = function(index) {
+    if (index >= 0 && index < this.game.players.length) {
+        var oldDevCards = this.game.players[index].oldDevCards;
+        var newDevCards = this.game.players[index].newDevCards;
         oldDevCards.monument += newDevCards.monument;
         newDevCards.monument = 0;
         oldDevCards.monopoly += newDevCards.monopoly;
@@ -596,6 +762,11 @@ GameSchema.methods.mergeDevCards = function(player) {
     }        
 };
 
+/**
+* @desc Increments the current version of the game model
+* @method incVersion
+* @class Game
+*/
 GameSchema.methods.incVersion = function() {
     this.game.version += 1;
 };
@@ -608,6 +779,11 @@ GameSchema.methods.addChat = function(message, source) {
     this.game.chat.lines.push(newMessage);
 };
 
+/**
+* @desc Removes the trade offer from the model
+* @method removeTradeOffer
+* @class Game
+*/
 GameSchema.methods.removeTradeOffer = function() {
     this.game.tradeOffer = null;
 };
