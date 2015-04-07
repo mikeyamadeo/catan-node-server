@@ -219,19 +219,17 @@ var MovesController = {
         
         if (gameHelpers.locationIsEqual(location, robber) && !req.command) {
           return res.status(403).json("robber is already in that location young homie");
-        } else {
+        } else  {
           var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
-          var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
-          console.log("victim " + victim);
-          var vResources = victim.resources;
+          if (victimId != -1) {
+            var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
+            var vResources = victim.resources;
 
-          var victimHasResources = resourceTypes.every(function(type) {
-            return vResources[type] > 0;
-          });
-
-          console.log("victim resources " + victimHasResources);
-
-          if (victimHasResources) {
+            var victimHasResources = resourceTypes.every(function(type) {
+              return vResources[type] > 0;
+            });
+          }
+          if (victimHasResources && victimId != -1) {
             var allResources = [];
 
             //create an array weighted by number of each type
@@ -267,7 +265,6 @@ var MovesController = {
                         result.addToLog(" moved the robber", req.body.playerIndex);
                         result.save();
                         command.addCommand(req.game, req.body); 
-                        console.log("after robbing " + result.game);
                         return res.status(200).json(result.game);
                     }
                 }
@@ -291,7 +288,6 @@ var MovesController = {
   finishTurn: function(req, res, next) {
     console.log("I'm in finishTurn",req.game);
     MovesModel.finishTurn(req.game, req.body.playerIndex, function(err, game) {
-      console.log("finish turn game", game)
         if (err && !req.command) {
             return res.status(500).send(err)
         }
@@ -440,7 +436,6 @@ var MovesController = {
                 } else if (!bank) {
                     return callback(new Error("Bank does not exist"));
                 }
-                console.log("first: ", first, "second: ", second);
                 if ((first === second && bank[first] > 1) || 
                     (bank[first] > 0 && bank[second] > 0)) {
                     return callback(null);
@@ -689,7 +684,6 @@ var MovesController = {
             });
         },
         function(resource, callback) {
-            console.log(gameId);
             MovesModel.soldier(gameId, location, index, victim, resource, 'Playing',
                 function(err, game) { 
                 if (err) {
@@ -1360,8 +1354,10 @@ var MovesController = {
     var index = body.playerIndex;
     var discardedCards = body.discardedCards;
     async.waterfall([
+      /*
         function(callback) {
             MovesModel.getStatus(gameId, function(err, status) {
+                console.log(status);
                 if (err) {
                     console.log(err.stack);
                     return callback(err);
@@ -1372,6 +1368,7 @@ var MovesController = {
                 }
             });
         },
+        */
         function(callback) {
             MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
                 if (err) {
@@ -1394,7 +1391,6 @@ var MovesController = {
                 } else {
                     var totalDiscard = helper.countResources(discardedCards);
                     var totalHand = helper.countResources(resources);
-                    console.log(totalHand, totalDiscard);
                     if (Math.floor(totalHand / 2) === totalDiscard) {
                         return callback(null, resources);
                     } else if (totalHand < 8) {
@@ -1432,7 +1428,6 @@ var MovesController = {
                         }
                     });
                     if (found && found.length > 0) {
-                        console.log(found);
                         return callback(null, 'Discarding');
                     } else {
                         return callback(null, 'Robbing');
@@ -1462,6 +1457,7 @@ var MovesController = {
         }],
         function(err, result) {
             if (err && !req.command) {
+                console.log(err.message);
                 res.status(400).send(err.message);
             } else {
               
