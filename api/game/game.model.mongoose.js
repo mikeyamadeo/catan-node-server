@@ -66,6 +66,11 @@ var Port = new Schema({
     ratio : Number
 }, { _id : false }); 
 
+/**
+* @desc Normalizes the location contained within the port
+* @method normalize
+* @class Port
+*/
 Port.methods.normalize = function() {
     
     switch(this.location.direction) {
@@ -101,31 +106,36 @@ var Road = new Schema({
     }
 }, { _id : false });
 
-    Road.methods.normalize = function() {
-        
-        switch(this.location.direction) {
-            case 'NW':
-            case 'NE':
-            case 'N':
-                break;
-            case 'SW':
-                this.location.direction = 'NE';
-                this.location.x = this.location.x - 1;
-                this.location.y = this.location.y + 1;
-                break;
-            case 'SE':
-                this.location.direction = 'NW';
-                this.location.x = this.location.x + 1;
-                break;
-            case 'S':
-                this.location.direction = 'N';
-                this.location.y = this.location.y + 1;
-                break;
-            default:
-                break;
-        }
-        return this;
+/**
+* @desc Normalizes the location inside the road object
+* @method normalize
+* @class Road
+*/
+Road.methods.normalize = function() {
+    
+    switch(this.location.direction) {
+        case 'NW':
+        case 'NE':
+        case 'N':
+            break;
+        case 'SW':
+            this.location.direction = 'NE';
+            this.location.x = this.location.x - 1;
+            this.location.y = this.location.y + 1;
+            break;
+        case 'SE':
+            this.location.direction = 'NW';
+            this.location.x = this.location.x + 1;
+            break;
+        case 'S':
+            this.location.direction = 'N';
+            this.location.y = this.location.y + 1;
+            break;
+        default:
+            break;
     }
+    return this;
+}
 
 var VertexObject = new Schema({
     owner : Number,
@@ -136,6 +146,11 @@ var VertexObject = new Schema({
     }
 }, { _id : false });
 
+/**
+* @desc Normalizes the location contained within the vertex object
+* @method normalize
+* @class VertexObject
+*/
 VertexObject.methods.normalize = function() {
     switch(this.location.direction) {
         case 'NW':
@@ -203,6 +218,13 @@ var GameSchema = new Schema({
     }
 });
 
+/**
+* @desc Updates the color of the specified player
+* @method updateColor
+* @param {string} name - specifes player
+* @param {string} color - player's new color
+* @class Game
+*/
 GameSchema.methods.updateColor = function(name, color) {
     for (var i = 0; i < this.game.players.length; i++) {
         if (this.game.players[i].name == name) {
@@ -211,30 +233,64 @@ GameSchema.methods.updateColor = function(name, color) {
     }
 };
 
+/**
+* @desc Retrieves the list of players from a game
+* @method getPlayers
+* @class Game
+*/
 GameSchema.methods.getPlayers = function() {
     return this.game.players;
 };
 
+/**
+* @desc Retrieves the deck from the game
+* @method getDeck
+* @class Game
+*/
 GameSchema.methods.getDeck = function() {
     return this.game.deck;
 };
 
+/**
+* @desc Retrieves the "playedDevCard" flag from specified player
+* @method getPlayedDevCard
+* @param {number} index - specifies player
+* @class Game
+*/
 GameSchema.methods.getPlayedDevCard = function(index) {
     if (index >= 0 && index < this.game.players.length) {
         return this.game.players[index].playedDevCard;
     }
 };
 
+/**
+* @desc Retrieves the devCards from specified player
+* @method getDevCards
+* @param {number} index - specifies player
+* @param {string} type - [oldDevCards/newDevCards]
+* @class Game
+*/ 
 GameSchema.methods.getDevCards = function(index, type) {
     if (index >= 0 && index < this.game.players.length) {
         return this.game.players[index][type];
     }
 };
 
+/**
+* @desc Retrieves the bank from game
+* @method getBank
+* @class Game
+*/
 GameSchema.methods.getBank = function() {
     return this.game.bank;
 };
 
+/**
+* @desc Retrieves the resource list from specified player
+* @method getResources
+* @param {number} index - specified player
+* @class Game
+*/
 GameSchema.methods.getResources = function(index) {
     if (index >= 0 && index < this.game.players.length) {
         return this.game.players[index].resources;
@@ -242,10 +298,21 @@ GameSchema.methods.getResources = function(index) {
     return null
 };
 
-GameSchema.methods.getHexes = function(index) {
+/**
+* @desc Retrieves the hexes from game map
+* @method getHexes
+* @class Game
+*/
+GameSchema.methods.getHexes = function() {
     return this.game.map.hexes;
 };
 
+/**
+* @desc Retrieves the hexes from game map by chit
+* @method getHexesByChit
+* @param {number} chit - [2-12]
+* @class Game
+*/
 GameSchema.methods.getHexesByChit = function(chit) {
     var hexes = this.game.map.hexes;
     var resourceHexes = [];
@@ -257,6 +324,13 @@ GameSchema.methods.getHexesByChit = function(chit) {
     return resourceHexes;
 };
 
+/**
+* @desc Adds message to log concatenated with specified players name
+* @method addToLog
+* @param {string} - message to add to log
+* @param {number} - specifies player
+* @class Game
+*/
 GameSchema.methods.addToLog = function(message, index) {
     var players = this.game.players;
     var logMessage = players[index].name + message;
@@ -266,7 +340,12 @@ GameSchema.methods.addToLog = function(message, index) {
     });
 };
 
-GameSchema.methods.getStatus = function(index) {
+/**
+* @desc Retrieves the status of game
+* @method getStatus
+* @class Game
+*/
+GameSchema.methods.getStatus = function() {
     return this.game.turnTracker.status;
 };
 
