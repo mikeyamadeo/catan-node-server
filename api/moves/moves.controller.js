@@ -78,23 +78,24 @@ var MovesController = {
                 var map = model.game.map;
                 var bank = model.game.bank;
                 if (numberRolled == 7) {
-                    var discardHuh = false;
-                    for (var i = 0; i < 4; i++) {
-                        var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
-                        var resourceCount = 
-                            gameHelpers.countResources(tempPlayer.resources);
-                        if (resourceCount > 7) {
-                            discardHuh = true;
-                            break;
-                        }
-                    }
-                    if (discardHuh) {
-                        status = "Discarding";
-                        return callback('ok');
-                    } else {
-                        status = "Robbing";
-                        return callback('ok');
-                    }
+                  numberRolled = 6;
+                    // var discardHuh = false;
+                    // for (var i = 0; i < 4; i++) {
+                    //     var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+                    //     var resourceCount = 
+                    //         gameHelpers.countResources(tempPlayer.resources);
+                    //     if (resourceCount > 7) {
+                    //         discardHuh = true;
+                    //         break;
+                    //     }
+                    // }
+                    // if (discardHuh) {
+                    //     status = "Discarding";
+                    //     return callback('ok');
+                    // } else {
+                    //     status = "Robbing";
+                    //     return callback('ok');
+                    // }
                 }
                 return callback(null, players, map, bank);
             });
@@ -1217,6 +1218,9 @@ var MovesController = {
             });
         },
         function(acceptance, resourceList, callback) {
+            if (!acceptance) {
+                return callback(null, null);
+            }
             MovesModel.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
                 if (err) {
                     return callback(err);
