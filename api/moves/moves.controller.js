@@ -1051,33 +1051,33 @@ var MovesController = {
                     return callback(err);
                 } else if (!resource) {
                     return callback(new Error("Resources do not exist"));
-                } else if (offer.brick <=0 && offer.ore <=0 && offer.sheep <=0 &&
-                    offer.wheat <=0 && offer.wood <=0) {
+                } else if (offer.brick >=0 && offer.ore >=0 && offer.sheep >=0 &&
+                    offer.wheat >=0 && offer.wood >=0) {
                     return callback(new Error("No resources allocated to receive"));
                 } else {
-                    if (offer.brick < 0) {
+                    if (offer.brick > 0) {
                       noResource = false;
-                      if (!(resource.brick >= Math.abs(offer.brick)))
+                      if (!(resource.brick <= Math.abs(offer.brick)))
                         return callback(new Error("You don't have the resources to trade"));
                     }
-                    if (offer.ore < 0) {
+                    if (offer.ore > 0) {
                       noResource = false;
-                      if (!(resource.ore >= Math.abs(offer.ore)))
+                      if (!(resource.ore <= Math.abs(offer.ore)))
                         return callback(new Error("You don't have the resources to trade"));
                     } 
-                    if (offer.sheep < 0) {
+                    if (offer.sheep > 0) {
                       noResource = false;
-                      if (!(resource.sheep >= Math.abs(offer.sheep)))
+                      if (!(resource.sheep <= Math.abs(offer.sheep)))
                         return callback(new Error("You don't have the resources to trade"));
                     } 
-                    if (offer.wheat < 0) {
+                    if (offer.wheat > 0) {
                       noResource = false;
-                      if (!(resource.wheat >= Math.abs(offer.wheat)))
+                      if (!(resource.wheat <= Math.abs(offer.wheat)))
                         return callback(new Error("You don't have the resources to trade"));
                     } 
-                    if (offer.wood < 0) {
+                    if (offer.wood > 0) {
                       noResource = false;
-                      if (!(resource.wood >= Math.abs(offer.wood)))
+                      if (!(resource.wood <= Math.abs(offer.wood)))
                         return callback(new Error("You don't have the resources to trade"));
                     }
                     if (noResource) {
