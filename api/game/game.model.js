@@ -111,7 +111,27 @@ var GameModel = {
             }
             return callback(null, null);
         });
-    }
+    },
+    /**
+    * @desc Resets the game to version 0. This is hard reset that 
+    * will delete all version of the game greater than 0. Thus, 
+    * resetting a reset will not be possible. 
+    * @method reset
+    * @param {number} id - specifies the game by id
+    * @param {function} callback - callback(err, game)
+    */
+    reset : function(id) {},
+    /**
+    * @desc Reverts the game to the previous version. This performs
+    * a hard reset deleting the current version of the game, effectively
+    * undoing the most recent game action. All subsequent requests for 
+    * the model by all other clients will receive the previous version
+    * of the model
+    * @method undo
+    * @param {number} id - specifies the game by id
+    * @param {function} callback - callback(err, game)
+    */
+    undo : function(id) {}
 };
 
 module.exports = GameModel;
