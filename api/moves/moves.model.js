@@ -42,7 +42,6 @@ module.exports = {
     * @param {function} callback - callback(err, game)
     */
     addChat : function(id, player, message, callback) {
-        console.log("Are we here");
         model.findById(id, function(err, game) {
             if (err) {
                 console.log(err);
@@ -884,6 +883,20 @@ module.exports = {
             }
         });
     },
+
+    updateStatus : function(id, status, callback) {
+        model.findById(id, function(err, game) {
+            if (err) {
+                console.log(err.stack);
+                return callback(err);
+            } else if (game) {
+                game.updateStatus(status)
+                return game.save(callback);
+            }
+            return callback(null, null);
+        });
+    },
+
     /**
     * @desc - retrieves structures and filter by player index,
             hex location, game, and structure type
