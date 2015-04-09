@@ -129,7 +129,7 @@ module.exports = {
     /**
      * @desc creates a new user
      * @method createNewUser
-     * @method {number} id - user id of player
+     * @param {number} id - user id of player
      * @param {string} name - name of new user
      * @param {string} color - color of new player
      * @return {object} player object

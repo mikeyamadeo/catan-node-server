@@ -28,6 +28,7 @@
             <pre class="prettyprint source"><code>'use strict'
 
 var model = require('../game/game.model.mongoose');
+var command = require('../game/game.command.mongoose');
 var fs = require('fs'),
     config = require('../../config');
 
@@ -41,20 +42,7 @@ var GamesModel = {
         model.find(function(err,games) {
             if (err) return callback(err);
             if (games) {
-                var gameHeaders = games.map(function(game, index, array) {
-                    return {
-                        players : games.players.map(function(player, index, array) {
-                            return {
-                                name : player.name,
-                                color : player.color,
-                                id : player.user
-                            };
-                        }),
-                        title : game.title,
-                        id : game._id
-                    }
-                });
-                return callback(null, gameHeaders);
+                return callback(null, games);
             }
             return callback(null, null);
         });
@@ -82,11 +70,30 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                player.index = game.players.length;
+                player.playerIndex = game.game.players.length;
                 game.addPlayer(player);
                 return game.save(callback);
             }
             return callback(null, null);
+        });
+    },
+    /**
+    * @desc modifies the player's color
+    * @method updateColor
+    * @param {number} id - specifies game
+    * @param {number} index - specifies player
+    * @param {function} callback - callback(err, game)
+    */
+    updateColor : function(id, name, color, callback) {
+        model.findById(id, function(err, game) {
+            if (err) return callback(err);
+            if (game) {
+                game.updateColor(name, color);
+                return game.save(callback);
+                return callback(null, game);
+            } else {
+                return callback(null, null);
+            }
         });
     },
     /**
@@ -119,7 +126,7 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                fs.writeFile(config.saves + '/' + name, 
+                fs.writeFile(config.saves + 'saves/' + name, 
                              JSON.stringify(game), function(err) {
                     if (err) return callback(err);
                     return callback(null, true);
@@ -136,7 +143,7 @@ var GamesModel = {
     * @param {function} callback - callback(err, game)
     */
     loadGame : function(name, callback) {
-        fs.readFile(config.saves + '/' + name, function(err, data) {
+        fs.readFile(config.saves + 'saves/' + name, function(err, data) {
             if (err) return callback(err);
             callback(null, JSON.parse(data));    
         });
@@ -151,13 +158,17 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                if (game.isGameAvailable()) {
-                    return callback(null, true);
-                }
+                console.log(game.isGameAvailable());
+                return callback(null, game.isGameAvailable());
             }
             return callback(null, false);
         });   
-    }
+    },
+
+    initializeGameCommands: function(initGame, callback) {
+
+        command.create(initGame); 
+    },
 }
 
 module.exports = GamesModel; 
@@ -172,13 +183,13 @@ module.exports = GamesModel;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Game.html">Game</a></li><li><a href="Port.html">Port</a></li><li><a href="Road.html">Road</a></li><li><a href="VertexObject.html">VertexObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#- getStructures">- getStructures</a></li><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#currentPlayer">currentPlayer</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getBank">getBank</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getDeck">getDeck</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getOldDevCards">getOldDevCards</a></li><li><a href="global.html#getOwnedPorts">getOwnedPorts</a></li><li><a href="global.html#getOwnedRoads">getOwnedRoads</a></li><li><a href="global.html#getOwnedStructures">getOwnedStructures</a></li><li><a href="global.html#getPlayedDevCard">getPlayedDevCard</a></li><li><a href="global.html#getResources">getResources</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getRobber">getRobber</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateColor">updateColor</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Apr 08 2015 15:08:25 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

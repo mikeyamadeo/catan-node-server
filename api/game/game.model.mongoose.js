@@ -345,7 +345,7 @@ GameSchema.methods.addToLog = function(message, index) {
 * @method getStatus
 * @class Game
 */
-GameSchema.methods.getStatus = function( {
+GameSchema.methods.getStatus = function() {
     return this.game.turnTracker.status;
 };
 

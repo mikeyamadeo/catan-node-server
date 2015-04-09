@@ -128,7 +128,7 @@ var MovesModel = require('./moves.model');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line14">line 14</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line16">line 16</a>
     </li></ul></dd>
     
     
@@ -146,7 +146,7 @@ var MovesModel = require('./moves.model');
         
             
 <dt>
-    <h4 class="name" id="Model"><span class="type-signature"></span>Model<span class="type-signature"></span></h4>
+    <h4 class="name" id="GamesController"><span class="type-signature"></span>GamesController<span class="type-signature"></span></h4>
     
     
 </dt>
@@ -185,64 +185,7 @@ var MovesModel = require('./moves.model');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line12">line 12</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="newGame"><span class="type-signature"></span>newGame<span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        Example of getting access to required models:
-
-var Model = require('../model');
-var MovesModel = require('./moves.model');
-    </div>
-    
-    
-    
-
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line14">line 14</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line15">line 15</a>
     </li></ul></dd>
     
     
@@ -321,6 +264,216 @@ var MovesModel = require('./moves.model');
         <h3 class="subsection-title">Methods</h3>
         
         <dl>
+            
+<dt>
+    <h4 class="name" id="- getStructures"><span class="type-signature"></span>- getStructures<span class="signature">(id, index, type, location, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        - retrieves structures and filter by player index,
+            hex location, game, and structure type
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player (-1 if filtering not desired)</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies structure type ("settlements" or "cities")</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>location</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">hex location { x : Number, y : Number }</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, structures)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line900">line 900</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
             
 <dt>
     <h4 class="name" id="acceptTrade"><span class="type-signature"></span>acceptTrade<span class="signature">(req, res, next)</span><span class="type-signature"></span></h4>
@@ -459,7 +612,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line383">line 383</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line1125">line 1125</a>
     </li></ul></dd>
     
     
@@ -671,7 +824,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line342">line 342</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line417">line 417</a>
     </li></ul></dd>
     
     
@@ -834,7 +987,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line57">line 57</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line137">line 137</a>
     </li></ul></dd>
     
     
@@ -1020,7 +1173,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line6">line 6</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line36">line 36</a>
     </li></ul></dd>
     
     
@@ -1183,7 +1336,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line46">line 46</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line47">line 47</a>
     </li></ul></dd>
     
     
@@ -1323,7 +1476,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line35">line 35</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line23">line 23</a>
     </li></ul></dd>
     
     
@@ -1486,7 +1639,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line47">line 47</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line35">line 35</a>
     </li></ul></dd>
     
     
@@ -1813,7 +1966,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line340">line 340</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line949">line 949</a>
     </li></ul></dd>
     
     
@@ -1999,7 +2152,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line300">line 300</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line374">line 374</a>
     </li></ul></dd>
     
     
@@ -2163,7 +2316,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line294">line 294</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line797">line 797</a>
     </li></ul></dd>
     
     
@@ -2372,7 +2525,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line250">line 250</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line323">line 323</a>
     </li></ul></dd>
     
     
@@ -2536,7 +2689,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line317">line 317</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line873">line 873</a>
     </li></ul></dd>
     
     
@@ -2745,7 +2898,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line274">line 274</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line347">line 347</a>
     </li></ul></dd>
     
     
@@ -2911,7 +3064,7 @@ deck is not empty
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line151">line 151</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line325">line 325</a>
     </li></ul></dd>
     
     
@@ -3097,7 +3250,7 @@ deck is not empty
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line106">line 106</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line169">line 169</a>
     </li></ul></dd>
     
     
@@ -3423,7 +3576,7 @@ deck is not empty
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line85">line 85</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line69">line 69</a>
     </li></ul></dd>
     
     
@@ -3451,7 +3604,7 @@ deck is not empty
         
             
 <dt>
-    <h4 class="name" id="createNewUser"><span class="type-signature"></span>createNewUser<span class="signature">(name, color)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="createNewUser"><span class="type-signature"></span>createNewUser<span class="signature">(id, name, color)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
     
 </dt>
@@ -3489,6 +3642,29 @@ deck is not empty
 	</thead>
 	
 	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">user id of player</td>
+        </tr>
+	
 	
 	
         <tr>
@@ -3563,7 +3739,7 @@ deck is not empty
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.helper.js.html">games/games.controller.helper.js</a>, <a href="games.controller.helper.js.html#line4">line 4</a>
+        <a href="games.controller.helper.js.html">games/games.controller.helper.js</a>, <a href="games.controller.helper.js.html#line129">line 129</a>
     </li></ul></dd>
     
     
@@ -3606,6 +3782,146 @@ deck is not empty
 </dl>
 
         
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="currentPlayer"><span class="type-signature"></span>currentPlayer<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves current turn
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, index)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line497">line 497</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
     
     
 </dd>
@@ -3749,7 +4065,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line424">line 424</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line1334">line 1334</a>
     </li></ul></dd>
     
     
@@ -3777,7 +4093,7 @@ the request and sends a response after performing the action
         
             
 <dt>
-    <h4 class="name" id="discardCards"><span class="type-signature"></span>discardCards<span class="signature">(id, player, resources, callback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="discardCards"><span class="type-signature"></span>discardCards<span class="signature">(id, player, resources, status, callback)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -3889,6 +4205,29 @@ the request and sends a response after performing the action
 	
         <tr>
             
+                <td class="name"><code>status</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">new game status</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>callback</code></td>
             
             
@@ -3936,7 +4275,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line396">line 396</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line472">line 472</a>
     </li></ul></dd>
     
     
@@ -4100,7 +4439,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line123">line 123</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line283">line 283</a>
     </li></ul></dd>
     
     
@@ -4263,7 +4602,147 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line84">line 84</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line131">line 131</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getBank"><span class="type-signature"></span>getBank<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the resources in the bank
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, bank)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line616">line 616</a>
     </li></ul></dd>
     
     
@@ -4403,7 +4882,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line84">line 84</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line85">line 85</a>
     </li></ul></dd>
     
     
@@ -4566,7 +5045,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line25">line 25</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line36">line 36</a>
     </li></ul></dd>
     
     
@@ -4706,7 +5185,147 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line30">line 30</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line31">line 31</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getDeck"><span class="type-signature"></span>getDeck<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the deck
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, deck)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line100">line 100</a>
     </li></ul></dd>
     
     
@@ -4846,7 +5465,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line6">line 6</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line7">line 7</a>
     </li></ul></dd>
     
     
@@ -4986,7 +5605,1008 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line18">line 18</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line19">line 19</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getOldDevCards"><span class="type-signature"></span>getOldDevCards<span class="signature">(id, index, type)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the oldDevCards of a player
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">oldDevCards | newDevCards</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line636">line 636</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getOwnedPorts"><span class="type-signature"></span>getOwnedPorts<span class="signature">(id, index, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves ports owned by specified player
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, [Port])</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line537">line 537</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getOwnedRoads"><span class="type-signature"></span>getOwnedRoads<span class="signature">(id, index, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the roads owned by specified player
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, [Road])</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line557">line 557</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getOwnedStructures"><span class="type-signature"></span>getOwnedStructures<span class="signature">(id, index, structure, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves structures owned by specified player
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>structure</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">type of structure to retrieve (city/settelement)</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, [VertexObject])</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line516">line 516</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getPlayedDevCard"><span class="type-signature"></span>getPlayedDevCard<span class="signature">(id, index, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves whether or not a player has played a dev card this turn
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, playedCard)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line657">line 657</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getResources"><span class="type-signature"></span>getResources<span class="signature">(id, index, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the resource set of a player
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, resources)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line596">line 596</a>
     </li></ul></dd>
     
     
@@ -5126,7 +6746,147 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line54">line 54</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line55">line 55</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getRobber"><span class="type-signature"></span>getRobber<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        retrieves the location of the robber
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, robber)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line577">line 577</a>
     </li></ul></dd>
     
     
@@ -5266,7 +7026,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line69">line 69</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line70">line 70</a>
     </li></ul></dd>
     
     
@@ -5686,7 +7446,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line117">line 117</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line124">line 124</a>
     </li></ul></dd>
     
     
@@ -5849,7 +7609,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line65">line 65</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line72">line 72</a>
     </li></ul></dd>
     
     
@@ -6012,7 +7772,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line116">line 116</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line126">line 126</a>
     </li></ul></dd>
     
     
@@ -6175,7 +7935,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line55">line 55</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line18">line 18</a>
     </li></ul></dd>
     
     
@@ -6338,7 +8098,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line33">line 33</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line57">line 57</a>
     </li></ul></dd>
     
     
@@ -6455,7 +8215,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line8">line 8</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line9">line 9</a>
     </li></ul></dd>
     
     
@@ -6618,7 +8378,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line196">line 196</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line219">line 219</a>
     </li></ul></dd>
     
     
@@ -6758,7 +8518,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line105">line 105</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line112">line 112</a>
     </li></ul></dd>
     
     
@@ -6921,7 +8681,7 @@ the turn tracker accordingly
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.controller.js.html">user/user.controller.js</a>, <a href="user.controller.js.html#line8">line 8</a>
+        <a href="user.controller.js.html">user/user.controller.js</a>, <a href="user.controller.js.html#line9">line 9</a>
     </li></ul></dd>
     
     
@@ -7085,7 +8845,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line403">line 403</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line1243">line 1243</a>
     </li></ul></dd>
     
     
@@ -7317,7 +9077,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line373">line 373</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line449">line 449</a>
     </li></ul></dd>
     
     
@@ -7480,7 +9240,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line17">line 17</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line19">line 19</a>
     </li></ul></dd>
     
     
@@ -7644,7 +9404,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line251">line 251</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line719">line 719</a>
     </li></ul></dd>
     
     
@@ -7833,7 +9593,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line202">line 202</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line270">line 270</a>
     </li></ul></dd>
     
     
@@ -7997,7 +9757,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line271">line 271</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line775">line 775</a>
     </li></ul></dd>
     
     
@@ -8160,7 +9920,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line231">line 231</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line304">line 304</a>
     </li></ul></dd>
     
     
@@ -8324,7 +10084,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line363">line 363</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line1028">line 1028</a>
     </li></ul></dd>
     
     
@@ -8533,7 +10293,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line322">line 322</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line397">line 397</a>
     </li></ul></dd>
     
     
@@ -8696,7 +10456,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line49">line 49</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line100">line 100</a>
     </li></ul></dd>
     
     
@@ -8859,7 +10619,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.controller.js.html">user/user.controller.js</a>, <a href="user.controller.js.html#line47">line 47</a>
+        <a href="user.controller.js.html">user/user.controller.js</a>, <a href="user.controller.js.html#line49">line 49</a>
     </li></ul></dd>
     
     
@@ -9022,7 +10782,149 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line41">line 41</a>
+        <a href="game.controller.js.html">game/game.controller.js</a>, <a href="game.controller.js.html#line67">line 67</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="reset"><span class="type-signature"></span>reset<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Resets the game to version 0. This is hard reset that 
+will delete all version of the game greater than 0. Thus, 
+resetting a reset will not be possible.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies the game by id</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, game)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line115">line 115</a>
     </li></ul></dd>
     
     
@@ -9162,7 +11064,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line39">line 39</a>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line40">line 40</a>
     </li></ul></dd>
     
     
@@ -9326,7 +11228,7 @@ verifies that the actiono is valid and sends a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line204">line 204</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line487">line 487</a>
     </li></ul></dd>
     
     
@@ -9535,7 +11437,7 @@ verifies that the actiono is valid and sends a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line155">line 155</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line219">line 219</a>
     </li></ul></dd>
     
     
@@ -9700,7 +11602,7 @@ a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line94">line 94</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line162">line 162</a>
     </li></ul></dd>
     
     
@@ -9932,7 +11834,7 @@ a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line57">line 57</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line103">line 103</a>
     </li></ul></dd>
     
     
@@ -10121,7 +12023,7 @@ a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line29">line 29</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line73">line 73</a>
     </li></ul></dd>
     
     
@@ -10286,7 +12188,7 @@ resources to players and return a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line60">line 60</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line48">line 48</a>
     </li></ul></dd>
     
     
@@ -10449,7 +12351,7 @@ resources to players and return a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line166">line 166</a>
+        <a href="games.controller.js.html">games/games.controller.js</a>, <a href="games.controller.js.html#line184">line 184</a>
     </li></ul></dd>
     
     
@@ -10635,7 +12537,7 @@ resources to players and return a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line83">line 83</a>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line90">line 90</a>
     </li></ul></dd>
     
     
@@ -10798,7 +12700,7 @@ resources to players and return a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line17">line 17</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line18">line 18</a>
     </li></ul></dd>
     
     
@@ -10962,7 +12864,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line229">line 229</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line591">line 591</a>
     </li></ul></dd>
     
     
@@ -10990,7 +12892,7 @@ the request and sends a response after performing the action
         
             
 <dt>
-    <h4 class="name" id="soldier"><span class="type-signature"></span>soldier<span class="signature">(id, hex, player, victim, callback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="soldier"><span class="type-signature"></span>soldier<span class="signature">(id, hex, player, victim, resource, status, callback)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -11124,6 +13026,52 @@ the request and sends a response after performing the action
 	
         <tr>
             
+                <td class="name"><code>resource</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">resource to take</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>status</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">new game status</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>callback</code></td>
             
             
@@ -11171,7 +13119,314 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line178">line 178</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line242">line 242</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="undo"><span class="type-signature"></span>undo<span class="signature">(id, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Reverts the game to the previous version. This performs
+a hard reset deleting the current version of the game, effectively
+undoing the most recent game action. All subsequent requests for 
+the model by all other clients will receive the previous version
+of the model
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies the game by id</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, game)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="game.model.js.html">game/game.model.js</a>, <a href="game.model.js.html#line124">line 124</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="updateColor"><span class="type-signature"></span>updateColor<span class="signature">(id, index, callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        modifies the player's color
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies game</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">specifies player</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback(err, game)</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="games.model.js.html">games/games.model.js</a>, <a href="games.model.js.html#line53">line 53</a>
     </li></ul></dd>
     
     
@@ -11334,7 +13589,7 @@ the request and sends a response after performing the action
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.model.js.html">user/user.model.js</a>, <a href="user.model.js.html#line44">line 44</a>
+        <a href="user.model.js.html">user/user.model.js</a>, <a href="user.model.js.html#line45">line 45</a>
     </li></ul></dd>
     
     
@@ -11501,7 +13756,7 @@ dev card that turn and returns a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line180">line 180</a>
+        <a href="moves.controller.js.html">moves/moves.controller.js</a>, <a href="moves.controller.js.html#line397">line 397</a>
     </li></ul></dd>
     
     
@@ -11710,7 +13965,7 @@ dev card that turn and returns a response
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line132">line 132</a>
+        <a href="moves.model.js.html">moves/moves.model.js</a>, <a href="moves.model.js.html#line196">line 196</a>
     </li></ul></dd>
     
     
@@ -11751,13 +14006,13 @@ dev card that turn and returns a response
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Game.html">Game</a></li><li><a href="Port.html">Port</a></li><li><a href="Road.html">Road</a></li><li><a href="VertexObject.html">VertexObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#- getStructures">- getStructures</a></li><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#currentPlayer">currentPlayer</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getBank">getBank</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getDeck">getDeck</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getOldDevCards">getOldDevCards</a></li><li><a href="global.html#getOwnedPorts">getOwnedPorts</a></li><li><a href="global.html#getOwnedRoads">getOwnedRoads</a></li><li><a href="global.html#getOwnedStructures">getOwnedStructures</a></li><li><a href="global.html#getPlayedDevCard">getPlayedDevCard</a></li><li><a href="global.html#getResources">getResources</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getRobber">getRobber</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateColor">updateColor</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Apr 08 2015 15:08:25 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

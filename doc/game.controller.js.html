@@ -28,7 +28,9 @@
             <pre class="prettyprint source"><code>'use strict';
 
 var _ = require('lodash'),
-    model = require('./game.model');
+    GameModel = require('./game.model'),
+    moveCtrl = require('../moves/moves.controller'),
+    command = require('./game.command.mongoose');
 
 /**
  * Example of getting access to required models:
@@ -48,7 +50,16 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  model: function(req, res, next) {},
+
+  model: function(req, res, next) {
+    var gameId = req.game;
+    GameModel.getModel(gameId, function(err, model) {
+      if (err) {
+        return res.status(400).send(err.message);
+      }
+      return res.status(200).json(model.game);
+    });
+  },
   /**
    * @desc get request to get commands in command log
    * @method getCommands
@@ -56,7 +67,20 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  getCommands: function(req, res, next) {},
+  getCommands: function(req, res, next) {
+    var gameId = req.game;
+    var body = req.body;
+
+    command.findOne({id:gameId}, function(err, state) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err);
+        }
+        if (state) {
+          var commands = state.getCommands(); 
+          return res.status(200).send(commands);           }
+    });
+  },
     /**
    * @desc get request to get all AI types
    * @method listAI
@@ -64,7 +88,9 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  listAI: function(req, res, next) {},
+  listAI: function(req, res, next) {
+      return res.status(200).json(['LARGEST_ARMY']);
+  },
     /**
    * @desc request to reset game state to initial state
    * @method reset
@@ -72,7 +98,32 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  reset: function(req, res, next) {},
+  reset: function(req, res, next) {
+    var gameId = req.game;
+    var body = req.body;
+
+    command.findOne({id:gameId}, function(err, state) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err);
+        }
+        if (state) {
+          GameModel.getModel(gameId, function(err, game) {
+            if (err) {
+              return res.status(400).send(err.message);
+            }
+            if(game) {
+              var playerList = game.game.players;
+              game.game = state.getInitialState();
+              game.game.players = playerList;
+              game.save();
+              state.reset();
+              return res.status(200).json(game.game);
+            }
+          });
+        }
+    });
+  },
     /**
    * @desc request for adding new commands to command log
    * @method postCommands
@@ -80,7 +131,36 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  postCommands: function(req, res, next) {},
+  postCommands: function(req, res, next) {
+    var gameId = req.game;
+    var body = req.body;
+
+    command.findOne({id:gameId}, function(err, state) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err);
+        }
+        if (state) {
+          // add command and run using controller
+          for (var i in body) {
+            state.addCommand(body[i]);
+            var req = {
+              command: true,
+              game: gameId,
+              body: body[i]
+            };
+            moveCtrl[body[i].type](req);
+            command.addCommand(body[i]);
+          }
+          GameModel.getModel(gameId, function(err, model) {
+            if (err) {
+              return res.status(400).send(err.message);
+            }
+            return res.status(200).json(model.game);
+          });
+        }
+    });
+  },
     /**
    * @desc request to add an AI player
    * @method addAI
@@ -88,7 +168,9 @@ var GameController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  addAI: function(req, res, next) {},
+  addAI: function(req, res, next) {
+    return res.status(200).json("No AI Available")
+  },
 };
 
 module.exports = GameController;
@@ -102,13 +184,13 @@ module.exports = GameController;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Game.html">Game</a></li><li><a href="Port.html">Port</a></li><li><a href="Road.html">Road</a></li><li><a href="VertexObject.html">VertexObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#- getStructures">- getStructures</a></li><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#currentPlayer">currentPlayer</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getBank">getBank</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getDeck">getDeck</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getOldDevCards">getOldDevCards</a></li><li><a href="global.html#getOwnedPorts">getOwnedPorts</a></li><li><a href="global.html#getOwnedRoads">getOwnedRoads</a></li><li><a href="global.html#getOwnedStructures">getOwnedStructures</a></li><li><a href="global.html#getPlayedDevCard">getPlayedDevCard</a></li><li><a href="global.html#getResources">getResources</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getRobber">getRobber</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateColor">updateColor</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Apr 08 2015 15:08:25 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>

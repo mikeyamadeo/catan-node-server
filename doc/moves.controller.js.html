@@ -27,16 +27,17 @@
         <article>
             <pre class="prettyprint source"><code>'use strict';
 
-var _ = require('lodash'),
-    model = require('./moves.model');
 
-/**
- * Example of getting access to required models:
- *
- * var Model = require('../model');
- * var MovesModel = require('./moves.model');
- */
-var Model = require('./moves.model');
+var _ = require('lodash');
+var gameHelpers = require('../game/game.helpers');
+var MovesModel = require('./moves.model');
+var GameModel = require('../game/game.model');
+var helper = require('./moves.controller.helper');
+var async = require('async');
+
+// command model
+var command = require('./moves.command');
+console.log('required commands')
 
 var MovesController = {
   /** CREATE **/
@@ -49,40 +50,27 @@ var MovesController = {
    * @param {function} next - next command
    */
   sendChat: function(req, res, next) {
-    console.log("Are we here -- controller");
-    var data = req.body;
-    var gameId = 0;
-    var playerId = data.playerIndex;
-    var message = data.content;
-    model.addChat(gameId, playerId, message, function(err, game) {
-        if (err) {
-            console.log(err); 
-            next(); 
-        }
-        console.log(game);
-        res.json(game);
-    });
-    
     /*
       Things to do:
       1. pull model from request body.
       2. call correct execute method
         - add chat object to the chat object array
-    */
-
-    /* Psuedo code
-        //Example of how we can store commands for the command pattern
-        var body = req.body;
-        Model.storeCommand(body);
-
-        //store chat message
-        MovesModel.storeMessage(body, function(err, msg) {
-            //send back response after message stored
-            if(err) return next(err);
-            res.status(201);
-        })
-    */
-    console.log(req.body);
+    */    
+    var data = req.body;
+    var gameId = req.game;
+    var playerId = data.playerIndex;
+    var message = data.content;
+    MovesModel.addChat(gameId, playerId, message, function(err, game) {
+        if (err) {
+            console.log(err); 
+            next(); 
+        }
+        if(!req.command) {
+          command.addCommand(gameId, data);
+          return res.status(200).send(game.game); // make sure this is same as game model
+        }
+    });
+    
   },
   /**
    * @desc get rolled number and based on the 
@@ -94,6 +82,109 @@ var MovesController = {
    * @param {function} next - next command
    */
   rollNumber: function(req, res, next) {
+    var gameId = req.game;
+    var numberRolled = req.body.number;
+    var status = "Playing";
+    var resourceChanges = [];
+    for (var i = 0; i &lt; 4; i++) {
+        resourceChanges.push({
+            player : i,
+            resourceMap : {
+                brick : 0,
+                ore : 0,
+                sheep : 0,
+                wheat : 0,
+                wood : 0
+            }
+        });
+    }
+    async.waterfall([
+        function(callback) {
+            GameModel.getModel(gameId, function(err, model) {
+                var players = model.game.players;
+                var map = model.game.map;
+                var bank = model.game.bank;
+                if (numberRolled == 7) {
+                    var discardHuh = false;
+                    for (var i = 0; i &lt; 4; i++) {
+                        var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+                        var resourceCount = 
+                            gameHelpers.countResources(tempPlayer.resources);
+                        if (resourceCount > 7) {
+                            discardHuh = true;
+                            break;
+                        }
+                    }
+                    if (discardHuh) {
+                        status = "Discarding";
+                        return callback('ok');
+                    } else {
+                        status = "Robbing";
+                        return callback('ok');
+                    }
+                }
+                return callback(null, players, map, bank);
+            });
+        },
+        function(players, map, bank, callback) {
+            //hexes that have the chit number that was rolled
+            var hotHexes = map.hexes.filter(function(hex, i) {
+                return hex.number == numberRolled;
+            });
+            //Use cities to determine if player has property on hothexes
+            //add to resources if so.
+            /*
+            hotHexes.forEach(function(hex) {
+                model.getStructures(gameId, -1, "cities", hex.location, 
+                    function(err, cities) {
+                    cities.forEach(function(city) {
+                        var amount = 0;
+                        if (gameHelpers.resourceIsAvailable(bank, hex.resource, 2)) {
+                            amount = 2;
+                        } else {
+                            amount = bank[hex.resource];
+                        }
+                        gameHelpers.addToResourceChanges(hex.resource, amount, 
+                            city.owner, resourceChanges);
+                    });
+                });
+            });
+            */
+            return callback(null, players, map, bank, hotHexes);
+        },
+        function(players, map, bank, hotHexes, callback) {
+            hotHexes.forEach(function(hex) {
+                MovesModel.getStructures(gameId, -1, "settlements", hex.location,
+                    function(err, settlements) {
+                    settlements.forEach(function(settlement) {
+                        var amount = 0;
+                        if (gameHelpers.resourceIsAvailable(bank, hex.resource, 1)) {
+                            amount = 1;
+                        }
+                        gameHelpers.addToResourceChanges(hex.resource, amount,
+                            settlement.owner, resourceChanges);
+                    });
+                });
+            });
+            return callback(null);
+        }],
+        function(err, result) {
+            if (err !== 'ok' && err) {
+                return res.status(500).send(err.message);
+            } else {
+                MovesModel.rollNumber(gameId, status, resourceChanges, 
+                    function(err, game) {
+                        if (err) {
+                            return res.status(400).send(err.message);
+                        } else if (!game) {
+                            return res.status(500).send("Server Error");
+                        } else {
+                            return res.status(200).json(game.game);
+                        }
+                });
+            }
+        });
+  },
     /*
       Things to do:
       1. pull model from request body.
@@ -116,8 +207,6 @@ var MovesController = {
           else
             change state to 'discarding'
     */
-    console.log("number rolled");
-  },
   /**
    * @desc gets a rob player request and updates
    * player resources based on the request and returns
@@ -128,6 +217,7 @@ var MovesController = {
    * @param {function} next - next command
    */
   robPlayer: function(req, res, next) {
+    console.log("in robbing");
     /*
       Things to do:
       1. pull model from request body.
@@ -146,7 +236,77 @@ var MovesController = {
                 mark resource as being checked
         change state to 'playing'
     */
+    var gameId = req.game;
+    var playerIndex = req.body.playerIndex;
+    var victimId = req.body.victimIndex;
+    var location = req.body.location;
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.game.players;
+      MovesModel.getRobber(gameId, function(err, robber) {
+        
+        if (gameHelpers.locationIsEqual(location, robber) && !req.command) {
+          return res.status(403).json("robber is already in that location young homie");
+        } else {
+          var resourceTypes = ["wood", "wheat", "sheep", "ore", "brick"];
+          var victim = gameHelpers.getPlayerFromPlayers(players, victimId);
+          console.log("victim " + victim);
+          var vResources = victim.resources;
+
+          var victimHasResources = resourceTypes.every(function(type) {
+            return vResources[type] > 0;
+          });
+
+          console.log("victim resources " + victimHasResources);
+
+          if (victimHasResources) {
+            var allResources = [];
+
+            //create an array weighted by number of each type
+            resourceTypes.forEach(function(type) {
+              allResources = allResources.concat(gameHelpers.fillArrayWithValue(vResources[type], type))
+            });
+
+            var random = Math.floor(Math.random() * allResources.length);
+
+            MovesModel.robPlayer(gameId, location, playerIndex, victimId, allResources[random], "Playing", function(err, result) {
+              if (err && !req.command) {
+                return res.status(400).send(err.message);
+              } else if (!result && !req.command) {
+                  return res.status(500).send("Server Error");
+              } else {
+                if(!req.command) {
+                  result.addToLog(" moved the robber", req.body.playerIndex);
+                  result.save();
+                  command.addCommand(req.game, req.body); 
+                  return res.status(200).json(result.game);
+                }
+              }
+            });
+
+          } else {
+              MovesModel.updateStatus(gameId, "Playing", function(err, result) {
+                if (err && !req.command) {
+                  return res.status(400).send(err.message);
+                } else if (!result && !req.command) {
+                    return res.status(500).send("Server Error");
+                } else {
+                    if(!req.command) {
+                        result.addToLog(" moved the robber", req.body.playerIndex);
+                        result.save();
+                        command.addCommand(req.game, req.body); 
+                        console.log("after robbing " + result.game);
+                        return res.status(200).json(result.game);
+                    }
+                }
+              });
+            }
+          }
+        });
+    });
   },
+
+
+
   /**
    * @desc recieves a finish turn request and updates
    * the turn tracker accordingly
@@ -156,6 +316,20 @@ var MovesController = {
    * @param {function} next - next command
    */
   finishTurn: function(req, res, next) {
+    console.log("I'm in finishTurn",req.game);
+    MovesModel.finishTurn(req.game, req.body.playerIndex, function(err, game) {
+      console.log("finish turn game", game)
+        if (err && !req.command) {
+            return res.status(500).send(err)
+        }
+        if(!req.command) {
+          game.addToLog(" finished their turn", req.body.playerIndex);
+          game.save();
+          command.addCommand(req.game, req.body);
+          res.json(game.game);
+        }
+    });
+
     /*
       Things to do:
       1. pull model from request body.
@@ -186,6 +360,14 @@ var MovesController = {
    * @param {function} next - next command
    */
   buyDevCard: function(req, res, next) {
+    // Model.finishTurn(req.game, req.body.playerIndex, function(err) {
+    //     if (err) {
+    //         console.log(err); 
+    //         return next(); 
+    //     }
+    //     console.log("finishTurn");
+    //     res.json({cheerUp: "young homie"});
+    // });
     /*
       Things to do:
       1. pull model from request body.
@@ -203,6 +385,41 @@ var MovesController = {
               else
                 mark dev card type as being checked
     */
+    var gameId = req.game;
+    var playerId = req.body.playerIndex;
+
+    GameModel.getGame(gameId, function(err, game) {
+      var deck = game.deck;
+      var cardTypes = ['yearOfPlenty', 'soldier', 'roadBuilding', 'monument', 'monopoly'];
+      var random = 0;
+
+      var cardsInDeck = cardTypes.every(function(type) {
+        return deck[type] > 0;
+      });
+
+      if (!cardsInDeck && !req.command) {
+        return res.json("no dev cards left to purchase");
+      } else {
+        //create an array weighted by number of each type
+        var allCards = [];
+        cardTypes.forEach(function(type) {
+          allCards = allCards.concat(gameHelpers.fillArrayWithValue(deck[type], type))
+        })
+
+        //get random value based on array length
+        var random = Math.floor(Math.random() * allCards.length);
+        MovesModel.buyDevCard(gameId, playerId, allCards[random], function(err, result) {
+        if(!req.command) {
+          game.addToLog(" bought a dev card", req.body.playerIndex);
+          game.save();
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.game);
+        }
+        });
+      }
+
+
+    });
   },
   /**
    * @desc receives a request to play a year of plenty card and
@@ -215,7 +432,7 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  yearOfPlenty: function(req, res, next) {
+  Year_of_Plenty: function(req, res, next) {
     /*
       Things to do:
       1. pull model from request body.
@@ -227,6 +444,72 @@ var MovesController = {
         if true for all of the above
           decrement resources from bank and add to player
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var first = body.resource1;
+    var second = body.resource2;
+    async.series([
+        function(callback) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, playedDevCard) {
+                if (err) {
+                    return callback(err);
+                } else if (playedDevCard) {
+                    return callback(new Error("You have already played a dev card"));
+                }
+                return callback(null)
+            });
+        },
+        function(callback) {
+            MovesModel.getBank(gameId, function(err, bank) {
+                if (err) {
+                    return callback(err);
+                } else if (!bank) {
+                    return callback(new Error("Bank does not exist"));
+                }
+                console.log("first: ", first, "second: ", second);
+                if ((first === second && bank[first] > 1) || 
+                    (bank[first] > 0 && bank[second] > 0)) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Not enough resources in bank"));
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, devCards) {
+                if (err) {
+                    return callback(err);
+                } else if (!devCards) {
+                    return callback(new Error("Dev Cards do not exist"));
+                }
+                if (devCards.yearOfPlenty > 0) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("No year of plenty dev card"));
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.yearOfPlenty(gameId, index, first, second, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err && !req.command) {
+            return res.status(400).send(err.message);
+        }
+
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.pop().game);
+        }
+    });
   },
   /**
    * @desc receives a request to play a road building card and 
@@ -236,7 +519,86 @@ var MovesController = {
    * @param {object} res - http response object
    * @param {function} next - next command
    */
-  roadBuilding: function(req, res, next) {
+  Road_Building: function(req, res, next) {
+      var body = req.body;
+      var index = body.playerIndex;
+      var first = body.spot1;
+      var second = body.spot2;
+      var gameId = req.game;
+      async.waterfall([
+          function(callback) {
+            
+              MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+                  if (err) {
+                      return callback(err);
+                  }
+                  if (!cardList) {
+                      return callback(new Error("Dev cards do not exist"));
+                  } else if (cardList.roadBuilding > 0) {
+                      return callback(null);
+                  } else {
+                      return callback(new Error("Insufficient cards"));
+                  }
+              });
+          },
+          function(callback) {
+              MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
+                  if (err) {
+                      return callback(err);
+                  }
+                  if (played) {
+                      return callback(new Error("You have already played a dev card " + 
+                          "this turn"));
+                  } else {
+                      return callback(null);
+                  }
+              });
+          },
+          function(callback) {
+              helper.verifyRoadsAvailable(req.game, req.body.playerIndex, 2, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+          },
+          function(callback) {
+              helper.verifyRoadLocation(req.game, req.body.playerIndex, first, second, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+          },
+          function(callback) {
+              MovesModel.roadBuilding(gameId, index, first, second,
+                  function(err, game) { 
+                    if (err) {
+                        return callback(err);
+                    }
+                    if (!game) {
+                        return callback(new Error("Game does not exist"));
+                    } else {
+                        return callback(null, game);
+                    }
+              });
+          }],
+          function(err, result) {
+              if (err && !req.command) {
+                  return res.status(400).send(err.message);
+              } else if (!result && !req.command) {
+                  return res.status(500).send("Server Error");
+              } else {
+                if(!req.command) {
+                  command.addCommand(req.game, req.body); 
+                  return res.status(200).json(result.game);
+                }
+              }
+          });
     /*
       Things to do:
       1. pull model from request body.
@@ -274,6 +636,112 @@ var MovesController = {
           see rob player function
           increment player soldier count
     */
+    var body = req.body;
+    var index = body.playerIndex;
+    var victim = body.victimIndex;
+    var location = body.location;
+    var gameId = req.game;
+    async.waterfall([
+        function(callback) {
+            MovesModel.getDevCards(gameId, index, 'oldDevCards', function(err, cardList) {
+                if (err) {
+                    return callback(err);
+                }
+                if (!cardList) {
+                    return callback(new Error("Dev cards do not exist"));
+                } else if (cardList.soldier > 0) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Insufficient soldier cards"));
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
+                if (err) {
+                    return callback(err);
+                }
+                if (played) {
+                    return callback(new Error("You have already played a dev card " + 
+                        "this turn"));
+                } else {
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            if (index == victim) {
+                return callback(new Error("You are not allowed to rob yourself"));
+            } else {
+                return callback(null);
+            }
+        },
+        function(callback) {
+            MovesModel.getRobber(gameId, function(err, robber) {
+                if (err) {
+                    return callback(err);
+                }
+                if (!robber) {
+                    return callback(new Error("Robber does not exist"));
+                } else if (robber.x === location.x && robber.y === location.y) {
+                    return callback(new Error("The robber must be placed at a new " +
+                        "location"));
+                } else {
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.getResources(gameId, victim, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources.brick > 0) {
+                        return callback(null, 'brick');
+                    } else if (resources.ore > 0) {
+                        return callback(null, 'ore');
+                    } else if (resources.sheep > 0) {
+                        return callback(null, 'sheep');
+                    } else if (resources.wheat > 0) {
+                        return callback(null, 'wheat');
+                    } else if (resources.wood > 0) {
+                        return callback(null, 'wood');
+                    } else {
+                        return callback(new Error("Victim does not have any " + 
+                            "resources"));
+                    }
+                }
+            });
+        },
+        function(resource, callback) {
+            console.log(gameId);
+            MovesModel.soldier(gameId, location, index, victim, resource, 'Playing',
+                function(err, game) { 
+                if (err) {
+                    return callback(err);
+                }
+                if (!game) {
+                    return callback(new Error("Game does not exist"));
+                } else {
+                    return callback(null, game);
+                }
+            });
+        }],
+        function(err, result) {
+            if (err && !req.command) {
+                return res.status(400).send(err.message);
+            } else if (!result && !req.command) {
+                return res.status(500).send("Server Error");
+            } else {
+
+              if(!req.command) {
+                command.addCommand(req.game, req.body); 
+                return res.status(200).json(result.game);
+              }
+            }
+        });
   },
   /**
    * @desc gets a request to play a monopoly card, validates
@@ -284,16 +752,52 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monopoly: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check to make sure player index is current player
-        check to make sure that the card was not bought that turn, and hasn't already been played
-        if above is true
-          loop through players and reduce resources of resource type to zero
-          increment current player's resource by same number
-    */
+
+    var gameId = req.game;
+    var resourceType = req.body.resource;
+    var playerId = req.body.playerIndex;
+
+    GameModel.getModel(gameId, function(err, model) {
+      var players = model.game.players;
+      var player = gameHelpers.getPlayerFromPlayers(players, playerId);
+      var amount = 0;
+
+      if (player.oldDevCards[resourceType] > 0 && !player.playedDevCard) {
+        
+        //loop through players and reduce resources of resource type to zero
+        players.forEach(function(user) {
+          if (user.id !== playerId) {
+            amount += user.resources[resourceTpe];
+            user.resources[resourceType] = 0;
+          }
+        });
+         
+        //increment current player's resource
+        player.resources[resourceType] += amount;
+
+        MovesModel.monopoly(gameId, playerId, players, function(err, result) {
+          if (err && !req.command) {
+            return res.status(400).send(err.message);
+          } else if (!result && !req.command) {
+            return res.status(500).send("Server Error");
+          } else {
+
+            if(!req.command) {
+              command.addCommand(req.game, req.body); 
+              return res.status(200).json(result.game);
+            }
+          }
+        });
+
+      } else {
+
+          if(!req.command) {
+            return res.status(400).json("player either needs to wait a turn or already has playerd a dev card");
+          }
+      }
+
+    });
+
   },
   /**
    * @desc gets a request to play a monument card, validates
@@ -304,19 +808,18 @@ var MovesController = {
    * @param {function} next - next command
    */
   Monument: function(req, res, next) {
-    /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        check that player is current player
-        if we decide to take the easy route:
-          increment player's victory points
-        else
-          if player's victory points + total number of monument cards >= 10
-            increment player's victory points
-            set winner index to current player index
-            change game state?
-    */
+    MovesModel.monument(req.game, req.body.playerIndex, function(err, result) {
+      if (err && !req.command) {
+        return res.status(400).send(err.message);
+      } else if (!result && !req.command) {
+        return res.status(500).send("Server Error");
+      } else {
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.game);
+        }
+      }
+    });
   },
   /**
    * @desc gets a request to build a road, validates
@@ -327,17 +830,70 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildRoad: function(req, res, next) {
+
+    console.log("Building a road",req.game);
+    req.body.roadLocation = helper.normalizeEdge(req.body.roadLocation);
+
+    async.series([
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, 1, function (err, roadsAvail) {
+                if (err) {
+                    console.log(err.stack);
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] &lt; 1 && resources["wood"] &lt; 1 && req.body.free === false) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+            
+        },
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                /*
+                var players = game.game.players;
+                var currPlayerIndex = game.game.turnTracker.currentTurn;
+                var logMessage = players[currPlayerIndex].name + " built a road";
+                */
+                game.addToLog(" built a road", req.body.playerIndex);
+                game.save();
+                console.log("road built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err && !req.command) {
+            return res.status(400).send(err.message);
+        }
+
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.pop().game);
+        }
+    });
     /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        verify player
-        verify availability of resources and road pieces
-        verify road location
-        if above is true
-          add road to map
-          decrement road pieces
-          remove resources and place back in bank
           run longest road algorithm
     */
   },
@@ -350,18 +906,71 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildSettlement: function(req, res, next) {
+
+    console.log("Building a settlement",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
+
+
+    async.series([
+      /*
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] &lt; 1 && resources["wood"] &lt; 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildSettlement(req.game, req.body.playerIndex, req.body.vertexLocation, req.body.free, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                game.addToLog(" built a settlement", req.body.playerIndex);
+                game.save();
+                console.log("settlement built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err && !req.command) {
+            return res.status(400).send(err.message);
+        }
+
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.pop().game);
+        }
+    });
     /*
-      Things to do:
-      1. pull model from request body.
-      2. call correct execute method
-        verify player
         verify availablity of resources and settlement pieces
         verify settlement location
-        if above is true
-          add settlement to map
-          increment player victory points by 1
-          give player resources to bank
-
     */
   },
   /**
@@ -373,6 +982,66 @@ var MovesController = {
    * @param {function} next - next command
    */
   buildCity: function(req, res, next) {
+    console.log("Building a city",req.game);
+
+    req.body.vertexLocation = helper.normalizeVertex(req.body.vertexLocation);
+
+
+    async.series([
+      /*
+        function(callback) {
+            helper.verifyRoadsAvailable(req.game, req.body.playerIndex, function (err, roadsAvail) {
+                if (err) {
+                      return callback(err); 
+                } else if (!roadsAvail) {
+                    return callback(new Error("Player doesn't have any roads left"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            if (req.body.free === true)
+                return callback(null);
+            MovesModel.getResources(req.game, req.body.playerIndex, function (err, resources) {
+                if (err) {
+                      return callback(err); 
+                } else if (resources["brick"] &lt; 1 && resources["wood"] &lt; 1) {
+                      return callback(new Error("Player doesn't have enough resources"));
+                }
+                return callback(null);
+            });
+        },
+        function(callback) {
+            helper.verifyRoadLocation(req.game, req.body.playerIndex, req.body.roadLocation, null, function (err, locationVerified) {
+                if (err) {
+                      return callback(err); 
+                } else if (!locationVerified) {
+                    return callback(new Error("This road location is not acceptable"));
+                }
+                return callback(null);
+            });
+        },
+        */
+        function(callback) {
+            MovesModel.buildCity(req.game, req.body.playerIndex, req.body.vertexLocation, function(err, game) {
+                if (err) {
+                      return callback(err); 
+                }
+                game.addToLog(" built a city", req.body.playerIndex);
+                game.save();
+                console.log("city built");
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err && !req.command) {
+            return res.status(400).send(err.message);
+        }
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.pop().game);
+        }
+    });
     /*
       Things to do:
       1. pull model from request body.
@@ -380,11 +1049,7 @@ var MovesController = {
         verify player
         verify availablity of resources and city pieces
         verify city location
-        if above is true
-          add city to map and remove settlement from map
-          increase player settlement count by 1
-          increment player victory points by 1
-          give player resources to bank
+
     */
   },
   /**
@@ -406,6 +1071,83 @@ var MovesController = {
         if above is valid, set as trade offer
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var offer = body.offer;
+    var receiver = body.receiver;
+    async.series([
+        function(callback) {
+            if (index == receiver) {
+                return callback(new Error("You cannot trade with yourself"));
+            } else {
+                return callback(null);
+            }
+        },
+        function(callback) {
+          var noResource = true;
+            MovesModel.getResources(gameId, index, function(err, resource) {
+                if (err) {
+                    return callback(err);
+                } else if (!resource) {
+                    return callback(new Error("Resources do not exist"));
+                } else if (offer.brick &lt;=0 && offer.ore &lt;=0 && offer.sheep &lt;=0 &&
+                    offer.wheat &lt;=0 && offer.wood &lt;=0) {
+                    return callback(new Error("No resources allocated to receive"));
+                } else {
+                    if (offer.brick &lt; 0) {
+                      noResource = false;
+                      if (!(resource.brick >= Math.abs(offer.brick)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (offer.ore &lt; 0) {
+                      noResource = false;
+                      if (!(resource.ore >= Math.abs(offer.ore)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.sheep &lt; 0) {
+                      noResource = false;
+                      if (!(resource.sheep >= Math.abs(offer.sheep)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wheat &lt; 0) {
+                      noResource = false;
+                      if (!(resource.wheat >= Math.abs(offer.wheat)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    } 
+                    if (offer.wood &lt; 0) {
+                      noResource = false;
+                      if (!(resource.wood >= Math.abs(offer.wood)))
+                        return callback(new Error("You don't have the resources to trade"));
+                    }
+                    if (noResource) {
+                        return callback(new Error("You didn't allocate any resources to send"));
+                    }
+                    noResource = true;
+                    return callback(null);
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.offerTrade(gameId, index, offer, receiver, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ], function(err, result) {
+        if (err && !req.command) {
+            return res.status(400).send(err.message);
+        }
+
+        if(!req.command) {
+          command.addCommand(req.game, req.body); 
+          return res.status(200).json(result.pop().game);
+        }
+    });
   },
   /**
    * @desc gets a request to accept a trade, validates
@@ -422,10 +1164,108 @@ var MovesController = {
       2. call correct execute method
         verify receiving player
         verify receiving player's cards
-        if above is ture and willAccept
+        if above is true and willAccept
           transfer cards
           set trade offer to null
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var acceptance = body.willAccept;
+    async.waterfall([
+        function(callback) {
+            MovesModel.getTradeOffer(gameId, function(err, offer) {
+                if (err) {
+                    return callback(err);
+                } else if (acceptance == false) {
+                    return callback(null, false, offer)
+                } else if (!offer) {
+                    return callback(new Error("There is no trade offer"));
+                } else {
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
+        function(acceptance, offer, callback) {
+            MovesModel.getResources(gameId, offer.receiver, function(err, resource) {
+                if (err) {
+                    return callback(err);
+                } else if (acceptance == false) {     
+                    return callback(null, false, offer);
+                } else if (!resource) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value &lt; 0) {
+                            if (Math.abs(value) > resource[key]) {
+                                return callback(new Error("You don't have the " + 
+                                    "resources to trade"));
+                            }
+                        }
+                    });
+                    return callback(null, acceptance, offer);
+                }
+            });
+        },
+        function(acceptance, offer, callback) {
+            if (!acceptance) {
+                return callback(null, null);
+            }
+            MovesModel.getResources(gameId, offer.sender, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    _.forOwn(offer.offer, function(value, key) {
+                        if (value > 0) {
+                            if (value > resources[key]) {
+                                return callback(new Error("Sender doesn't have " +
+                                    "sufficient resources to trade"));
+                            }
+                        }
+                    });
+                    var resourceList = [{
+                        player : offer.sender,
+                        resourceMap : {
+                            brick : offer.offer.brick * -1,
+                            ore : offer.offer.ore * -1,
+                            sheep : offer.offer.sheep * -1,
+                            wheat : offer.offer.wheat * -1,
+                            wood : offer.offer.wood * -1
+                        }
+                    },
+                    {
+                        player : offer.receiver,
+                        resourceMap : offer.offer    
+                    }];
+                    return callback(null, acceptance, resourceList);
+                }
+            });
+        },
+        function(acceptance, resourceList, callback) {
+            MovesModel.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
+                if (err) {
+                    return callback(err);
+                } else if (!game) {
+                    return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+    ],
+    function(err, result) {
+            if (err && !req.command) {
+                return res.status(400).send(err.message);
+            } else if (!result && !req.command) {
+                return res.status(500).send("Server Error");
+            } else {
+              if(!req.command) {
+                command.addCommand(req.game, req.body); 
+                return res.status(200).json(result.game);
+              }
+            }
+    });
   },
   /**
    * @desc gets a request to offer a maritime trade, validates
@@ -447,6 +1287,76 @@ var MovesController = {
         if above is true
           transfer resources
     */
+
+     var body = req.body;
+     var gameId = req.game;
+     var index = body.playerIndex;
+     var input = body.inputResource;
+     var output = body.outputResource;
+    var ratio = body.ratio;  
+    async.waterfall([
+       function(callback) {
+         MovesModel.getOwnedPorts(gameId, index,  function(err, ports) {
+            if (err) {
+             return callback(err);
+            } else if (!ports) {
+             return callback(new Error("Ports don't exist"));
+            } else {
+                var validPort = _.find(function(port) {
+                    if ((ratio === 2 && port.resource === output) ||
+                        (ratio === 3 && port.resource == undefined) ||
+                        (ratio === 4)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                if (validPort || ratio === 4) {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Invalid Trade"));
+                }     
+            }
+         });
+       },
+        function(callback) {
+            MovesModel.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    if (resources[input] &lt; ratio) {
+                        return callback(new Error("Insufficient Resources"));
+                    } else {
+                        return callback(null);
+                    }
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.maritimeTrade(gameId, index, ratio, input, output, 
+                function(err, game) {
+                if (err) {
+                   return callback(err);
+                } else if (!game) {
+                   return callback(new Error("Game does not exist"));
+                }
+                return callback(null, game);
+            });
+        }
+     ], function(err, result) {
+            if (err && !req.command) {
+                return res.status(400).send(err.message);
+            } else if (!result && !req.command) {
+                return res.status(500).send("Server Error");
+            } else {
+                if (!req.command) {
+                  command.addCommand(req.game, req.body); 
+                  return res.status(200).json(result);
+                }
+            }
+        });
   },
   /**
    * @desc gets a request to discard cards, validates
@@ -472,6 +1382,122 @@ var MovesController = {
           set game state to playing
 
     */
+    var body = req.body;
+    var gameId = req.game;
+    var index = body.playerIndex;
+    var discardedCards = body.discardedCards;
+    async.waterfall([
+        function(callback) {
+            MovesModel.getStatus(gameId, function(err, status) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (status === 'Discarding') {
+                    return callback(null);
+                } else {
+                    return callback(new Error("Game is not in discard phase"));
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (played) {
+                    return callback(new Error("This player has already discarded"));
+                } else {
+                    return callback(null);    
+                }
+            });
+        },
+        function(callback) {
+            MovesModel.getResources(gameId, index, function(err, resources) {
+                if (err) {
+                    console.log(err.stack);
+                    return callback(err);
+                } else if (!resources) {
+                    return callback(new Error("Resources do not exist"));
+                } else {
+                    var totalDiscard = helper.countResources(discardedCards);
+                    var totalHand = helper.countResources(resources);
+                    console.log(totalHand, totalDiscard);
+                    if (Math.floor(totalHand / 2) === totalDiscard) {
+                        return callback(null, resources);
+                    } else if (totalHand &lt; 8) {
+                        return callback(new Error("This players does not have more " +
+                            "than 7 cards"));
+                    } else {
+                        return callback(new Error("You are not discarding the " + 
+                            "correct number of resources"));
+                    } 
+                }
+            });
+        },
+        function(hand, callback) {
+            _.forOwn(discardedCards, function(value, key) {
+                if (value > hand[key]) {
+                    return callback(new Error("This player has insufficient " +
+                        "resources to perform this discard"));
+                }
+            });
+            return callback(null);
+        },
+        function(callback) {
+            MovesModel.getPlayers(gameId, function(err, players) {
+                if (err) {
+                    return callback(err);
+                } else if (!players) {
+                    return callback(new Error("Players do not exist"));
+                } else {
+                    var found = players.filter(function(player) {
+                        if (player.playerIndex != index && player.playedDevCard == false
+                            && helper.countResources(player.resources) > 7) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                    if (found && found.length > 0) {
+                        console.log(found);
+                        return callback(null, 'Discarding');
+                    } else {
+                        return callback(null, 'Robbing');
+                    }
+                }
+            });
+        },
+        function(status, callback) {
+            var discard = {
+                brick : discardedCards.brick * -1,
+                ore : discardedCards.ore * -1,
+                sheep : discardedCards.sheep * -1,
+                wheat : discardedCards.wheat * -1,
+                wood : discardedCards.wood * -1
+            };
+            MovesModel.discardCards(gameId, index, discard, status, 
+                function(err, game) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    if (game) {
+                        return callback(null, game);
+                    } else {
+                        return callback(new Error("Game does not exist"));
+                    }
+            });
+        }],
+        function(err, result) {
+            if (err && !req.command) {
+                res.status(400).send(err.message);
+            } else {
+              
+              if(!req.command) {
+                command.addCommand(req.game, req.body); 
+                res.status(200).json(result.game);
+              }
+            }
+        });
   },
 
 };
@@ -487,13 +1513,13 @@ module.exports = MovesController;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Model">Model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#newGame">newGame</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Game.html">Game</a></li><li><a href="Port.html">Port</a></li><li><a href="Road.html">Road</a></li><li><a href="VertexObject.html">VertexObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#- getStructures">- getStructures</a></li><li><a href="global.html#acceptTrade">acceptTrade</a></li><li><a href="global.html#addAI">addAI</a></li><li><a href="global.html#addChat">addChat</a></li><li><a href="global.html#addCommands">addCommands</a></li><li><a href="global.html#addGame">addGame</a></li><li><a href="global.html#addPlayer">addPlayer</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#buildCity">buildCity</a></li><li><a href="global.html#buildRoad">buildRoad</a></li><li><a href="global.html#buildSettlement">buildSettlement</a></li><li><a href="global.html#buyDevCard">buyDevCard</a></li><li><a href="global.html#changeLog">changeLog</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createNewUser">createNewUser</a></li><li><a href="global.html#currentPlayer">currentPlayer</a></li><li><a href="global.html#discardCards">discardCards</a></li><li><a href="global.html#finishTurn">finishTurn</a></li><li><a href="global.html#GameController">GameController</a></li><li><a href="global.html#GamesController">GamesController</a></li><li><a href="global.html#getBank">getBank</a></li><li><a href="global.html#getCities">getCities</a></li><li><a href="global.html#getCommands">getCommands</a></li><li><a href="global.html#getDeck">getDeck</a></li><li><a href="global.html#getGame">getGame</a></li><li><a href="global.html#getModel">getModel</a></li><li><a href="global.html#getOldDevCards">getOldDevCards</a></li><li><a href="global.html#getOwnedPorts">getOwnedPorts</a></li><li><a href="global.html#getOwnedRoads">getOwnedRoads</a></li><li><a href="global.html#getOwnedStructures">getOwnedStructures</a></li><li><a href="global.html#getPlayedDevCard">getPlayedDevCard</a></li><li><a href="global.html#getResources">getResources</a></li><li><a href="global.html#getRoads">getRoads</a></li><li><a href="global.html#getRobber">getRobber</a></li><li><a href="global.html#getSettlements">getSettlements</a></li><li><a href="global.html#getUserById">getUserById</a></li><li><a href="global.html#getUserByUsername">getUserByUsername</a></li><li><a href="global.html#isGameAvailable">isGameAvailable</a></li><li><a href="global.html#isPlayerInGame">isPlayerInGame</a></li><li><a href="global.html#join">join</a></li><li><a href="global.html#list">list</a></li><li><a href="global.html#listAI">listAI</a></li><li><a href="global.html#listGames">listGames</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#maritimeTrade">maritimeTrade</a></li><li><a href="global.html#model">model</a></li><li><a href="global.html#Monopoly">Monopoly</a></li><li><a href="global.html#monopoly">monopoly</a></li><li><a href="global.html#Monument">Monument</a></li><li><a href="global.html#monument">monument</a></li><li><a href="global.html#offerTrade">offerTrade</a></li><li><a href="global.html#postCommands">postCommands</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGame">resetGame</a></li><li><a href="global.html#roadBuilding">roadBuilding</a></li><li><a href="global.html#robPlayer">robPlayer</a></li><li><a href="global.html#rollNumber">rollNumber</a></li><li><a href="global.html#rollNumer">rollNumer</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveGame">saveGame</a></li><li><a href="global.html#sendChat">sendChat</a></li><li><a href="global.html#Soldier">Soldier</a></li><li><a href="global.html#soldier">soldier</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateColor">updateColor</a></li><li><a href="global.html#UtilController">UtilController</a></li><li><a href="global.html#validateUser">validateUser</a></li><li><a href="global.html#yearOfPlenty">yearOfPlenty</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Mar 21 2015 00:06:07 GMT-0600 (MDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Apr 08 2015 15:08:25 GMT-0600 (MDT)
 </footer>
 
 <script> prettyPrint(); </script>
