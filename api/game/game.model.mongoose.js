@@ -236,9 +236,10 @@ GameSchema.methods.updateColor = function(name, color) {
 GameSchema.methods.updateLongestRoad = function(player) {
     var hasLongest = this.game.turnTracker.longestRoad;
     if(hasLongest == -1) {
-        if(this.game.players[player].roads <= 10) 
+        if(this.game.players[player].roads <= 10) {
             this.game.turnTracker.longestRoad = player;
             this.game.players[player].victoryPoints += 1;
+        }
     }
     else {
         var currentLongest = this.game.players[hasLongest].roads;
