@@ -1,6 +1,7 @@
 'use strict'
 
 var model = require('../game/game.model.mongoose');
+var helper = require('./moves/moves.controller');
 var _ = require('lodash');
 var async = require('async');
 
@@ -225,7 +226,59 @@ module.exports = {
             if (err) return callback(err);
             if (game) {
                 game.addStructure(player, first, 'roads');
+                var players = game.game.players;
+                var turnTracker = game.game.turnTracker;
+                // if a player has placed enough roads to have longest road, calculate
+                if(players[player].roads <= 10) {
+                    // get longest road count for player
+                    var roadChain = helper.calcuateLongestRoad(map, first, new Array());
+                    // get the largest chain
+                    players[player].longestRoadCount = Math.max(roadChain.length, 
+                        (players[player].longestRoadCount)? players[player].longestRoadCount : 0);
+                    // if chain is actually larger than 5, compare with longest road
+                    if(players[player].longestRoadCount >= 5) {
+                        // no one has yet received the longest road card
+                        if(turnTracker.longestRoad === -1) {
+                            turnTracker.longestRoad = player;
+                            players[player].victoryPoints += 2;
+                        }
+                        // owner of longest road is not current player
+                        else if (turnTracker.longestRoad !== player) {
+                            // player has longest road count larger than current owner
+                            if (players[player].longestRoadCount > players[turnTracker.longestRoad].longestRoadCount) {
+                                players[player].victoryPoints += 2;
+                                players[turnTracker.longestRoad].victoryPoints -= 2;
+                                turnTracker.longestRoad = player;
+                            }
+                        }
+                    }
+                }
                 game.addStructure(player, second, 'roads');
+                // if a player has placed enough roads to have longest road, calculate
+                if(players[player].roads <= 10) {
+                    // get longest road count for player
+                    var roadChain = helper.calcuateLongestRoad(map, second, new Array());
+                    // get the largest chain
+                    players[player].longestRoadCount = Math.max(roadChain.length, 
+                        (players[player].longestRoadCount)? players[player].longestRoadCount : 0);
+                    // if chain is actually larger than 5, compare with longest road
+                    if(players[player].longestRoadCount >= 5) {
+                        // no one has yet received the longest road card
+                        if(turnTracker.longestRoad === -1) {
+                            turnTracker.longestRoad = player;
+                            players[player].victoryPoints += 2;
+                        }
+                        // owner of longest road is not current player
+                        else if (turnTracker.longestRoad !== player) {
+                            // player has longest road count larger than current owner
+                            if (players[player].longestRoadCount > players[turnTracker.longestRoad].longestRoadCount) {
+                                players[player].victoryPoints += 2;
+                                players[turnTracker.longestRoad].victoryPoints -= 2;
+                                turnTracker.longestRoad = player;
+                            }
+                        }
+                    }
+                }
                 game.incVersion();
                 game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'roadBuilding', -1, false);
@@ -335,6 +388,33 @@ module.exports = {
                 if (!free) {
                     game.modifyResource(player, 'wood', -1, true);
                     game.modifyResource(player, 'brick', -1, true);
+                }
+                var players = game.game.players;
+                var turnTracker = game.game.turnTracker;
+                // if a player has placed enough roads to have longest road, calculate
+                if(players[player].roads <= 10) {
+                    // get longest road count for player
+                    var roadChain = helper.calcuateLongestRoad(map, edge, new Array());
+                    // get the largest chain
+                    players[player].longestRoadCount = Math.max(roadChain.length, 
+                        (players[player].longestRoadCount)? players[player].longestRoadCount : 0);
+                    // if chain is actually larger than 5, compare with longest road
+                    if(players[player].longestRoadCount >= 5) {
+                        // no one has yet received the longest road card
+                        if(turnTracker.longestRoad === -1) {
+                            turnTracker.longestRoad = player;
+                            players[player].victoryPoints += 2;
+                        }
+                        // owner of longest road is not current player
+                        else if (turnTracker.longestRoad !== player) {
+                            // player has longest road count larger than current owner
+                            if (players[player].longestRoadCount > players[turnTracker.longestRoad].longestRoadCount) {
+                                players[player].victoryPoints += 2;
+                                players[turnTracker.longestRoad].victoryPoints -= 2;
+                                turnTracker.longestRoad = player;
+                            }
+                        }
+                    }
                 }
                 game.incVersion();
                 return game.save(callback);

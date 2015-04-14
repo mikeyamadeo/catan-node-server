@@ -45,7 +45,8 @@ var Player = new Schema({
     roads : Number,
     settlements : Number,
     soldiers : Number,
-    victoryPoints : Number
+    victoryPoints : Number,
+    longestRoadCount : Number
 }, { _id : false });
 
 var HexLocation = {
