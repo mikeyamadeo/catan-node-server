@@ -1371,7 +1371,7 @@ var MovesController = {
                 }
             });
         },
-        
+        */
         function(callback) {
             MovesModel.getPlayedDevCard(gameId, index, function(err, played) {
                 if (err) {
@@ -1415,7 +1415,7 @@ var MovesController = {
                 }
             });
             return callback(null);
-        },*/
+        },
         function(callback) {
             MovesModel.getPlayers(gameId, function(err, players) {
                 if (err) {
