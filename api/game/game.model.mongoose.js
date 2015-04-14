@@ -659,6 +659,7 @@ GameSchema.methods.addStructure = function(index, location, type) {
 * @class Game
 */ 
 GameSchema.methods.removeStructure = function(index, location, type) {
+    console.log("removing structure");
     if (index >= 0 && index < this.game.players.length) {
         var structures = this.game.map[type];
         _.remove(structures, function(structure) {
@@ -666,6 +667,7 @@ GameSchema.methods.removeStructure = function(index, location, type) {
                     structure.location.y === location.y &&
                     structure.location.direction === location.direction);
         });
+        console.log("removed structure");
         this.game.players[index][type] += 1;
     }
 };
