@@ -106,9 +106,8 @@ var MovesController = {
             });
             //Use cities to determine if player has property on hothexes
             //add to resources if so.
-            /*
             hotHexes.forEach(function(hex) {
-                model.getStructures(gameId, -1, "cities", hex.location, 
+                MovesModel.getStructures(gameId, -1, "cities", hex.location, 
                     function(err, cities) {
                     cities.forEach(function(city) {
                         var amount = 0;
@@ -122,7 +121,6 @@ var MovesController = {
                     });
                 });
             });
-            */
             return callback(null, players, map, bank, hotHexes);
         },
         function(players, map, bank, hotHexes, callback) {
@@ -143,8 +141,10 @@ var MovesController = {
         }],
         function(err, result) {
             if (err !== 'ok' && err) {
+                console.log("Error One");
                 return res.status(500).send(err.message);
             } else {
+                console.log("Error Two");
                 MovesModel.rollNumber(gameId, status, resourceChanges, 
                     function(err, game) {
                         if (err) {
@@ -722,33 +722,43 @@ var MovesController = {
 
     var gameId = req.game;
     var resourceType = req.body.resource;
-    var playerId = req.body.playerIndex;
+    var playerIndex = req.body.playerIndex;
 
     GameModel.getModel(gameId, function(err, model) {
       var players = model.game.players;
-      var player = gameHelpers.getPlayerFromPlayers(players, playerId);
+      var player = gameHelpers.getPlayerFromPlayers(players, playerIndex);
       var amount = 0;
+      var resources = [];
 
-      if (player.oldDevCards[resourceType] > 0 && !player.playedDevCard) {
+      if (player.oldDevCards['monopoly'] > 0 && !player.playedDevCard) {
         
         //loop through players and reduce resources of resource type to zero
         players.forEach(function(user) {
-          if (user.id !== playerId) {
-            amount += user.resources[resourceTpe];
-            user.resources[resourceType] = 0;
+          if (user.playerIndex !== playerIndex) {
+            resources.push({
+                player : user.playerIndex,
+                resourceMap : {
+                    resourceType : -1 * user.resources[resourceType]
+                }
+            });
+            amount += user.resources[resourceType];
           }
         });
          
         //increment current player's resource
-        player.resources[resourceType] += amount;
+        resources.push({
+            player : playerIndex,
+            resourceMap : {
+                resourceType : amount
+            }
+        });
 
-        MovesModel.monopoly(gameId, playerId, players, function(err, result) {
+        MovesModel.monopoly(gameId, playerIndex, resources, function(err, result) {
           if (err && !req.command) {
             return res.status(400).send(err.message);
           } else if (!result && !req.command) {
             return res.status(500).send("Server Error");
           } else {
-
             if(!req.command) {
               command.addCommand(req.game, req.body); 
               return res.status(200).json(result.game);

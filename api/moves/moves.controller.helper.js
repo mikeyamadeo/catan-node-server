@@ -7,8 +7,6 @@ var gameModel = require('./../game/game.model');
 var helpers = require('./../../common/common.helper');
 var  async = require('async');
 
-console.log("Moves Model: ", movesModel);
-console.log("Require: ", require('./moves.model'));
 module.exports = {
 
     gameToModel : function(game) {

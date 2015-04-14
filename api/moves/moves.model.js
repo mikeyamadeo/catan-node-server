@@ -284,14 +284,13 @@ module.exports = {
             if (game) {
                 // return callback(null, players)
                 players.map(function(tuple, index, array) {
-
-                    var resourceMap = tuple.resources;
+                    var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
-
-                        game.modifyResource(tuple.id, key, value, false);
+                        if (!isNan(value)) {
+                            game.modifyResource(tuple.player, key, value, false);
+                        }
                     });
                 });
-
                 game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'monopoly', -1, false);
                 game.incVersion();
