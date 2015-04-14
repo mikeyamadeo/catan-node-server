@@ -9,7 +9,6 @@ var MovesCommand = {
                 console.error(err);
             }
             if (state) {
-            	console.log(state)
         		state.addCommand({type:params.type, command: params});
                 state.save();
             }

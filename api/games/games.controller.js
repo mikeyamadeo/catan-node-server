@@ -154,7 +154,6 @@ var GamesController = {
         if (err) return res.status(404).send("Join failed");
         if (inGame) {
             res.cookie('catan.game', body.id);
-//            cookies.set('catan.game', encodedCookie);            
             gamesModel.updateColor(body.id, user.name, body.color, 
                 function(err, game) {
                 if (err || !game) res.status(500).send("Server Error");

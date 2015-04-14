@@ -10,7 +10,6 @@ var UserModel = {
     * @param {function} callback - callback(err, user)
     */
     getUserByUsername : function(username, callback) {
-        console.log("i'm here");
         model.findByUsername(username, function(err, user) {
             if (err) return callback(err);
             return callback(null, user);

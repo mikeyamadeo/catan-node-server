@@ -81,7 +81,7 @@ var UserController = {
                 var cleanUser = {
                     name : user.username,
                     password : user.password,
-                    id : user._id
+                    playerID : user._id
                 };
                 var cookies = new Cookies(req, res);
                 var encodedUser = encodeURI(JSON.stringify(cleanUser));
