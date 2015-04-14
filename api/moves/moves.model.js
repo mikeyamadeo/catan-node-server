@@ -225,29 +225,8 @@ module.exports = {
             if (err) return callback(err);
             if (game) {
                 game.addStructure(player, first, 'roads');
-                if(game.game.turnTracker.longestRoad == -1) {
-                    if(game.game.players[player].roads <= 10) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
-                else {
-                    var currentLongest = game.game.players[game.game.turnTracker.longestRoad].roads;
-                    if(game.game.players[player].roads < currentLongest) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
                 game.addStructure(player, second, 'roads');
-                if(game.game.turnTracker.longestRoad == -1) {
-                    if(game.game.players[player].roads <= 10) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
-                else {
-                    var currentLongest = game.game.players[game.game.turnTracker.longestRoad].roads;
-                    if(game.game.players[player].roads < currentLongest) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
+                game.updateLongestRoad(player);
                 game.incVersion();
                 game.setPlayedDevCard([player], true);
                 game.modifyOldDevCard(player, 'roadBuilding', -1, false);
@@ -358,17 +337,7 @@ module.exports = {
                     game.modifyResource(player, 'wood', -1, true);
                     game.modifyResource(player, 'brick', -1, true);
                 }
-                if(game.game.turnTracker.longestRoad == -1) {
-                    if(game.game.players[player].roads <= 10) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
-                else {
-                    var currentLongest = game.game.players[game.game.turnTracker.longestRoad].roads;
-                    if(game.game.players[player].roads < currentLongest) {
-                        game.game.turnTracker.longestRoad = player;
-                    }
-                }
+                game.updateLongestRoad(player);
                 game.incVersion();
                 return game.save(callback);
             }
