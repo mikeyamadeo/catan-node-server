@@ -681,7 +681,7 @@ module.exports = {
                 return callback(err);
             }
             if (game) {
-                var hexes = game.getHexes(id);
+                var hexes = game.getHexes();
                 var matchingHexes = hexes.filter(function(hex) {
                     return (hex.location.x === location.x && hex.location.y === location.y);                 
                 })
@@ -834,7 +834,7 @@ module.exports = {
                 return callback(err);
             }
             if (game) {
-                return callback(null, game.getStatus(id));
+                return callback(null, game.getStatus());
             } else {
                 return callback(null, null);
             }
