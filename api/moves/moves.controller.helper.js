@@ -20,7 +20,6 @@ module.exports = {
                 console.log(err.stack); 
                 return callback(err, true);
             }
-            console.log("player has " + roads.length);
             if (roads.length > 15-amount) {
                 return callback(null, false);
             }
@@ -74,13 +73,10 @@ module.exports = {
 		                console.log(err.stack);
 		            }			            
 			        return movesModel.getOwnedRoads(gameId, playerIndex, function (err, roads) {
-			        	console.log(edges);
-			        	console.log(roads);
 			        	var matchingRoads = roads.filter(function (road) {
 			        		return (helpers.containsEdge(road.location, edges) && road.owner === playerIndex);
 			        	});
 			        	return movesModel.getGameState( gameId, function (err, state) {
-			        		console.log(state);
 				            if (state.indexOf("Round") > -1) {
 				            	console.log("init round, num of connecting roads is " + matchingRoads.length);
 				            	//if (matchingRoads.length > 0)

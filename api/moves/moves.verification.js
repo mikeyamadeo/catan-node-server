@@ -12,12 +12,10 @@ module.exports = {
                 return res.status(500).send();
             }
             if (!currPlayer === undefined || currPlayer === null) {
-                console.log(currPlayer);
                 console.log("currentPlayer returned undefined"); 
                 return res.status(500).send();
             }
             if (currPlayer !== req.body.playerIndex) {
-                console.log(currPlayer, req.body.playerIndex);
                 return res.status(403).send("Not this player's turn");
             }
             return next();

@@ -233,6 +233,19 @@ GameSchema.methods.updateColor = function(name, color) {
     }
 };
 
+GameSchema.methods.updateLongestRoad = function(player) {
+    var hasLongest = this.game.turnTracker.longestRoad;
+    if(hasLongest == -1 && this.game.players[player].roads <= 10) {
+        this.game.turnTracker.longestRoad = player;
+    }
+    else {
+        var currentLongest = this.game.players[hasLongest].roads;
+        if(this.game.players[player].roads < currentLongest) {
+            this.game.turnTracker.longestRoad = player;
+        }
+    }
+};
+
 /**
 * @desc Retrieves the list of players from a game
 * @method getPlayers
@@ -298,6 +311,8 @@ GameSchema.methods.getResources = function(index) {
     return null
 };
 
+
+
 /**
 * @desc Retrieves the hexes from game map
 * @method getHexes
@@ -340,6 +355,7 @@ GameSchema.methods.addToLog = function(message, index) {
     });
 };
 
+
 /**
 * @desc Retrieves the status of game
 * @method getStatus
@@ -347,6 +363,22 @@ GameSchema.methods.addToLog = function(message, index) {
 */
 GameSchema.methods.getStatus = function() {
     return this.game.turnTracker.status;
+};
+
+GameSchema.methods.getLargestArmy = function() {
+    return this.game.turnTracker.largestArmy;
+};
+
+GameSchema.methods.setLargestArmy = function(player) {
+    return this.game.turnTracker.largestArmy = player;
+};
+
+GameSchema.methods.getSoldier = function(player) {
+    if (player >= 0 && player < this.game.players.length) {
+        return this.game.players[player].soldiers;                
+    }
+    else
+        return 0;
 };
 
 /**
@@ -669,6 +701,7 @@ GameSchema.methods.setPlayedDevCard = function(players, played) {
     });
 };
 
+
 /**
 * @desc Adds amount to the soldier count of specified player
 * @method addSoldier
@@ -678,7 +711,7 @@ GameSchema.methods.setPlayedDevCard = function(players, played) {
 */
 GameSchema.methods.addSoldier = function(index, amount) {
     if (index >= 0 && index < this.game.players.length) {
-        this.game.players[index].soldier += amount;                
+        this.game.players[index].soldiers += amount;                
     }
 };
 
