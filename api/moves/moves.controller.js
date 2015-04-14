@@ -1206,8 +1206,6 @@ var MovesController = {
         },
         function(acceptance, resourceList, callback) {
             MovesModel.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
-                console.log("THIS IS THE GAME: " + game);
-
                 if (err) {
                     return callback(err);
                 } else if (!game) {
