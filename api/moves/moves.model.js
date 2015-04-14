@@ -255,8 +255,10 @@ module.exports = {
                     function(err, game) {
                         game.addSoldier(player, 1);
                         var largestArmy = game.getLargestArmy();
-                        if (largestArmy === -1 || game.getSoldier(largestArmy) < game.getSoldier(player))
+                        if ((largestArmy === -1 || game.getSoldier(largestArmy) < game.getSoldier(player)) && game.getSoldier(player) >=3)  {
                             game.setLargestArmy(player);
+                            game.game.players[player].victoryPoints += 1;
+                        }
                         game.modifyOldDevCard(player, 'soldier', -1, false); 
                         game.setPlayedDevCard([player], true);
                         return game.save(callback);
@@ -278,28 +280,27 @@ module.exports = {
     * @param {function} callback - callback
     */
     monopoly : function(id, player, players, callback) {
-        model.findById(id, function(err, game) {
-            if (err) return callback(err);
-            if (game) {
-                // return callback(null, players)
-                players.map(function(tuple, index, array) {
+       model.findById(id, function(err, game) {
+           if (err) return callback(err);
+           if (game) {
+               // return callback(null, players)
+               players.map(function(tuple, index, array) {
+                   var resourceMap = tuple.resourceMap;
+                   _.forOwn(resourceMap, function(value, key) {
+                       if (!isNan(value)) {
+                           game.modifyResource(tuple.player, key, value, false);
+                       }
+                   });
+               });
+               game.setPlayedDevCard([player], true);
+               game.modifyOldDevCard(player, 'monopoly', -1, false);
+               game.incVersion();
 
-                    var resourceMap = tuple.resources;
-                    _.forOwn(resourceMap, function(value, key) {
-
-                        game.modifyResource(tuple.id, key, value, false);
-                    });
-                });
-
-                game.setPlayedDevCard([player], true);
-                game.modifyOldDevCard(player, 'monopoly', -1, false);
-                game.incVersion();
-
-                return game.save(callback);
-            }
-            return callback(null, null);
-        });     
-    },
+               return game.save(callback);
+           }
+           return callback(null, null);
+       });     
+   },
     /**
     * @desc performs monument operation
     * @method monument
@@ -384,7 +385,6 @@ module.exports = {
             if (err) return callback(err, game);
             if (game) {
                 game.addStructure(player, vertex, 'cities');
-                game.removeStructure(player, vertex, 'settlements');
                 game.modifyResource(player, 'ore', -3, true);
                 game.modifyResource(player, 'wheat', -2, true);
                 game.addVictoryPoints(player, 1);

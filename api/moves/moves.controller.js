@@ -713,52 +713,62 @@ var MovesController = {
    */
   Monopoly: function(req, res, next) {
 
-    var gameId = req.game;
-    var resourceType = req.body.resource;
-    var playerId = req.body.playerIndex;
+   var gameId = req.game;
+   var resourceType = req.body.resource;
+   var playerIndex = req.body.playerIndex;
 
-    GameModel.getModel(gameId, function(err, model) {
-      var players = model.game.players;
-      var player = gameHelpers.getPlayerFromPlayers(players, playerId);
-      var amount = 0;
+   GameModel.getModel(gameId, function(err, model) {
+     var players = model.game.players;
+     var player = gameHelpers.getPlayerFromPlayers(players, playerIndex);
+     var amount = 0;
+     var resources = [];
 
-      if (player.oldDevCards[resourceType] > 0 && !player.playedDevCard) {
+     if (player.oldDevCards['monopoly'] > 0 && !player.playedDevCard) {
+       
+       //loop through players and reduce resources of resource type to zero
+       players.forEach(function(user) {
+         if (user.playerIndex !== playerIndex) {
+           resources.push({
+               player : user.playerIndex,
+               resourceMap : {
+                   resourceType : -1 * user.resources[resourceType]
+               }
+           });
+           amount += user.resources[resourceType];
+         }
+       });
         
-        //loop through players and reduce resources of resource type to zero
-        players.forEach(function(user) {
-          if (user.id !== playerId) {
-            amount += user.resources[resourceTpe];
-            user.resources[resourceType] = 0;
-          }
-        });
-         
-        //increment current player's resource
-        player.resources[resourceType] += amount;
+       //increment current player's resource
+       resources.push({
+           player : playerIndex,
+           resourceMap : {
+               resourceType : amount
+           }
+       });
 
-        MovesModel.monopoly(gameId, playerId, players, function(err, result) {
-          if (err && !req.command) {
-            return res.status(400).send(err.message);
-          } else if (!result && !req.command) {
-            return res.status(500).send("Server Error");
-          } else {
+       MovesModel.monopoly(gameId, playerIndex, resources, function(err, result) {
+         if (err && !req.command) {
+           return res.status(400).send(err.message);
+         } else if (!result && !req.command) {
+           return res.status(500).send("Server Error");
+         } else {
+           if(!req.command) {
+             command.addCommand(req.game, req.body); 
+             return res.status(200).json(result.game);
+           }
+         }
+       });
 
-            if(!req.command) {
-              command.addCommand(req.game, req.body); 
-              return res.status(200).json(result.game);
-            }
-          }
-        });
+     } else {
 
-      } else {
+         if(!req.command) {
+           return res.status(400).json("player either needs to wait a turn or already has playerd a dev card");
+         }
+     }
 
-          if(!req.command) {
-            return res.status(400).json("player either needs to wait a turn or already has playerd a dev card");
-          }
-      }
+   });
 
-    });
-
-  },
+ },
   /**
    * @desc gets a request to play a monument card, validates
    * the request and sends a response after performing the action
