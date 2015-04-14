@@ -131,7 +131,6 @@ var GamesModel = {
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
-                console.log(game.isGameAvailable());
                 return callback(null, game.isGameAvailable());
             }
             return callback(null, false);

@@ -266,8 +266,24 @@ GameSchema.methods.addToLog = function(message, index) {
     });
 };
 
-GameSchema.methods.getStatus = function(index) {
+GameSchema.methods.getStatus = function() {
     return this.game.turnTracker.status;
+};
+
+GameSchema.methods.getLargestArmy = function() {
+    return this.game.turnTracker.largestArmy;
+};
+
+GameSchema.methods.setLargestArmy = function(player) {
+    return this.game.turnTracker.largestArmy = player;
+};
+
+GameSchema.methods.getSoldier = function(player) {
+    if (player >= 0 && player < this.game.players.length) {
+        return this.game.players[player].soldiers;                
+    }
+    else
+        return 0;
 };
 
 GameSchema.methods.getRobber = function() {
@@ -452,7 +468,7 @@ GameSchema.methods.setPlayedDevCard = function(players, played) {
 
 GameSchema.methods.addSoldier = function(player, amount) {
     if (player >= 0 && player < this.game.players.length) {
-        this.game.players[player].soldier += amount;                
+        this.game.players[player].soldiers += amount;                
     }
 };
 

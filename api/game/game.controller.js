@@ -62,7 +62,7 @@ var GameController = {
    * @param {function} next - next command
    */
   listAI: function(req, res, next) {
-      return res.status(200).json(['LARGEST_ARMY']);
+      return res.status(200).json([]);
   },
     /**
    * @desc request to reset game state to initial state
