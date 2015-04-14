@@ -77,24 +77,23 @@ var MovesController = {
                 var map = model.game.map;
                 var bank = model.game.bank;
                 if (numberRolled == 7) {
-                  numberRolled = 6;
-                    // var discardHuh = false;
-                    // for (var i = 0; i < 4; i++) {
-                    //     var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
-                    //     var resourceCount = 
-                    //         gameHelpers.countResources(tempPlayer.resources);
-                    //     if (resourceCount > 7) {
-                    //         discardHuh = true;
-                    //         break;
-                    //     }
-                    // }
-                    // if (discardHuh) {
-                    //     status = "Discarding";
-                    //     return callback('ok');
-                    // } else {
-                    //     status = "Robbing";
-                    //     return callback('ok');
-                    // }
+                    var discardHuh = false;
+                    for (var i = 0; i < 4; i++) {
+                        var tempPlayer = gameHelpers.getPlayerFromPlayers(players, i);
+                        var resourceCount = 
+                            gameHelpers.countResources(tempPlayer.resources);
+                        if (resourceCount > 7) {
+                            discardHuh = true;
+                            break;
+                        }
+                    }
+                    if (discardHuh) {
+                        status = "Discarding";
+                        return callback('ok');
+                    } else {
+                        status = "Robbing";
+                        return callback('ok');
+                    }
                 }
                 return callback(null, players, map, bank);
             });
