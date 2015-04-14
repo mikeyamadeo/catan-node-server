@@ -82,14 +82,12 @@ module.exports = {
     * @param {function} callback - callback
     */
     rollNumber : function(id, status, resources, callback) {
-        console.log(resources);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
                 resources.map(function(tuple) {
                     var resourceMap = tuple.resourceMap;
                     _.forOwn(resourceMap, function(value, key) {
-                        console.log("player " + tuple.player + " resource " + key + " amount " + value);
                         game.modifyResource(tuple.player, key, value, true);
                     });
                 });
@@ -115,7 +113,6 @@ module.exports = {
             if (err) return callback(err);
             if (game) {
                 if (victim != -1) {
-                    console.log("Victim: ", victim, "Player: ", player);
                     game.modifyResource(player, resource, 1, false);
                     game.modifyResource(victim, resource, -1, false);
                 }
@@ -136,7 +133,6 @@ module.exports = {
     * @param {function} callback - callback
     */
     finishTurn : function(id, player, callback) {
-        console.log("in model",player);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
@@ -175,7 +171,6 @@ module.exports = {
     * @param {function} callback - callback
     */
     buyDevCard : function(id, player, devCard, callback) {
-        console.log(arguments);
         model.findById(id, function(err, game) {
             if (err) return callback(err);
             if (game) {
@@ -258,6 +253,9 @@ module.exports = {
                  self.robPlayer(id, hex, player, victim, resource, status, 
                     function(err, game) {
                         game.addSoldier(player, 1);
+                        var largestArmy = game.getLargestArmy;
+                        if (largestArmy === -1 || game.getSoldier(largestArmy) < game.getSoldier(player))
+                            game.setLargestArmy(player);
                         game.modifyOldDevCard(player, 'soldier', -1, false); 
                         game.setPlayedDevCard([player], true);
                         return game.save(callback);
@@ -763,7 +761,6 @@ module.exports = {
         async.waterfall([
             function(callback) {
                 that.verifyEdge(id, adjEdges[0], function(err, result) {
-                    console.log("in the function, result is " + result);
                     if (err)
                         return callback(err, null);
                     else{
@@ -775,7 +772,6 @@ module.exports = {
             },
             function(finalEdges, callback) {
                 that.verifyEdge(id, adjEdges[1], function(err, result) {
-                    console.log("in the function, result is " + result);
                     if (err)
                         return callback(err, null);
                     else{
@@ -787,7 +783,6 @@ module.exports = {
             },
             function(finalEdges, callback) {
                 that.verifyEdge(id, adjEdges[2], function(err, result) {
-                    console.log("in the function, result is " + result);
                     if (err)
                         return callback(err, null);
                     else{
@@ -799,7 +794,6 @@ module.exports = {
             },
             function(finalEdges, callback) {
                 that.verifyEdge(id, adjEdges[3], function(err, result) {
-                    console.log("in the function, result is " + result);
                     if (err)
                         return callback(err, null);
                     else{
@@ -810,7 +804,6 @@ module.exports = {
                 });
             }],
         function(err, finalEdges) {
-            console.log("from func " + finalEdges);
             if (err) {
                 return callback(err);
             } else {
@@ -934,11 +927,9 @@ module.exports = {
                             direction : direction
                         };
                     });   
-                    console.log(vertexLocations);
                     vertexLocations = vertexLocations.map(function(vertexLocation) {
                         return normalizeVertex(vertexLocation);
                     });
-                    console.log(vertexLocations);
                     structures = structures.filter(function(structure) {
                         var surrounds = false;
                         vertexLocations.forEach(function(vertex) {
