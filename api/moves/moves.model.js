@@ -306,7 +306,7 @@ module.exports = {
                  self.robPlayer(id, hex, player, victim, resource, status, 
                     function(err, game) {
                         game.addSoldier(player, 1);
-                        var largestArmy = game.getLargestArmy;
+                        var largestArmy = game.getLargestArmy();
                         if (largestArmy === -1 || game.getSoldier(largestArmy) < game.getSoldier(player))
                             game.setLargestArmy(player);
                         game.modifyOldDevCard(player, 'soldier', -1, false); 
