@@ -1170,7 +1170,7 @@ var MovesController = {
         },
         function(acceptance, offer, callback) {
             if (!acceptance) {
-                return callback(null, null);
+                return callback(null, false, []);
             }
             MovesModel.getResources(gameId, offer.sender, function(err, resources) {
                 if (err) {
@@ -1205,10 +1205,9 @@ var MovesController = {
             });
         },
         function(acceptance, resourceList, callback) {
-            if (!acceptance) {
-                return callback(null, null);
-            }
             MovesModel.acceptTrade(gameId, index, acceptance, resourceList, function(err, game) {
+                console.log("THIS IS THE GAME: " + game);
+
                 if (err) {
                     return callback(err);
                 } else if (!game) {
@@ -1216,9 +1215,7 @@ var MovesController = {
                 }
                 return callback(null, game);
             });
-        }
-    ],
-    function(err, result) {
+        }], function(err, result) {
             if (err && !req.command) {
                 return res.status(400).send(err.message);
             } else if (!result && !req.command) {
@@ -1229,7 +1226,7 @@ var MovesController = {
                 return res.status(200).json(result.game);
               }
             }
-    });
+      });
   },
   /**
    * @desc gets a request to offer a maritime trade, validates
