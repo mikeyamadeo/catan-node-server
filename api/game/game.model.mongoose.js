@@ -233,6 +233,19 @@ GameSchema.methods.updateColor = function(name, color) {
     }
 };
 
+GameSchema.methods.updateLongestRoad = function(player) {
+    var hasLongest = this.game.turnTracker.longestRoad;
+    if(hasLongest == -1 && this.game.players[player].roads <= 10) {
+        this.game.turnTracker.longestRoad = player;
+    }
+    else {
+        var currentLongest = this.game.players[hasLongest].roads;
+        if(this.game.players[player].roads < currentLongest) {
+            this.game.turnTracker.longestRoad = player;
+        }
+    }
+};
+
 /**
 * @desc Retrieves the list of players from a game
 * @method getPlayers
@@ -297,6 +310,8 @@ GameSchema.methods.getResources = function(index) {
     }
     return null
 };
+
+
 
 /**
 * @desc Retrieves the hexes from game map
