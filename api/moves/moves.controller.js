@@ -838,23 +838,27 @@ var MovesController = {
             });
         },
         function(callback) {
-            MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, function(err, game) {
-                if (err) {
-                      return callback(err); 
-                }
-                /*
-                var players = game.game.players;
-                var currPlayerIndex = game.game.turnTracker.currentTurn;
-                var logMessage = players[currPlayerIndex].name + " built a road";
-                */
-                game.addToLog(" built a road", req.body.playerIndex);
-                game.save();
-                console.log("road built");
-                return callback(null, game);
-            });
+          MovesModel.getMap(req.game, function (err, map) {
+              var roadChain = helper.calcuateLongestRoad(map, req.body.roadLocation, req.body.playerIndex, new Array());
+              return MovesModel.buildRoad(req.game, req.body.playerIndex, req.body.roadLocation, req.body.free, roadChain, function(err, game) {
+                  if (err) {
+                        return callback(err); 
+                  }
+                  /*
+                  var players = game.game.players;
+                  var currPlayerIndex = game.game.turnTracker.currentTurn;
+                  var logMessage = players[currPlayerIndex].name + " built a road";
+                  */
+                  game.addToLog(" built a road", req.body.playerIndex);
+                  game.save();
+                  console.log("road built");
+                  return callback(null, game);
+              });
+          });
         }
     ], function(err, result) {
         if (err && !req.command) {
+            console.log(err.message);
             return res.status(400).send(err.message);
         }
 
@@ -863,9 +867,6 @@ var MovesController = {
           return res.status(200).json(result.pop().game);
         }
     });
-    /*
-          run longest road algorithm
-    */
   },
   /**
    * @desc gets a request to build a settlement, validates

@@ -15,6 +15,7 @@ module.exports = {
     },
 
     verifyRoadsAvailable : function (gameId, playerId, amount, callback) {
+        console.log("in verify avai");
         movesModel.getOwnedRoads(gameId, playerId, function (err, roads) {
             if (err) {
                 console.log(err.stack); 
@@ -178,34 +179,72 @@ module.exports = {
         the function is called on that road.
         When this is completed, the array of roads is returned.
     */
-    calcuateLongestRoad: function(map, road, results) {
-        results.push(road);
-        var vertices = getAdjacentVertices(road);
+    calcuateLongestRoad: function(map, road, owner, results) {
+        results.push({location: road, owner: owner});
+        console.log(" pushed to res road" + road.x + " " + road.y + " " + road.direction + " owner " + owner);
+        var vertices = this.getAdjacentVertices(road, owner);
+        console.log("adj vert "  + vertices.length);
         for (var i = 0; i < vertices.length; i++) {
-            if(canContinueLRCalc(map, vertices[i])) {
-                var edges = getAdjacentEdges(verticies[i]);
+            console.log("con cont with "  + vertices[i].location.x + vertices[i].location.y + " " + this.canContinueLRCalc(map, vertices[i]));
+            if(this.canContinueLRCalc(map, vertices[i])) {
+                var edges = this.getAdjacentEdges(vertices[i]);
+                console.log("adj edg "  + edges.length);
                 for (var j = 0; j < edges.length; j++) {
-                    var edge = normalizeEdge(edges[j]);
-
-                    if(isOwnedEdge(edge, map.roads) && results.indexOf(edge) === -1) {
-                        calcuateLongestRoad(map, edges[j], results)
+                    var paths = [];
+                    edges[j].location = this.normalizeEdge(edges[j].location);
+                    console.log("edge " + edges[j].location + " is owned " + this.isOwnedEdge(edges[j].location, edges[j].owner, map.roads));
+                    if(this.isOwnedEdge(edges[j].location, edges[j].owner, map.roads) && results.indexOf(edges[j]) === -1) {
+                        console.log("pushing " + edges[j].location.x + " " + edges[j].location.y + " " + edges[j].location.direction);
+                        paths.push(edges[j]);
                     }
                 };
+                console.log("paths length is " + paths.length);
+                if (paths.length === 1) {
+                    return this.calcuateLongestRoad(map, paths[0].location, paths[0].owner, results);
+                }
+                else if (paths.length === 2) {
+                    return Math.max(this.calcuateLongestRoad(map, paths[0].location, paths[0].owner, results),
+                        this.calcuateLongestRoad(map, paths[1].location, paths[1].owner, results));
+                }
             }
         }
-        return results;
+        return results.length;
     },
     // gets adjacent edges of a given vertex
     getAdjacentEdges: function(vertexLocation) {
-        var vertex = normalizeVertex(vertexLocation);
+        vertexLocation.location = this.normalizeVertex(vertexLocation.location);
+        var vertex = vertexLocation;
         var edges = [];
-        switch(road.direction) {
+        switch(vertex.location.direction) {
             case 'NW':
                 edges.push({owner : vertex.owner,
                     location : {
                         x : vertex.location.x,
                         y : vertex.location.y,
-                        direction : 'W'
+                        direction : 'NW'
+                    }
+                });
+                edges.push({owner : vertex.owner,
+                    location : {
+                        x : vertex.location.x,
+                        y : vertex.location.y,
+                        direction : 'N'
+                    }
+                });
+                edges.push({owner : vertex.owner,
+                    location : {
+                        x : vertex.location.x- 1,
+                        y : vertex.location.y,
+                        direction : 'NE'
+                    }
+                });
+                break;
+            case 'NE':
+                edges.push({owner : vertex.owner,
+                    location : {
+                        x : vertex.location.x,
+                        y : vertex.location.y,
+                        direction : 'N'
                     }
                 });
                 edges.push({owner : vertex.owner,
@@ -217,44 +256,21 @@ module.exports = {
                 });
                 edges.push({owner : vertex.owner,
                     location : {
-                        x : vertex.location.x,
+                        x : vertex.location.x + 1,
                         y : vertex.location.y - 1,
-                        direction : 'W'
-                    }
-                });
-                break;
-            case 'NE':
-                edges.push({owner : vertex.owner,
-                    location : {
-                        x : vertex.location.x,
-                        y : vertex.location.y,
-                        direction : 'E'
-                    }
-                });
-                edges.push({owner : vertex.owner,
-                    location : {
-                        x : vertex.location.x,
-                        y : vertex.location.y,
-                        direction : 'NW'
-                    }
-                });
-                edges.push({owner : vertex.owner,
-                    location : {
-                        x : vertex.location.x,
-                        y : vertex.location.y - 1,
-                        direction : 'E'
+                        direction : 'NE'
                     }
                 });
                 break;
             default:
                 break;
         }
-        return vertices;
+        return edges;
     },
 
-    isOwnedEdge: function(road, roads) {
+    isOwnedEdge: function(edge, owner, roads) {
         for (var i = 0; i < roads.length; i++) {
-            if(helpers.isLocationEqual(roads[i].location, road.location) && roads[i].owner == road.owner) {
+            if(helpers.isLocationEqual(roads[i].location, edge) && roads[i].owner === owner) {
                 return true;
             }
         }
@@ -263,7 +279,8 @@ module.exports = {
 
     // checks if a vertex has a building and is not owned by player
     canContinueLRCalc: function(map, vertex) {
-        var normVertex = normalizeVertex(vertex);
+        vertex.location = this.normalizeVertex(vertex.location);
+        var normVertex = vertex;
         for (var i = 0; i < map.settlements.length; i++) {
             if (helpers.isLocationEqual(map.settlements[i].location, normVertex.location)) {
                 if(map.settlements[i].owner !== normVertex.owner) {
@@ -288,54 +305,54 @@ module.exports = {
     },
 
     // given a road, will return vertices
-    getAdjacentVertices: function(roadLocation) {
-        var road = normalizeEdge(roadLocation);
+    getAdjacentVertices: function(road, owner) {
+        road = this.normalizeEdge(road);
         var vertices = [];
         switch(road.direction) {
             case 'NW':
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
+                        x : road.x,
+                        y : road.y,
                         direction : 'W'
                     }
                 });
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
+                        x : road.x,
+                        y : road.y,
                         direction : 'NW'
                     }
                 });
                 break;
             case 'NE':
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
+                        x : road.x,
+                        y : road.y,
                         direction : 'NE'
                     }
                 });
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
-                        direction : 'NW'
+                        x : road.x,
+                        y : road.y,
+                        direction : 'E'
                     }
                 });
                 break;
             case 'N':
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
-                        direction : 'E'
+                        x : road.x,
+                        y : road.y,
+                        direction : 'NW'
                     }
                 });
-                vertices.push({owner : road.owner,
+                vertices.push({owner : owner,
                     location : {
-                        x : road.location.x,
-                        y : road.location.y,
+                        x : road.x,
+                        y : road.y,
                         direction : 'NE'
                     }
                 });

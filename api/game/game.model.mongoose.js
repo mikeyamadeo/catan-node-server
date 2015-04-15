@@ -395,6 +395,10 @@ GameSchema.methods.getRobber = function() {
     return this.game.map.robber;
 };
 
+GameSchema.methods.getMap = function() {
+    return this.game.map;
+};
+
 /**
 * @desc Retrieves the roads owned by specified player from game map
 * @method getOwnedRoads
